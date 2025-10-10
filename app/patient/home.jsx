@@ -6,7 +6,7 @@ export default function Home() {
   const pages = [
     { title: "Doctor List", icon: "people-outline", path: "/patient/doctor-list" },
     { title: "Upload Documents", icon: "document-text-outline", path: "/patient/upload-documents"},
-    { title: "View E-Recipe", icon: "medkit-outline", path: "/patient/view-erecipe"},
+    { title: "View E-Recipe", icon: "medkit-outline", path: "/patient/view-recipe"},
     { title: "Reminder", icon: "alarm-outline", path: "/patient/reminder"},
     { title: "Emergency", icon: "alert-circle-outline", path: "/patient/emergency"},
     { title: "Profile & History", icon: "person-circle-outline", path: "/patient/profile"},
