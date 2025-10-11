@@ -115,6 +115,67 @@ export default function DoctorList() {
     return matchesSearch && matchesSpecialty;
   });
 
+   const renderDoctorCard = ({ item }) => (
+  <TouchableOpacity
+    style={styles.card}
+    onPress={() =>
+      router.push({
+        pathname: "/patient/doctor-details",
+        params: { 
+          id: item.id.toString(),
+          name: item.name, 
+          specialty: item.specialty,
+          rating: item.rating.toString(),
+          experience: item.experience,
+          description:item.description,
+          image:item.image,
+          education: item.education,
+          languages: item.languages.join(','),
+          location: item.location, 
+          reviews:item.reviews,
+          availability:item.availability.join('|'),
+          price: getDoctorPrice(item.specialty) 
+        }
+      })
+    }
+    activeOpacity={0.7}
+  >
+      <View style={styles.avatarContainer}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>
+            {item.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.cardContent}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.specialty}>{item.specialty}</Text>
+
+        <View style={styles.ratingContainer}>
+          <Ionicons name="star" size={16} color="#FFD700" />
+          <Text style={styles.rating}>{item.rating}</Text>
+          <Text style={styles.experience}>• {item.experience}</Text>
+        </View>
+      </View>
+
+      <View style={styles.arrowContainer}>
+        <Ionicons name="chevron-forward" size={20} color="#666" />
+      </View>
+    </TouchableOpacity>
+  );
+const getDoctorPrice = (specialty) => {
+  const prices = {
+    "Cardiologist": "$150",
+    "Dermatologist": "$120", 
+    "Neurologist": "$180",
+    "Pediatrician": "$100"
+  };
+  return prices[specialty] || "$120";
+};
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -211,5 +272,73 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 20,
+  },
+    card: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#f1f5f9",
+  },
+  avatarContainer: {
+    marginRight: 16,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#3b82f6",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cardContent: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1e293b",
+    marginBottom: 2,
+  },
+  specialty: {
+    fontSize: 14,
+    color: "#64748b",
+    marginBottom: 6,
+    fontWeight: "500",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  rating: {
+    fontSize: 14,
+    color: "#1e293b",
+    fontWeight: "600",
+    marginLeft: 2,
+  },
+  experience: {
+    fontSize: 13,
+    color: "#64748b",
+    fontWeight: "500",
+  },
+  arrowContainer: {
+    padding: 4,
   },
 });
