@@ -42,7 +42,62 @@ export default function DoctorList() {
       reviews: 67,
       availability: ["10:00 AM", "11:30 AM", "04:00 PM", "05:15 PM"]
     },
-    // ... other doctors data
+    {
+      id: 3,
+      name: "Dr. Erzana Beqaj",
+      specialty: "Neurologist",
+      rating: 4.7,
+      experience: "15 years",
+      description: "Neurology expert with extensive experience in treating neurological disorders, epilepsy, and stroke patients. Researcher in neurodegenerative diseases.",
+      image: "https://images.unsplash.com/photo-1591604021695-0c69b7c05981?w=400&h=400&fit=crop",
+      education: "MD Neurology, Harvard Medical School",
+      languages: ["Albanian", "English", "French"],
+      location: "University Clinical Center",
+      reviews: 124,
+      availability: ["08:30 AM", "11:00 AM", "01:30 PM", "03:00 PM"]
+    },
+    {
+      id: 4,
+      name: "Dr. Artan Krasniqi",
+      specialty: "Cardiologist",
+      rating: 4.6,
+      experience: "10 years",
+      description: "Interventional cardiologist specializing in angioplasty, stenting, and cardiac catheterization. Focus on minimally invasive procedures.",
+      image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop",
+      education: "MD Cardiology, University of Tirana",
+      languages: ["Albanian", "English", "Turkish"],
+      location: "City Heart Hospital",
+      reviews: 56,
+      availability: ["09:30 AM", "12:00 PM", "02:30 PM", "04:45 PM"]
+    },
+    {
+      id: 5,
+      name: "Dr. Lirije Morina",
+      specialty: "Pediatrician",
+      rating: 4.9,
+      experience: "14 years",
+      description: "Pediatric specialist with focus on child development, vaccinations, and childhood diseases. Passionate about preventive pediatric care.",
+      image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=400&fit=crop",
+      education: "MD Pediatrics, University of Skopje",
+      languages: ["Albanian", "English", "Macedonian"],
+      location: "Children's Health Center",
+      reviews: 145,
+      availability: ["08:00 AM", "10:15 AM", "01:00 PM", "03:30 PM"]
+    },
+    {
+      id: 6,
+      name: "Dr. Besnik Aliu",
+      specialty: "Dermatologist",
+      rating: 4.5,
+      experience: "7 years",
+      description: "Dermatology and venereology specialist with expertise in acne treatment, skin cancer screening, and aesthetic procedures.",
+      image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop",
+      education: "MD Dermatology, University of Belgrade",
+      languages: ["Albanian", "English", "Serbian"],
+      location: "Skin Care Specialists",
+      reviews: 42,
+      availability: ["09:45 AM", "11:15 AM", "02:45 PM", "04:00 PM"]
+    },
   ];
 
   const specialties = [
