@@ -1,7 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -206,6 +208,41 @@ const getDoctorPrice = (specialty) => {
           </TouchableOpacity>
         )}
       </View>
+      <View style={styles.filterSection}>
+  <Text style={styles.filterTitle}>Specialty</Text>
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.filterContainer}
+  >
+    {specialties.map((specialty) => (
+      <TouchableOpacity
+        key={specialty}
+        style={[
+          styles.filterChip,
+          selectedSpecialty === specialty && styles.filterChipActive,
+        ]}
+        onPress={() => setSelectedSpecialty(specialty)}
+      >
+        <Text
+          style={[
+            styles.filterChipText,
+            selectedSpecialty === specialty && styles.filterChipTextActive,
+          ]}
+        >
+          {specialty}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </ScrollView>
+</View>
+
+<View style={styles.resultsContainer}>
+  <Text style={styles.resultsText}>
+    {filteredDoctors.length} doctor
+    {filteredDoctors.length !== 1 ? "s" : ""} found
+  </Text>
+</View>
 
       <FlatList
         data={filteredDoctors}
@@ -213,6 +250,15 @@ const getDoctorPrice = (specialty) => {
         renderItem={renderDoctorCard}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+  <View style={styles.emptyState}>
+    <Ionicons name="search-outline" size={64} color="#cbd5e1" />
+    <Text style={styles.emptyStateTitle}>No doctors found</Text>
+    <Text style={styles.emptyStateText}>
+      Try adjusting your search or filter criteria
+    </Text>
+  </View>
+}
       />
     </View>
   );
@@ -341,4 +387,64 @@ const styles = StyleSheet.create({
   arrowContainer: {
     padding: 4,
   },
+  filterSection: {
+  marginBottom: 16,
+},
+filterTitle: {
+  fontSize: 16,
+  fontWeight: "600",
+  color: "#1e293b",
+  marginBottom: 12,
+},
+filterContainer: {
+  paddingRight: 20,
+},
+filterChip: {
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  backgroundColor: "#ffffff",
+  borderRadius: 20,
+  borderWidth: 1,
+  borderColor: "#e2e8f0",
+  marginRight: 8,
+},
+filterChipActive: {
+  backgroundColor: "#3b82f6",
+  borderColor: "#3b82f6",
+},
+filterChipText: {
+  fontSize: 14,
+  fontWeight: "500",
+  color: "#64748b",
+},
+filterChipTextActive: {
+  color: "#ffffff",
+},
+resultsContainer: {
+  marginBottom: 12,
+},
+resultsText: {
+  fontSize: 14,
+  color: "#64748b",
+  fontWeight: "500",
+},
+emptyState: {
+  alignItems: "center",
+  justifyContent: "center",
+  paddingVertical: 60,
+  paddingHorizontal: 20,
+},
+emptyStateTitle: {
+  fontSize: 18,
+  fontWeight: "600",
+  color: "#475569",
+  marginTop: 16,
+  marginBottom: 8,
+},
+emptyStateText: {
+  fontSize: 14,
+  color: "#64748b",
+  textAlign: "center",
+  lineHeight: 20,
+},
 });
