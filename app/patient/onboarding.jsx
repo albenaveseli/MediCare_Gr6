@@ -31,8 +31,6 @@ export default function OnBoarding() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text style={styles.title}></Text>
-
       {/* Birth Date */}
       <View style={styles.card}>
         <Text style={styles.label}>Birth Date (DD/MM/YYYY):</Text>
@@ -109,12 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
     padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 20,
-  },
   card: {
     backgroundColor: "#ffffff",
     padding: 16,
@@ -151,7 +143,7 @@ const styles = StyleSheet.create({
   welcomeTitle: {
     fontSize: 26,
     fontWeight: "bold",
-    marginBottom: =p10,
+    marginBottom: 10,
     color: "#1e293b",
   },
   welcomeText: {
