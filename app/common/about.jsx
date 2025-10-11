@@ -78,3 +78,106 @@ export default function About() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#f8f9fa",
+  },
+  scrollView: {
+    width: "100%",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#2c5aa0",
+    marginBottom: 25,
+    marginTop: 10,
+  },
+  section: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1a3a6e",
+    marginBottom: 12,
+  },
+  description: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#4a5568",
+    textAlign: "justify",
+  },
+  featureList: {
+    marginTop: 5,
+  },
+  feature: {
+    fontSize: 14,
+    color: "#2d3748",
+    marginBottom: 6,
+    lineHeight: 20,
+  },
+  audienceContainer: {
+    flexDirection: "column",
+    gap: 12,
+  },
+  audienceBox: {
+    backgroundColor: "#f0f8ff",
+    padding: 15,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#2c5aa0",
+  },
+  audienceTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1a3a6e",
+    marginBottom: 5,
+  },
+  audienceText: {
+    fontSize: 13,
+    color: "#4a5568",
+    lineHeight: 18,
+  },
+  teamText: {
+    fontSize: 14,
+    color: "#4a5568",
+    marginBottom: 10,
+    lineHeight: 20,
+  },
+  teamList: {
+    marginLeft: 10,
+  },
+  teamMember: {
+    fontSize: 13,
+    color: "#2d3748",
+    marginBottom: 4,
+  },
+  contactText: {
+    fontSize: 14,
+    color: "#4a5568",
+    lineHeight: 22,
+  },
+  version: {
+    textAlign: "center",
+    fontSize: 12,
+    color: "#718096",
+    marginTop: 10,
+    marginBottom: 20,
+    fontStyle: "italic",
+  },
+});
