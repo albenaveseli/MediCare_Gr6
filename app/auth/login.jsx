@@ -9,20 +9,20 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Plotëso email dhe fjalëkalimin!");
+      Alert.alert("Please fill in both email and password!");
       return;
     }
 
     try {
       const data = await AsyncStorage.getItem(email);
       if (!data) {
-        Alert.alert("Nuk ekziston llogaria, regjistrohu më parë!");
+        Alert.alert("Account not found. Please sign up first!");
         return;
       }
 
       const user = JSON.parse(data);
       if (user.password !== password) {
-        Alert.alert("Fjalëkalimi është i pasaktë!");
+        Alert.alert("Incorrect password!");
         return;
       }
 
@@ -35,7 +35,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Kyçu</Text>
+      <Text style={styles.title}>Welcome Back!</Text>
 
       <TextInput
         style={styles.input}
@@ -45,42 +45,46 @@ export default function Login() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Fjalëkalimi"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Vazhdo</Text>
+        <Text style={styles.loginText}>Login</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/auth/signup")}>
-        <Text style={styles.link}>Nuk ke llogari? Regjistrohu</Text>
+        <Text style={styles.link}>
+          Don’t have an account? <Text style={styles.linkBold}>Sign Up</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  title: { fontSize: 26, fontWeight: "bold", marginBottom: 20, color: "#007AFF" },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#fff" },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, color: "#007AFF" },
   input: {
     width: "80%",
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 10,
+    padding: 12,
+    marginBottom: 12,
     borderRadius: 8,
+    fontSize: 16,
   },
   loginButton: {
     backgroundColor: "#007AFF",
-    padding: 12,
+    padding: 14,
     borderRadius: 8,
     width: "80%",
     alignItems: "center",
     marginTop: 10,
   },
   loginText: { color: "#fff", fontSize: 18, fontWeight: "600" },
-  link: { color: "#007AFF", marginTop: 20 },
+  link: { color: "#333", marginTop: 20, fontSize: 15 },
+  linkBold: { color: "#007AFF", fontWeight: "600" },
 });
