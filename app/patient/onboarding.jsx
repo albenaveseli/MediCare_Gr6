@@ -54,15 +54,6 @@ export default function OnBoarding() {
         </Picker>
       </View>
 
-      {/* Age Group */}
-      <View style={styles.card}>
-        <Text style={styles.label}>Age Group:</Text>
-        <Picker selectedValue={ageGroup} onValueChange={setAgeGroup} style={styles.picker}>
-          <Picker.Item label="Child" value="child" />
-          <Picker.Item label="Adult" value="adult" />
-          <Picker.Item label="Elder" value="elder" />
-        </Picker>
-      </View>
 
       {/* Weight */}
       <View style={styles.card}>
