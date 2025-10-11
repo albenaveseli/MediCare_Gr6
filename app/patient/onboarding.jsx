@@ -1,5 +1,6 @@
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Button, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
@@ -15,6 +16,7 @@ export default function OnBoarding() {
   const handleNext = () => {
     console.log({ birthDate, gender, ageGroup, weight, height, hasAllergy });
     alert("Your information has been saved!");
+    router.replace("/patient/home"); // kalon në faqen home
   };
 
   if (showWelcome) {
@@ -52,8 +54,15 @@ export default function OnBoarding() {
         </Picker>
       </View>
 
-     
-    
+      {/* Age Group */}
+      <View style={styles.card}>
+        <Text style={styles.label}>Age Group:</Text>
+        <Picker selectedValue={ageGroup} onValueChange={setAgeGroup} style={styles.picker}>
+          <Picker.Item label="Child" value="child" />
+          <Picker.Item label="Adult" value="adult" />
+          <Picker.Item label="Elder" value="elder" />
+        </Picker>
+      </View>
 
       {/* Weight */}
       <View style={styles.card}>
@@ -130,6 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 30,
+    backgroundColor: "#fff",
   },
   welcomeTitle: {
     fontSize: 26,
