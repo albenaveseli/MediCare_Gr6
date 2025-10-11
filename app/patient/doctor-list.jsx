@@ -186,12 +186,7 @@ const getDoctorPrice = (specialty) => {
       </View>
 
       <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color="#64748b"
-          style={styles.searchIcon}
-        />
+        <Ionicons name="search" size={20} color="#64748b" style={styles.searchIcon}/>
         <TextInput
           style={styles.searchInput}
           placeholder="Search doctors by name or specialty..."
@@ -200,21 +195,14 @@ const getDoctorPrice = (specialty) => {
           placeholderTextColor="#94a3b8"
         />
         {searchQuery.length > 0 && (
-          <TouchableOpacity
-            onPress={() => setSearchQuery("")}
-            style={styles.clearButton}
-          >
-            <Ionicons name="close-circle" size={20} color="#64748b" />
+          <TouchableOpacity onPress={() => setSearchQuery("")} style={styles.clearButton}>
+            <Ionicons name="close-circle" size={20} color="#64748b"/>
           </TouchableOpacity>
         )}
       </View>
       <View style={styles.filterSection}>
   <Text style={styles.filterTitle}>Specialty</Text>
-  <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.filterContainer}
-  >
+  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContainer}>
     {specialties.map((specialty) => (
       <TouchableOpacity
         key={specialty}
