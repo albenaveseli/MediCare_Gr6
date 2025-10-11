@@ -86,14 +86,8 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#1a73e8",
     letterSpacing: -0.5,
-    // Heqim textShadowOffset sepse shkakton probleme
     textShadowColor: "rgba(26, 115, 232, 0.2)",
     textShadowRadius: 4,
-    // Nëse do text shadow, përdor këtë alternativë:
-    // shadowColor: "#1a73e8",
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 4,
   },
   underline: {
     width: 60,
