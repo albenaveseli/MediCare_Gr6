@@ -9,7 +9,8 @@ export default function Home() {
     { title: "View E-Recipe", icon: "medkit-outline", path: "/patient/view-recipe"},
     { title: "Reminder", icon: "alarm-outline", path: "/patient/reminder"},
     { title: "Emergency", icon: "alert-circle-outline", path: "/patient/emergency"},
-    { title: "Profile & History", icon: "person-circle-outline", path: "/patient/profile"},
+    { title: "Profile", icon: "person-circle-outline", path: "/patient/profile"},
+    { title: "History", icon: "person-circle-outline", path: "/patient/history"},
     { title: "Hospital Finder", icon: "location-outline", path: "/patient/hospital-finder" },
     { title: "About App", icon: "information-circle-outline", path: "../common/about" },
   ];
