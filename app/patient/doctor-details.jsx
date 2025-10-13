@@ -33,6 +33,25 @@ export default function DoctorDetails() {
   return [availability];
   };
 
+   const getAvailableTimeSlots = () => {
+    const today = new Date();
+    const selectedDate = new Date(); 
+    const isToday = selectedDate.toDateString() === today.toDateString();
+    
+    if (isToday) {
+      return getAvailabilityArray();
+    } else {
+      return generateTimeSlots();
+    }
+  };
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 8; hour <= 16; hour++) {
+      const timeString = `${hour.toString().padStart(2, '0')}:00`;
+      slots.push(timeString);
+    }
+    return slots;
+  };
   const isWeekend = () => {
     const today = new Date();
     const day = today.getDay();
@@ -136,7 +155,18 @@ export default function DoctorDetails() {
 
       {/* Book Appointment Button */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.bookButton}>
+        <TouchableOpacity style={styles.bookButton}
+        onPress={() => router.push({
+            pathname: "/patient/book-appointment",
+            params: { 
+              doctorId: doctor.id,
+              doctorName: doctor.name,
+              doctorSpecialty: doctor.specialty,
+              doctorPrice: doctor.price,
+              doctorImage:doctor.image,
+              doctorAvailability: doctor.availability.join('|')
+            }
+          })}>
           <Text style={styles.bookButtonText}>Book Appointment</Text>
           <FontAwesome5 name="calendar-check" size={20} color="#fff" />
         </TouchableOpacity>
