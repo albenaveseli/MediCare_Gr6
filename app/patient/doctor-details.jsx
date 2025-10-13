@@ -19,6 +19,25 @@ export default function DoctorDetails() {
     price 
   } = useLocalSearchParams();
 
+  const getAvailabilityArray = () => {
+  if (!availability) return [];
+  
+  if (typeof availability === 'string' && availability.includes('|')) {
+   return availability.split('|');
+  }
+  
+  if (Array.isArray(availability)) {
+   return availability;
+  }
+    
+  return [availability];
+  };
+
+  const isWeekend = () => {
+    const today = new Date();
+    const day = today.getDay();
+    return day === 0 || day === 6; // 0 = e Diel, 6 = e Shtunë
+  };
   const doctor = {
     id: id || "1",
     name: name || "Dr. Unknown",
@@ -31,7 +50,7 @@ export default function DoctorDetails() {
     education,
     languages: typeof languages === 'string' ? languages.split(',') : ['English'],
     location,
-    availability: typeof availability === 'string' ? availability.split('|') : [],
+    availability: getAvailabilityArray(),
     price
   };
   
@@ -86,6 +105,29 @@ export default function DoctorDetails() {
               <Text style={styles.featureText}>{feature.text}</Text>
             </View>
           ))}
+        </View>
+
+         {/* Availability */}
+        <View style={styles.availabilityCard}>
+          <Text style={styles.sectionTitle}>
+            {isWeekend() ? "Available Hours (Next Week)" : "Available Hours"}
+          </Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={styles.timeSlotsContainer}
+          >
+            {doctor.availability.map((time, index) => (
+              <TouchableOpacity key={index} style={styles.timeSlot}>
+                <Text style={styles.timeText}>{time}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <Text style={styles.availabilityNote}>
+            {isWeekend() 
+              ? "Today is weekend. Available hours for next working days." 
+              : "For today: doctor's specific availability. For other days: 08:00-16:00"}
+          </Text>
         </View>
 
         {/* Spacer for button */}
@@ -247,5 +289,37 @@ featureText: {
   marginLeft: 12,
   flex: 1,
   lineHeight: 20,
+},
+availabilityCard: {
+  backgroundColor: '#fff',
+  margin: 16,
+  padding: 20,
+  borderRadius: 12,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+timeSlotsContainer: {
+  paddingVertical: 10,
+},
+timeSlot: {
+  backgroundColor: '#007AFF',
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+  borderRadius: 8,
+  marginRight: 10,
+},
+timeText: {
+  color: '#fff',
+  fontWeight: '600',
+  fontSize: 14,
+},
+availabilityNote: {
+  fontSize: 12,
+  color: '#666',
+  marginTop: 10,
+  fontStyle: 'italic',
 },
 });
