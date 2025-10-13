@@ -34,6 +34,13 @@ export default function DoctorDetails() {
     availability: typeof availability === 'string' ? availability.split('|') : [],
     price
   };
+  
+  const features = [
+    { icon: 'school', text: doctor.education },
+    { icon: 'location-on', text: doctor.location },
+    { icon: 'language', text: doctor.languages.join(', ') },
+    { icon: 'attach-money', text: `Consultation: ${doctor.price}` }
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,6 +70,22 @@ export default function DoctorDetails() {
               <Text style={styles.reviews}>({doctor.reviews} reviews)</Text>
             </View>
           </View>
+        </View>
+
+        {/* Short Description */}
+        <View style={styles.descriptionCard}>
+        <Text style={styles.descriptionText}>{doctor.description}</Text>
+        </View>
+        
+        {/* Features */}
+        <View style={styles.featuresCard}>
+          <Text style={styles.sectionTitle}>Details</Text>
+          {features.map((feature, index) => (
+            <View key={index} style={styles.featureItem}>
+              <MaterialIcons name={feature.icon} size={20} color="#007AFF" />
+              <Text style={styles.featureText}>{feature.text}</Text>
+            </View>
+          ))}
         </View>
 
         {/* Spacer for button */}
@@ -179,4 +202,50 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginRight: 8,
   },
+  descriptionCard: {
+  backgroundColor: '#fff',
+  margin: 16,
+  padding: 20,
+  borderRadius: 12,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+descriptionText: {
+  fontSize: 15,
+  lineHeight: 22,
+  color: '#555',
+  textAlign: 'center',
+},
+featuresCard: {
+  backgroundColor: '#fff',
+  margin: 16,
+  padding: 20,
+  borderRadius: 12,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+sectionTitle: {
+  fontSize: 18,
+  fontWeight: '700',
+  color: '#333',
+  marginBottom: 15,
+},
+featureItem: {
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  marginBottom: 12,
+},
+featureText: {
+  fontSize: 14,
+  color: '#555',
+  marginLeft: 12,
+  flex: 1,
+  lineHeight: 20,
+},
 });
