@@ -1,7 +1,8 @@
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
 export default function DoctorDetails() {
   const { 
     id,
@@ -18,6 +19,37 @@ export default function DoctorDetails() {
     availability,
     price 
   } = useLocalSearchParams();
+
+  const [isLiked, setIsLiked] = useState(false);
+  const LIKE_KEY = `doctor_${id}_liked`;
+  useEffect(() => {
+    loadLikeStatus();
+  }, [id]);
+
+   const loadLikeStatus = async () => {
+    try {
+      const savedLikeStatus = await AsyncStorage.getItem(LIKE_KEY);
+      if (savedLikeStatus !== null) {
+        setIsLiked(JSON.parse(savedLikeStatus));
+      }
+    } catch (error) {
+      console.error('Error loading like status:', error);
+    }
+  };
+
+  const toggleLike = async () => {
+    try {
+      const newLikeStatus = !isLiked;
+      setIsLiked(newLikeStatus);
+      await AsyncStorage.setItem(LIKE_KEY, JSON.stringify(newLikeStatus));
+      
+      // Optional
+      console.log(`Doctor ${name} ${newLikeStatus ? 'added to' : 'removed from'} favorites`);
+    } catch (error) {
+      console.error('Error saving like status:', error);
+      setIsLiked(!isLiked);
+    }
+  };
 
   const getAvailabilityArray = () => {
   if (!availability) return [];
@@ -90,8 +122,12 @@ export default function DoctorDetails() {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Doctor Profile</Text>
-        <TouchableOpacity>
-          <Ionicons name="heart-outline" size={24} color="#333" />
+        <TouchableOpacity onPress={toggleLike} style={styles.heartButton}>
+          <Ionicons 
+            name={isLiked ? "heart" : "heart-outline"} 
+            size={24} 
+            color={isLiked ? "#FF3B30" : "#333"} 
+          />
         </TouchableOpacity>
       </View>
 
@@ -197,6 +233,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
+  },
+  heartButton: {
+    padding: 4,
   },
   profileSection: {
     backgroundColor: '#fff',
