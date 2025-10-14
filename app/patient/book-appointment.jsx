@@ -169,6 +169,25 @@ const BookingScreen = ({ navigation, route }) => {
           </Text>
         </View>
 
+        {/* Patient Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Patient Information</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Full Name *"
+            value={patientName}
+            onChangeText={setPatientName}
+          />
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Additional Notes (Optional)"
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+            numberOfLines={3}
+          />
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -303,6 +322,20 @@ availabilityInfo: {
   marginTop: 10,
   fontStyle: 'italic',
 },
+input: {
+  backgroundColor: '#f8f9fa',
+  padding: 16,
+  borderRadius: 8,
+  borderWidth: 1,
+  borderColor: '#e0e0e0',
+  marginBottom: 12,
+  fontSize: 16,
+},
+textArea: {
+  height: 80,
+  textAlignVertical: 'top',
+},
+
 });
 
 export default BookingScreen;
