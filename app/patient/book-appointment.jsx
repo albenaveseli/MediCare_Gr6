@@ -80,6 +80,27 @@ const BookingScreen = ({ navigation, route }) => {
       day: 'numeric'
     });
   };
+   const handleBooking = () => {
+    if (!selectedTime || !patientName) {
+      Alert.alert('Error', 'Please fill all required fields');
+      return;
+    }
+    if (isWeekend(selectedDate)) {
+      Alert.alert('Weekend', 'Appointments are not available on weekends. Please select a weekday.');
+      return;
+    }
+
+    Alert.alert('Appointment Booked!',
+      `Your appointment with ${doctor.name} is confirmed for ${selectedDate.toDateString()} at ${selectedTime}`,
+      [
+        {
+          text: 'OK',
+          onPress: () => router.back() 
+        }
+      ]
+    );
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -188,6 +209,22 @@ const BookingScreen = ({ navigation, route }) => {
           />
         </View>
 
+         {/* Confirm Button */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={[
+            styles.confirmButton,
+            (isWeekend(selectedDate) || !selectedTime || !patientName) && styles.disabledButton
+          ]} 
+          onPress={handleBooking}
+          disabled={isWeekend(selectedDate) || !selectedTime || !patientName}
+        >
+          <Text style={styles.confirmButtonText}>
+            {isWeekend(selectedDate) ? 'Weekend - Not Available' : 'Confirm Appointment'}
+          </Text>
+          <Ionicons name="checkmark-circle" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -334,6 +371,35 @@ input: {
 textArea: {
   height: 80,
   textAlignVertical: 'top',
+},
+buttonContainer: {
+  padding: 20,
+  backgroundColor: '#fff',
+  borderTopWidth: 1,
+  borderTopColor: '#e0e0e0',
+},
+confirmButton: {
+  backgroundColor: '#28a745',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 16,
+  borderRadius: 12,
+  shadowColor: '#28a745',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.3,
+  shadowRadius: 8,
+  elevation: 5,
+},
+disabledButton: {
+  backgroundColor: '#6c757d',
+  shadowColor: '#6c757d',
+},
+confirmButtonText: {
+  color: '#fff',
+  fontSize: 18,
+  fontWeight: '700',
+  marginRight: 8,
 },
 
 });
