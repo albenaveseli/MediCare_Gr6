@@ -32,11 +32,11 @@ export default function PatientLayout() {
       />
 
       <Tabs.Screen
-        name="doctor-list"
+        name="emergency"
         options={{
-          title: "Book Appointment",
+          title: "SOS",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" color={color} size={size} />
+            <Ionicons name="alert-circle-outline" color={color} size={size} />
           ),
         }}
       />
@@ -53,7 +53,7 @@ export default function PatientLayout() {
 
       <Tabs.Screen name="book-appointment" options={{ href: null }} />
       <Tabs.Screen name="doctor-details" options={{ href: null }} />
-      <Tabs.Screen name="emergency" options={{ href: null }} />
+      <Tabs.Screen name="doctor-list" options={{ href: null }} />
       <Tabs.Screen name="history" options={{ href: null }} />
       <Tabs.Screen name="hospital-finder" options={{ href: null }} />
       <Tabs.Screen name="onboarding" options={{ href: null }} />

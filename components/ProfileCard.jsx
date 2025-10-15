@@ -25,7 +25,7 @@ export default function ProfileCard({
   const handleLogout = () => router.replace("/auth/login");
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
-  const handleBack = () => router.push(homePath);
+  const handleAbout = () => router.push("/common/about"); 
 
   return (
     <View style={styles.container}>
@@ -73,15 +73,16 @@ export default function ProfileCard({
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Back to Home</Text>
-          </TouchableOpacity>
 
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      <TouchableOpacity style={styles.aboutButtonOutside} onPress={handleAbout}>
+        <Text style={styles.aboutTextOutside}>About App</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -119,6 +120,7 @@ const styles = StyleSheet.create({
   email: { fontSize: 16, color: "#7F8C8D", marginTop: 4 },
   role: { fontSize: 15, color: "#95A5A6", marginBottom: 25 },
   buttonsContainer: { width: "100%", marginTop: 10, gap: 15 },
+
   editButton: {
     backgroundColor: "#4A90E2",
     paddingVertical: 12,
@@ -126,6 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   editText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+
   saveButton: {
     backgroundColor: "#2ECC71",
     paddingVertical: 12,
@@ -133,6 +136,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+
   backButton: {
     backgroundColor: "#AED9E0",
     paddingVertical: 12,
@@ -140,6 +144,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backText: { color: "#1E6091", fontSize: 16, fontWeight: "600" },
+
   logoutButton: {
     backgroundColor: "#f8d7da",
     paddingVertical: 12,
@@ -147,6 +152,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoutText: { color: "#d9534f", fontSize: 16, fontWeight: "600" },
+
   input: {
     backgroundColor: "#f2f2f2",
     borderRadius: 10,
@@ -157,5 +163,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     textAlign: "center",
+  },
+
+  aboutButtonOutside: {
+    marginTop: 20,
+    backgroundColor: "gray",
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  aboutTextOutside: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
 });
