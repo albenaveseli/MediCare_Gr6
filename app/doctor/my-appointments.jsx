@@ -11,7 +11,98 @@ import {
 } from 'react-native';
 
 const MyAppointmentsScreen = () => {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState([
+    
+    {
+      id: '1',
+      patientName: 'John Doe',
+      patientAge: '35',
+      date: new Date('2024-02-15'),
+      time: '10:00',
+      reason: 'Routine checkup',
+      status: 'pending'
+    },
+    {
+      id: '2',
+      patientName: 'Jane Smith',
+      patientAge: '28',
+      date: new Date('2024-02-15'),
+      time: '11:30',
+      reason: 'Headache consultation',
+      status: 'approved'
+    },
+    {
+      id: '3',
+      patientName: 'Mike Johnson',
+      patientAge: '45',
+      date: new Date('2024-02-16'),
+      time: '09:15',
+      reason: 'Blood test results',
+      status: 'pending'
+    },
+    {
+      id: '4',
+      patientName: 'Sarah Wilson',
+      patientAge: '32',
+      date: new Date('2024-02-16'),
+      time: '14:00',
+      reason: 'Annual physical',
+      status: 'approved'
+    },
+    {
+      id: '5',
+      patientName: 'Robert Brown',
+      patientAge: '50',
+      date: new Date('2024-02-17'),
+      time: '16:30',
+      reason: 'Back pain consultation',
+      status: 'pending'
+    }
+  ]);
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'approved':
+        return '#28a745';
+      case 'pending':
+        return '#ffc107';
+      case 'cancelled':
+        return '#dc3545';
+      default:
+        return '#6c757d';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'approved':
+        return 'Approved';
+      case 'pending':
+        return 'Pending';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
+  };
+  const groupAppointmentsByDate = (appointmentsList) => {
+    const grouped = {};
+    appointmentsList.forEach(apt => {
+      const dateKey = apt.date.toDateString();
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(apt);
+    });
+    return grouped;
+  };
 return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
