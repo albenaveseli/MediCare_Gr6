@@ -1,9 +1,5 @@
-import { Text, View } from "react-native";
+import ProfileCard from "../../components/ProfileCard";
 
-export default function Profile() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Profile.js</Text>
-    </View>
-  );
+export default function DoctorProfile() {
+  return <ProfileCard roleType="Doctor" homePath="/doctor/home" />;
 }
