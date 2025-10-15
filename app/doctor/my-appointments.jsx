@@ -115,10 +115,57 @@ return (
       </View>
 
       <ScrollView style={styles.content}>
-        <View style={styles.emptyState}>
-          <Ionicons name="calendar-outline" size={48} color="#ccc" />
-          <Text style={styles.emptyStateText}>No appointments scheduled</Text>
-        </View>
+       {Object.keys(groupedAppointments).length > 0 ? (
+    Object.entries(groupedAppointments).map(([dateKey, dayAppointments]) => (
+      <View key={dateKey} style={styles.daySection}>
+        <Text style={styles.dayHeader}>
+          {new Date(dateKey).toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </Text>
+        
+        {dayAppointments.map((appointment) => (
+          <View key={appointment.id} style={styles.appointmentItem}>
+            {/* Left: Patient Info */}
+            <View style={styles.patientInfo}>
+              <Text style={styles.patientName}>
+                {appointment.patientName}
+              </Text>
+              <Text style={styles.patientAge}>
+                {appointment.patientAge} years
+              </Text>
+              <Text style={styles.appointmentTime}>
+                <Ionicons name="time-outline" size={12} color="#666" />
+                {' '}{appointment.time}
+              </Text>
+              <Text style={styles.reason} numberOfLines={1}>
+                {appointment.reason}
+              </Text>
+            </View>
+
+            {/* Right: Status and Actions */}
+            <View style={styles.rightSection}>
+              <View style={[
+                styles.statusBadge,
+                { backgroundColor: getStatusColor(appointment.status) }
+              ]}>
+                <Text style={styles.statusText}>
+                  {getStatusText(appointment.status)}
+                </Text>
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
+    ))
+  ) : (
+    <View style={styles.emptyState}>
+      <Ionicons name="calendar-outline" size={48} color="#ccc" />
+      <Text style={styles.emptyStateText}>No appointments scheduled</Text>
+    </View>
+  )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -162,6 +209,69 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: 'center',
   },
+  daySection: {
+  marginBottom: 24,
+},
+dayHeader: {
+  fontSize: 16,
+  fontWeight: '600',
+  color: '#333',
+  marginBottom: 12,
+  paddingHorizontal: 8,
+},
+appointmentItem: {
+  flexDirection: 'row',
+  backgroundColor: '#fff',
+  padding: 16,
+  borderRadius: 12,
+  marginBottom: 8,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 2,
+  alignItems: 'center',
+},
+patientInfo: {
+  flex: 1,
+},
+patientName: {
+  fontSize: 16,
+  fontWeight: '600',
+  color: '#333',
+  marginBottom: 2,
+},
+patientAge: {
+  fontSize: 14,
+  color: '#666',
+  marginBottom: 4,
+},
+appointmentTime: {
+  fontSize: 13,
+  color: '#666',
+  marginBottom: 4,
+},
+reason: {
+  fontSize: 12,
+  color: '#999',
+  fontStyle: 'italic',
+},
+rightSection: {
+  alignItems: 'flex-end',
+  gap: 8,
+},
+statusBadge: {
+  paddingHorizontal: 8,
+  paddingVertical: 4,
+  borderRadius: 6,
+  minWidth: 70,
+},
+statusText: {
+  color: '#fff',
+  fontSize: 11,
+  fontWeight: '600',
+  textAlign: 'center',
+},
 });
 
 export default MyAppointmentsScreen;
