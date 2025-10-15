@@ -3,10 +3,8 @@ import DashboardCards from "../../components/DashboardCards";
 
 export default function Home() {
   const pages = [
-    { title: "My Appointments", icon: "calendar-outline", path: "/doctor/my-appointments" },
     { title: "Analytics", icon: "bar-chart-outline", path: "/doctor/analytics" },
     { title: "E-Recipe", icon: "medkit-outline", path: "/doctor/erecipe" },
-    { title: "Profile", icon: "person-circle-outline", path: "/doctor/profile" },
     { title: "About App", icon: "information-circle-outline", path: "../common/about" },
   ];
 
