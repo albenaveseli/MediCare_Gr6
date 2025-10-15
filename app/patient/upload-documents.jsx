@@ -31,8 +31,7 @@ export default function UploadDocuments() {
       });
 
       if (result.canceled) return;
-
-      // Ruaj listën e file-ve nga assets ose nga vetë rezultati (varet nga platforma)
+      
       const pickedFiles = result.assets || [result];
       const newDocs = pickedFiles.map((file) => {
         const name = file.name || "Unnamed file";
