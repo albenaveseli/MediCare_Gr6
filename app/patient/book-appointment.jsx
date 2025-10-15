@@ -25,6 +25,7 @@ const BookingScreen = ({ navigation, route }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [patientName, setPatientName] = useState('');
   const [notes, setNotes] = useState('');
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
@@ -157,34 +158,73 @@ const BookingScreen = ({ navigation, route }) => {
             Select Time {isWeekend(selectedDate) ? '(Not Available)' : ''}
           </Text>
           {isWeekend(selectedDate) ? (
-            <Text style={styles.noSlotsText}>
-              No available time slots on weekends. Please select a weekday.
-            </Text>
-          ) : availableTimeSlots.length > 0 ? (
-            <View style={styles.timeGrid}>
-              {availableTimeSlots.map((time, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.timeSlot,
-                    selectedTime === time && styles.selectedTimeSlot
-                  ]}
-                  onPress={() => setSelectedTime(time)}
-                >
-                  <Text style={[
-                    styles.timeText,
-                    selectedTime === time && styles.selectedTimeText
-                  ]}>
-                    {time}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ) : (
-            <Text style={styles.noSlotsText}>
-              No available time slots for selected date.
-            </Text>
-          )}
+    <Text style={styles.noSlotsText}>
+      No available time slots on weekends. Please select a weekday.
+    </Text>
+  ) : selectedDate.toDateString() === new Date().toDateString() ? (
+    // Oraret ekzistuese per sot
+    <View style={styles.timeGrid}>
+      {doctor.availability.map((time, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[
+            styles.timeSlot,
+            selectedTime === time && styles.selectedTimeSlot
+          ]}
+          onPress={() => setSelectedTime(time)}
+        >
+          <Text
+            style={[
+              styles.timeText,
+              selectedTime === time && styles.selectedTimeText
+            ]}
+          >
+            {time}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  ) : (
+    // Ditët tjera (jo vikend, jo sot) - përdor TimePicker
+    <>
+      <TouchableOpacity
+        style={styles.dateButton}
+        onPress={() => setShowTimePicker(true)}
+      >
+        <Ionicons name="time" size={20} color="#007AFF" />
+        <Text style={styles.dateText}>
+          {selectedTime ? selectedTime : "Select time (08:00 - 16:00)"}
+        </Text>
+      </TouchableOpacity>
+
+      {showTimePicker && (
+        <DateTimePicker
+          mode="time"
+          value={selectedDate}
+          display="spinner"
+          onChange={(event, date) => {
+            setShowTimePicker(false);
+            if (date) {
+              const hours = date.getHours();
+              const minutes = date.getMinutes();
+              if (hours >= 8 && hours <= 16) {
+                const formatted = `${hours.toString().padStart(2, '0')}:${minutes
+                  .toString()
+                  .padStart(2, '0')}`;
+                setSelectedTime(formatted);
+              } else {
+                Alert.alert(
+                  'Invalid time',
+                  'Please select a time between 08:00 and 16:00.'
+                );
+              }
+            }
+          }}
+        />
+      )}
+    </>
+  )}
+
           <Text style={styles.availabilityInfo}>
             {selectedDate.toDateString() === new Date().toDateString() 
               ? "Today: Doctor's specific availability"
