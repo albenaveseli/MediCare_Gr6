@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -92,6 +93,41 @@ const MyAppointmentsScreen = () => {
         return 'Unknown';
     }
   };
+  const handleApprove = (appointmentId) => {
+    setAppointments(prev =>
+      prev.map(apt =>
+        apt.id === appointmentId
+          ? { ...apt, status: 'approved' }
+          : apt
+      )
+    );
+    Alert.alert('Success', 'Appointment approved successfully');
+  };
+
+  const handleCancel = (appointmentId) => {
+    Alert.alert(
+      'Cancel Appointment',
+      'Are you sure you want to cancel this appointment?',
+      [
+        {
+          text: 'No',
+          style: 'cancel'
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            setAppointments(prev =>
+              prev.map(apt =>
+                apt.id === appointmentId
+                  ? { ...apt, status: 'cancelled' }
+                  : apt
+              )
+            );
+          }
+        }
+      ]
+    );
+  };
   const groupAppointmentsByDate = (appointmentsList) => {
     const grouped = {};
     appointmentsList.forEach(apt => {
@@ -103,6 +139,9 @@ const MyAppointmentsScreen = () => {
     });
     return grouped;
   };
+   const filteredAppointments = appointments.filter(apt => apt.status !== 'cancelled');
+  const groupedAppointments = groupAppointmentsByDate(filteredAppointments);
+
 return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -155,6 +194,32 @@ return (
                   {getStatusText(appointment.status)}
                 </Text>
               </View>
+               {appointment.status === 'pending' && (
+                      <View style={styles.actionButtons}>
+                        <TouchableOpacity 
+                          style={[styles.actionButton, styles.approveButton]}
+                          onPress={() => handleApprove(appointment.id)}
+                        >
+                          <Ionicons name="checkmark" size={16} color="#fff" />
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity 
+                          style={[styles.actionButton, styles.cancelButton]}
+                          onPress={() => handleCancel(appointment.id)}
+                        >
+                          <Ionicons name="close" size={16} color="#fff" />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+
+                    {appointment.status === 'approved' && (
+                      <TouchableOpacity 
+                        style={[styles.actionButton, styles.cancelButton, styles.standaloneButton]}
+                        onPress={() => handleCancel(appointment.id)}
+                      >
+                        <Ionicons name="close" size={16} color="#fff" />
+                      </TouchableOpacity>
+                    )}
             </View>
           </View>
         ))}
@@ -271,6 +336,27 @@ statusText: {
   fontSize: 11,
   fontWeight: '600',
   textAlign: 'center',
+},
+actionButtons: {
+  flexDirection: 'row',
+  gap: 6,
+},
+actionButton: {
+  width: 32,
+  height: 32,
+  borderRadius: 6,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+approveButton: {
+  backgroundColor: '#28a745',
+},
+cancelButton: {
+  backgroundColor: '#dc3545',
+},
+standaloneButton: {
+  width: 32,
+  height: 32,
 },
 });
 
