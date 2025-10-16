@@ -1,24 +1,39 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function History() {
-  const [appointments, setAppointments] = useState([]);
-  const [documents, setDocuments] = useState([]);
+  const [appointments] = useState([
+    {
+      doctorName: "Dr. Arben Krasniqi",
+      date: "2025-09-10",
+      status: "Completed",
+    },
+    {
+      doctorName: "Dr. Elira Gashi",
+      date: "2025-08-22",
+      status: "Cancelled",
+    },
+    {
+      doctorName: "Dr. Besnik Hoxha",
+      date: "2025-07-15",
+      status: "Completed",
+    },
+  ]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedAppointments = await AsyncStorage.getItem("appointments");
-        const storedDocuments = await AsyncStorage.getItem("documents");
-        if (storedAppointments) setAppointments(JSON.parse(storedAppointments));
-        if (storedDocuments) setDocuments(JSON.parse(storedDocuments));
-      } catch (error) {
-        console.error("Error loading data", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const [documents] = useState([
+    {
+      type: "Blood Test Report",
+      date: "2025-09-11",
+    },
+    {
+      type: "X-Ray Result",
+      date: "2025-08-25",
+    },
+    {
+      type: "Prescription File",
+      date: "2025-07-20",
+    },
+  ]);
 
   return (
     <ScrollView style={styles.container}>
