@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Modal,
@@ -8,8 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Header from "../../components/Header";
 
 export default function ERecipeScreen() {
+  const router = useRouter();
+
   const [patient, setPatient] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
   const [medications, setMedications] = useState("");
@@ -20,7 +24,6 @@ export default function ERecipeScreen() {
   const [generated, setGenerated] = useState(false);
   const [viewRecipe, setViewRecipe] = useState(false);
   const [showForm, setShowForm] = useState(true);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [sendModal, setSendModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -49,66 +52,65 @@ export default function ERecipeScreen() {
     setShowForm(true);
   };
 
-  const handleSend = () => {
-    setSendModal(true);
-  };
-
-  const handleDelete = () => {
-    setDeleteModal(true);
-  };
+  const handleSend = () => setSendModal(true);
+  const handleDelete = () => setDeleteModal(true);
 
   return (
     <ScrollView style={styles.container}>
+      <Header
+        title="Create Prescription"
+        onBack={() => router.push("/doctor/home")}
+      />
+
       {showForm && (
         <View>
-          <Text style={styles.title}>Create Prescription</Text>
+          <Text style={styles.title}>Prescription Details</Text>
 
-          <TextInput
-            placeholder="Patient Name"
-            placeholderTextColor="#999"
-            style={styles.input}
-            value={patient}
-            onChangeText={setPatient}
-          />
-
-          <TextInput
-            placeholder="Diagnosis"
-            placeholderTextColor="#999"
-            style={styles.input}
-            value={diagnosis}
-            onChangeText={setDiagnosis}
-          />
-
-          <TextInput
-            placeholder="Medications"
-            placeholderTextColor="#999"
-            style={styles.input}
-            value={medications}
-            onChangeText={setMedications}
-          />
-
-          <TextInput
-            placeholder="Treatment Steps"
-            placeholderTextColor="#999"
-            style={styles.input}
-            value={steps}
-            onChangeText={setSteps}
-          />
-
-          <TextInput
-            placeholder="Additional Notes"
-            placeholderTextColor="#999"
-            style={[styles.input, { height: 80 }]}
-            multiline
-            value={notes}
-            onChangeText={setNotes}
-          />
+          {[
+            "Patient Name",
+            "Diagnosis",
+            "Medications",
+            "Treatment Steps",
+            "Additional Notes",
+          ].map((placeholder, idx) => (
+            <TextInput
+              key={idx}
+              placeholder={placeholder}
+              style={[
+                styles.input,
+                placeholder === "Additional Notes" ? { height: 80 } : {},
+              ]}
+              value={
+                placeholder === "Patient Name"
+                  ? patient
+                  : placeholder === "Diagnosis"
+                  ? diagnosis
+                  : placeholder === "Medications"
+                  ? medications
+                  : placeholder === "Treatment Steps"
+                  ? steps
+                  : notes
+              }
+              onChangeText={
+                placeholder === "Patient Name"
+                  ? setPatient
+                  : placeholder === "Diagnosis"
+                  ? setDiagnosis
+                  : placeholder === "Medications"
+                  ? setMedications
+                  : placeholder === "Treatment Steps"
+                  ? setSteps
+                  : setNotes
+              }
+              multiline={placeholder === "Additional Notes"}
+            />
+          ))}
 
           <Text style={styles.label}>Urgency Level</Text>
           <View style={styles.urgencyContainer}>
             {["Normal", "Medium", "Emergency"].map((level) => {
               const colors = {
-                Normal: "#2ecc71",
+                Normal: "#48c774",
                 Medium: "#f1c40f",
                 Emergency: "#e74c3c",
               };
@@ -135,7 +137,7 @@ export default function ERecipeScreen() {
           {generated && (
             <View style={styles.dualButtonContainer}>
               <TouchableOpacity
-                style={[styles.halfButton, { backgroundColor: "#007bff" }]}
+                style={[styles.halfButton, { backgroundColor: "#007ea7" }]}
                 onPress={handleViewRecipe}
               >
                 <Text style={styles.buttonText}>View Prescription</Text>
@@ -151,71 +153,23 @@ export default function ERecipeScreen() {
         </View>
       )}
 
-      {/* Prescription View */}
       {viewRecipe && (
         <View style={styles.detailsContainer}>
           <ScrollView contentContainerStyle={styles.detailsContent}>
-            {/* Header */}
-            <View style={styles.detailsHeaderRow}>
-              <View>
-                <Text style={styles.detailsDoctor}>Dr. Ardit Hyseni</Text>
-                <Text style={styles.detailsProfession}>Cardiologist</Text>
-              </View>
-              <Text style={styles.detailsDate}>{new Date().toLocaleDateString()}</Text>
-            </View>
+            <Text style={styles.title}>Prescription Details</Text>
+            <Text style={styles.label}>Patient: {patient}</Text>
+            <Text style={styles.label}>Diagnosis: {diagnosis}</Text>
+            <Text style={styles.label}>Medications: {medications}</Text>
+            <Text style={styles.label}>Treatment Steps: {steps}</Text>
+            {notes ? <Text style={styles.label}>Notes: {notes}</Text> : null}
+            <Text style={styles.label}>Urgency: {urgency}</Text>
 
-            {/* Separator with urgency color */}
-            <View
-              style={[
-                styles.separator,
-                urgency === "Emergency"
-                  ? { backgroundColor: "#e74c3c" }
-                  : urgency === "Medium"
-                  ? { backgroundColor: "#f1c40f" }
-                  : { backgroundColor: "#2ecc71" },
-              ]}
-            />
-
-            {/* Card Sections */}
-            <View style={styles.cardSection}>
-              <Text style={styles.label}>Diagnosis</Text>
-              <Text style={styles.value}>{diagnosis}</Text>
-            </View>
-
-            <View style={styles.cardSection}>
-              <Text style={styles.label}>Medications</Text>
-              {medications.split(",").map((m, i) => (
-                <Text key={i} style={styles.value}>• {m.trim()}</Text>
-              ))}
-            </View>
-
-            <View style={styles.cardSection}>
-              <Text style={styles.label}>Treatment Steps</Text>
-              <Text style={styles.value}>{steps}</Text>
-            </View>
-
-            {notes ? (
-              <View style={styles.cardSection}>
-                <Text style={styles.label}>Additional Notes</Text>
-                <Text style={styles.value}>{notes}</Text>
-              </View>
-            ) : null}
-
-            {/* Send to Patient Button */}
-            <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: "#28a745", marginBottom: 10 }]}
-              onPress={handleSend}
-            >
-              <Text style={styles.modalButtonText}>Send to Patient</Text>
-            </TouchableOpacity>
-
-            {/* Delete / Back Buttons 50/50 */}
             <View style={styles.dualButtonContainer}>
               <TouchableOpacity
-                style={[styles.halfButton, { backgroundColor: "#e74c3c" }]}
-                onPress={handleDelete}
+                style={[styles.halfButton, { backgroundColor: "#28a745" }]}
+                onPress={handleSend}
               >
-                <Text style={styles.buttonText}>Delete Recipe</Text>
+                <Text style={styles.buttonText}>Send</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.halfButton, { backgroundColor: "#6c757d" }]}
@@ -231,169 +185,187 @@ export default function ERecipeScreen() {
         </View>
       )}
 
-      {/* Generate Modal */}
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.successText}>
-              Medical prescription generated successfully!
-            </Text>
-            <View style={styles.modalButtons}>
+      {/* Modals */}
+      {[
+        {
+          modal: modalVisible,
+          set: setModalVisible,
+          text: "Prescription generated successfully!",
+          color: "#007ea7",
+          action: handleViewRecipe,
+        },
+        {
+          modal: sendModal,
+          set: setSendModal,
+          text: "Sent to patient successfully!",
+          color: "#28a745",
+          action: handleClear,
+        },
+        {
+          modal: deleteModal,
+          set: setDeleteModal,
+          text: "Deleted successfully!",
+          color: "#e74c3c",
+          action: handleClear,
+        },
+      ].map((m, idx) => (
+        <Modal key={idx} visible={m.modal} transparent animationType="fade">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.successText}>{m.text}</Text>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#007bff" }]}
-                onPress={handleViewRecipe}
-              >
-                <Text style={styles.modalButtonText}>View Prescription</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#28a745" }]}
+                style={[styles.modalButton, { backgroundColor: m.color }]}
                 onPress={() => {
-                  setModalVisible(false);
-                  setGenerated(true);
+                  m.set(false); 
+                  m.action(); 
                 }}
               >
                 <Text style={styles.modalButtonText}>OK</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </View>
-      </Modal>
-
-      {/* Send Modal */}
-      <Modal visible={sendModal} transparent animationType="fade">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.successText}>
-              Recipe was successfully sent to {patient || "the patient"}!
-            </Text>
-            <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: "#28a745" }]}
-              onPress={() => {
-                setSendModal(false);
-                handleClear();
-              }}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Delete Modal */}
-      <Modal visible={deleteModal} transparent animationType="fade">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.successText}>Recipe was successfully deleted!</Text>
-            <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: "#e74c3c" }]}
-              onPress={() => {
-                setDeleteModal(false);
-                handleClear();
-              }}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        </Modal>
+      ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#eef2f9", padding: 10 },
+  container: { flex: 1, backgroundColor: "#e8f6f8", padding: 15 },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#1f3c88",
-    marginBottom: 25,
+    fontSize: 26,
+    fontWeight: "900",
+    marginBottom: 15,
+    marginTop: 30,
+    color: "#007ea7",
     textAlign: "center",
+    textShadowColor: "rgba(0, 126, 167, 0.3)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 3,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 12,
+    borderColor: "#cfdce6",
+    borderRadius: 14,
+    padding: 14,
     marginBottom: 12,
+    backgroundColor: "#ffffff",
+    fontSize: 16,
+    color: "#033d49",
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   button: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#48c774",
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 14,
     alignItems: "center",
+    marginTop: 10,
+    shadowColor: "#48c774",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  buttonText: { color: "#fff", fontWeight: "bold" },
-  label: { fontWeight: "bold", fontSize: 18, color: "#1f3c88" },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
+  label: {
+    fontWeight: "700",
+    fontSize: 17,
+    marginBottom: 6,
+    color: "#033d49",
+    textShadowColor: "rgba(0,0,0,0.05)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
+  },
   urgencyContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginVertical: 10,
+    marginBottom: 12,
   },
   urgencyButton: {
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 22,
     borderWidth: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  urgencyText: { color: "#000000ff", fontWeight: "bold", textAlign: "center" },
-  dualButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-    gap: 10,
+  urgencyText: {
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#033d49",
+    fontSize: 15,
   },
+  dualButtonContainer: { flexDirection: "row", gap: 12, marginTop: 12 },
   halfButton: {
     flex: 1,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 14,
     alignItems: "center",
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  recipeContainer: { marginTop: 10 },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  doctorName: { fontSize: 20, fontWeight: "bold" },
-  specialization: { fontSize: 16, color: "#555" },
-  date: { fontSize: 16, color: "#777" },
-  divider: {
-    height: 5,
-    borderRadius: 10,
-    marginVertical: 15,
+  detailsContainer: {
+    flex: 1,
+    backgroundColor: "#f7f9fb",
+    marginVertical: 10,
+    borderRadius: 16,
+    padding: 15,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  card: { backgroundColor: "#f8f9fa", borderRadius: 15, padding: 20 },
-  value: { fontSize: 16, marginTop: 4 },
-  actionsContainer: { marginTop: 20, gap: 10 },
-  actionButton: {
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
+  detailsContent: { padding: 10 },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   modalContent: {
     backgroundColor: "#fff",
-    borderRadius: 15,
-    padding: 25,
-    width: "80%",
+    padding: 22,
+    borderRadius: 16,
+    alignItems: "center",
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  successText: {
+    fontSize: 17,
+    fontWeight: "700",
+    marginBottom: 12,
+    textAlign: "center",
+    color: "#033d49",
+  },
+  modalButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 14,
     alignItems: "center",
   },
-  successText: { fontSize: 16, fontWeight: "600", marginBottom: 15, textAlign: "center" },
-  modalButtons: { flexDirection: "row", gap: 10 },
-  modalButton: { paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10, alignItems: "center" },
-  modalButtonText: { color: "#fff", fontWeight: "bold" },
-
-  // Styles për pjesën e detajuar
-  detailsContainer: { flex: 1, 
-    backgroundColor: "#eef2f9", 
-    paddingTop: 40,
-    margin: 0 },
-  detailsContent: { paddingHorizontal: 20, paddingBottom: 40 },
-  detailsHeaderRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 15 },
-  detailsDoctor: { fontSize: 26, fontWeight: "bold", color: "#1f3c88" },
-  detailsProfession: { fontSize: 18, color: "#4a4a4a", marginTop: 4 },
-  detailsDate: { fontSize: 16, color: "#333", marginTop: 4 },
-  separator: { height: 6, borderRadius: 3, marginVertical: 20 },
-  cardSection: { backgroundColor: "#fff", borderRadius: 12, padding: 15, marginBottom: 15, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 },
+  modalButtonText: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
 });

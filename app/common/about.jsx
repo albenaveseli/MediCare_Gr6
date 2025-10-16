@@ -1,13 +1,16 @@
+import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Header from "../../components/Header";
 import InfoSection from "../../components/InfoSection";
 
 export default function About() {
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>About MediCare</Text>
+      <Header title="About MediCare" onBack={() => router.push("/doctor/home")} />
 
-        <InfoSection title="What is MediCare?">
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+        <InfoSection title="What is MediCare?" style={styles.card}>
           <Text style={styles.description}>
             MediCare is a mobile application developed for comprehensive management
             of patient-doctor relationships and all hospital services. The platform
@@ -16,7 +19,7 @@ export default function About() {
           </Text>
         </InfoSection>
 
-        <InfoSection title="Key Features">
+        <InfoSection title="Key Features" style={styles.card}>
           <View style={styles.featureList}>
             {[
               "✓ Secure Registration & Login",
@@ -37,7 +40,7 @@ export default function About() {
           </View>
         </InfoSection>
 
-        <InfoSection title="Who is MediCare For?">
+        <InfoSection title="Who is MediCare For?" style={styles.card}>
           <View style={styles.audienceContainer}>
             <View style={styles.audienceBox}>
               <Text style={styles.audienceTitle}>For Doctors</Text>
@@ -54,7 +57,7 @@ export default function About() {
           </View>
         </InfoSection>
 
-        <InfoSection title="Development Team">
+        <InfoSection title="Development Team" style={styles.card}>
           <Text style={styles.teamText}>
             This application was developed by a team of students from the Faculty of
             Electrical and Computer Engineering (FIEK):
@@ -75,7 +78,7 @@ export default function About() {
           </View>
         </InfoSection>
 
-        <InfoSection title="Contact">
+        <InfoSection title="Contact" style={styles.card}>
           <Text style={styles.contactText}>
             For any questions or assistance, please contact us at:{"\n"}
             support@medicare.com{"\n"}+355 123 456 789
@@ -91,24 +94,29 @@ export default function About() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#e8f6f8",
   },
   scrollView: {
     width: "100%",
+    padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#2c5aa0",
-    marginBottom: 25,
-    marginTop: 10,
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 18,
+    padding: 20,
+    marginBottom: 18,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#d4f1f4",
   },
   description: {
     fontSize: 14,
     lineHeight: 20,
-    color: "#4a5568",
+    color: "#033d49",
     textAlign: "justify",
   },
   featureList: {
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
   },
   feature: {
     fontSize: 14,
-    color: "#2d3748",
+    color: "#007ea7",
     marginBottom: 6,
     lineHeight: 20,
   },
@@ -125,26 +133,29 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   audienceBox: {
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#b9ecf0",
     padding: 15,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#2c5aa0",
+    borderRadius: 12,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   audienceTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1a3a6e",
+    color: "#033d49",
     marginBottom: 5,
   },
   audienceText: {
     fontSize: 13,
-    color: "#4a5568",
+    color: "#4a6572",
     lineHeight: 18,
   },
   teamText: {
     fontSize: 14,
-    color: "#4a5568",
+    color: "#4a6572",
     marginBottom: 10,
     lineHeight: 20,
   },
@@ -153,18 +164,18 @@ const styles = StyleSheet.create({
   },
   teamMember: {
     fontSize: 13,
-    color: "#2d3748",
+    color: "#033d49",
     marginBottom: 4,
   },
   contactText: {
     fontSize: 14,
-    color: "#4a5568",
+    color: "#4a6572",
     lineHeight: 22,
   },
   version: {
     textAlign: "center",
     fontSize: 12,
-    color: "#718096",
+    color: "#6c757d",
     marginTop: 10,
     marginBottom: 20,
     fontStyle: "italic",

@@ -1,18 +1,27 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Header from "../../components/Header";
 
 export default function Reminder() {
-
   const [medicines, setMedicines] = useState([
-    {id: '1', name: 'Paracetamol', time: '08:00 AM'},
-    {id: '2', name: 'Ibuprofen', time: '02:00 PM'},
+    { id: "1", name: "Paracetamol", time: "08:00 AM" },
+    { id: "2", name: "Ibuprofen", time: "02:00 PM" },
   ]);
 
-  const [newMedicineName, setNewMedicineName] = useState('');
-  const [newMedicineTime, setNewMedicineTime] = useState('');
+  const [newMedicineName, setNewMedicineName] = useState("");
+  const [newMedicineTime, setNewMedicineTime] = useState("");
 
   const addMedicine = () => {
-    if(!newMedicineName || !newMedicineTime){
+    if (!newMedicineName || !newMedicineTime) {
       Alert.alert("Please enter both medicine name and time");
       return;
     }
@@ -24,8 +33,8 @@ export default function Reminder() {
     };
 
     setMedicines([...medicines, newMedicine]);
-    setNewMedicineName('');
-    setNewMedicineTime('');
+    setNewMedicineName("");
+    setNewMedicineTime("");
   };
 
   const renderItem = ({ item }) => (
@@ -37,24 +46,37 @@ export default function Reminder() {
 
   return (
     <View style={styles.container}>
-      <FlatList 
-      data={medicines}
-      renderItem={renderItem}
-      keyExtractor={item => item.id}
+      {/* Header */}
+      <Header
+        title="Medicine Reminders"
+        icon={<Ionicons name="medkit-outline" size={28} color="#007ea7" />}
       />
 
-      <TextInput 
-      style={styles.input}
-      placeholder="Medicine Name"
-      value={newMedicineName}
-      onChangeText={setNewMedicineName}
+      {/* List of medicines */}
+      <FlatList
+        data={medicines}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{
+          paddingBottom: 20,
+          paddingHorizontal: 20,
+          paddingTop: 10,
+        }}
       />
 
-      <TextInput 
-      style={styles.input}
-      placeholder="Time (e.g., 08:00 AM)"
-      value={newMedicineTime}
-      onChangeText={setNewMedicineTime}
+      {/* Inputs */}
+      <TextInput
+        style={styles.input}
+        placeholder="Medicine Name"
+        value={newMedicineName}
+        onChangeText={setNewMedicineName}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Time (e.g., 08:00 AM)"
+        value={newMedicineTime}
+        onChangeText={setNewMedicineTime}
       />
 
       <TouchableOpacity style={styles.addButton} onPress={addMedicine}>
@@ -67,46 +89,51 @@ export default function Reminder() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#e8f6f8",
+    paddingTop: 20,
   },
   card: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 10,
-    shadowColor:'#000',
-    shadowOffset:{width: 0, height: 3},
+    backgroundColor: "#ffffff",
+    padding: 16,
+    marginVertical: 6,
+    borderRadius: 14,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowRadius: 5,
     elevation: 3,
   },
   medicineName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "700",
+    color: "#007ea7",
   },
   medicineTime: {
-    fontSize: 16,
-    color: '#555',
-    marginTop: 5,
+    fontSize: 15,
+    color: "#4a6572",
+    marginTop: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 5,
+    borderColor: "#d0d7e0",
+    padding: 14,
+    borderRadius: 12,
+    marginHorizontal: 20,
+    marginVertical: 6,
+    fontSize: 16,
+    backgroundColor: "#fff",
   },
-  addButton:{
-    backgroundColor: 'green',
-    padding: 15,
-    borderRadius: 10,
-    alignItems:'center',
+  addButton: {
+    backgroundColor: "#007ea7",
+    padding: 16,
+    borderRadius: 14,
+    alignItems: "center",
     marginTop: 10,
+    marginHorizontal: 20,
   },
   addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "700",
     fontSize: 16,
   },
 });

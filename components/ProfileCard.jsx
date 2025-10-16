@@ -73,7 +73,6 @@ export default function ProfileCard({
             </TouchableOpacity>
           )}
 
-
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
@@ -90,39 +89,41 @@ export default function ProfileCard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E8F1FA",
+    backgroundColor: "#e8f6f8",
     alignItems: "center",
     justifyContent: "center",
     padding: 25,
   },
   profileCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     width: "90%",
-    borderRadius: 20,
+    borderRadius: 18,
     paddingVertical: 40,
     paddingHorizontal: 25,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#007ea7",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#d4f1f4",
   },
   profileImage: {
     width: 120,
     height: 120,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: "#4A90E2",
+    borderColor: "#48c774",
     marginBottom: 20,
   },
-  name: { fontSize: 22, fontWeight: "bold", color: "#2C3E50" },
-  email: { fontSize: 16, color: "#7F8C8D", marginTop: 4 },
-  role: { fontSize: 15, color: "#95A5A6", marginBottom: 25 },
+  name: { fontSize: 22, fontWeight: "600", color: "#033d49" },
+  email: { fontSize: 16, color: "#4a6572", marginTop: 4 },
+  role: { fontSize: 15, color: "#6c757d", marginBottom: 25 },
   buttonsContainer: { width: "100%", marginTop: 10, gap: 15 },
 
   editButton: {
-    backgroundColor: "#4A90E2",
+    backgroundColor: "#4db8ff",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
@@ -130,52 +131,44 @@ const styles = StyleSheet.create({
   editText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 
   saveButton: {
-    backgroundColor: "#2ECC71",
+    backgroundColor: "#007ea7",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
   },
   saveText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 
-  backButton: {
-    backgroundColor: "#AED9E0",
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  backText: { color: "#1E6091", fontSize: 16, fontWeight: "600" },
-
   logoutButton: {
-    backgroundColor: "#f8d7da",
+    backgroundColor: "#b9ecf0",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
   },
-  logoutText: { color: "#d9534f", fontSize: 16, fontWeight: "600" },
+  logoutText: { color: "#007ea7", fontSize: 16, fontWeight: "600" },
 
   input: {
-    backgroundColor: "#f2f2f2",
-    borderRadius: 10,
-    padding: 10,
+    backgroundColor: "#f2f9fb",
+    borderRadius: 12,
+    padding: 12,
     fontSize: 16,
-    marginVertical: 5,
+    marginVertical: 6,
     width: "100%",
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#d4f1f4",
     textAlign: "center",
   },
 
   aboutButtonOutside: {
     marginTop: 20,
-    backgroundColor: "gray",
+    backgroundColor: "#48c774",
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 4,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
   aboutTextOutside: {
     color: "#fff",

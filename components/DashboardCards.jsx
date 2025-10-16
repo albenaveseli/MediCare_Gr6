@@ -1,58 +1,68 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function DashboardCards({ pages }) {
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+    <View style={styles.gridContainer}>
       {pages.map((item, index) => (
         <TouchableOpacity
           key={index}
           style={styles.card}
+          activeOpacity={0.9}
           onPress={() => router.push(item.path)}
-          activeOpacity={0.8}
         >
-          <View style={styles.iconContainer}>
-            <Ionicons name={item.icon} size={28} color="#1a73e8" />
+          <View style={styles.iconWrapper}>
+            <View style={styles.iconCircle}>
+              <Ionicons name={item.icon} size={28} color="#007ea7" />
+            </View>
           </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-          </View>
-          <Ionicons name="chevron-forward-outline" size={22} color="#94a3b8" />
+
+          <Text style={styles.cardTitle}>{item.title}</Text>
         </TouchableOpacity>
       ))}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: { paddingBottom: 40 },
-  card: {
+  gridContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingBottom: 40,
+  },
+  card: {
+    width: "48%",
     backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderRadius: 20,
+    paddingVertical: 26,
+    alignItems: "center",
+    marginBottom: 16,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
     borderWidth: 1,
-    borderColor: "#f1f5f9",
+    borderColor: "#d4f1f4",
   },
-  iconContainer: {
-    backgroundColor: "#e0edff",
-    borderRadius: 12,
+  iconWrapper: {
+    backgroundColor: "#e0f7fa",
+    borderRadius: 50,
+    padding: 12,
+    marginBottom: 12,
+  },
+  iconCircle: {
+    backgroundColor: "#b9ecf0",
+    borderRadius: 50,
     padding: 10,
-    marginRight: 16,
   },
-  textContainer: { flex: 1 },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 4,
+    color: "#033d49",
+    textAlign: "center",
+    marginTop: 4,
   },
 });
