@@ -56,7 +56,6 @@ export default function PatientLayout() {
       <Tabs.Screen name="doctor-list" options={{ href: null }} />
       <Tabs.Screen name="history" options={{ href: null }} />
       <Tabs.Screen name="hospital-finder" options={{ href: null }} />
-      <Tabs.Screen name="onboarding" options={{ href: null }} />
       <Tabs.Screen name="reminder" options={{ href: null }} />
       <Tabs.Screen name="upload-documents" options={{ href: null }} />
       <Tabs.Screen name="view-recipe" options={{ href: null }} />
