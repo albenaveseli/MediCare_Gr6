@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from "../../components/Header";
+import TimeSlots from "../../components/TimeSlots";
 
 const BookingScreen = () => {
   const {
@@ -23,7 +24,7 @@ const BookingScreen = () => {
     doctorAvailability,
   } = useLocalSearchParams();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState("");
+   const [selectedTime, setSelectedTime] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [patientName, setPatientName] = useState("");
@@ -140,25 +141,11 @@ const BookingScreen = () => {
             </Text>
           ) : selectedDate.toDateString() === new Date().toDateString() ? (
             <View style={styles.timeGrid}>
-              {doctor.availability.map((time, i) => (
-                <TouchableOpacity
-                  key={i}
-                  style={[
-                    styles.timeSlot,
-                    selectedTime === time && styles.selectedTimeSlot,
-                  ]}
-                  onPress={() => setSelectedTime(time)}
-                >
-                  <Text
-                    style={[
-                      styles.timeText,
-                      selectedTime === time && styles.selectedTimeText,
-                    ]}
-                  >
-                    {time}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+               <TimeSlots
+                slots={doctor.availability}
+                selected={selectedTime}
+                onSelect={setSelectedTime}
+              />
             </View>
           ) : (
             <>
@@ -181,12 +168,14 @@ const BookingScreen = () => {
                     if (date) {
                       const hours = date.getHours();
                       const minutes = date.getMinutes();
-                      if (hours >= 8 && hours <= 16)
+                      if ((hours > 8 || (hours === 8 && minutes >= 0)) && 
+                         (hours < 16 || (hours === 16 && minutes === 0))){
                         setSelectedTime(
                           `${hours.toString().padStart(2, "0")}:${minutes
                             .toString()
                             .padStart(2, "0")}`
                         );
+                      }
                       else
                         Alert.alert(
                           "Invalid time",
@@ -311,19 +300,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-  timeSlot: {
-    width: "48%",
-    backgroundColor: "#f8f9fa",
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  selectedTimeSlot: { backgroundColor: "#007ea7", borderColor: "#007ea7" },
-  timeText: { fontSize: 14, fontWeight: "600", color: "#333" },
-  selectedTimeText: { color: "#fff" },
   noSlotsText: {
     textAlign: "center",
     color: "#666",

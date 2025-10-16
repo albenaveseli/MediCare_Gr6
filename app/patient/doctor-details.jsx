@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from "../../components/Header"; // importojmë header-in
+import TimeSlots from "../../components/TimeSlots";
 
 export default function DoctorDetails() {
   const {
@@ -33,6 +34,7 @@ export default function DoctorDetails() {
 
   const [isLiked, setIsLiked] = useState(false);
   const LIKE_KEY = `doctor_${id}_liked`;
+  const [selectedTime, setSelectedTime] = useState(null);
 
   useEffect(() => {
     loadLikeStatus();
@@ -151,17 +153,11 @@ export default function DoctorDetails() {
           <Text style={styles.sectionTitle}>
             {isWeekend() ? "Available Hours (Next Week)" : "Available Hours"}
           </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.timeSlotsContainer}
-          >
-            {doctor.availability.map((time, i) => (
-              <TouchableOpacity key={i} style={styles.timeSlot}>
-                <Text style={styles.timeText}>{time}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+           <TimeSlots
+        slots={doctor.availability}
+        selected={selectedTime}
+        onSelect={setSelectedTime}
+      />
           <Text style={styles.availabilityNote}>
             {isWeekend()
               ? "Today is weekend. Available hours for next working days."
@@ -273,15 +269,6 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 20,
   },
-  timeSlotsContainer: { paddingVertical: 10 },
-  timeSlot: {
-    backgroundColor: "#007ea7",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginRight: 10,
-  },
-  timeText: { color: "#fff", fontWeight: "600", fontSize: 14 },
   availabilityNote: {
     fontSize: 12,
     color: "#666",
