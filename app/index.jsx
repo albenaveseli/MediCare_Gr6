@@ -8,6 +8,7 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>MediCare</Text>
           <View style={styles.underline} />
@@ -16,6 +17,7 @@ export default function WelcomeScreen() {
           </Text>
         </View>
 
+        {/* Logo */}
         <View style={styles.iconContainer}>
           <View style={styles.circle}>
             <Image
@@ -25,6 +27,8 @@ export default function WelcomeScreen() {
             />
           </View>
         </View>
+
+        {/* Buttons */}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={[
@@ -57,6 +61,7 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Footer */}
         <Text style={styles.footerText}>
           Trusted by thousands of patients and doctors
         </Text>
@@ -68,7 +73,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fdff",
+    backgroundColor: "#e8f6f8", // si Home
   },
   content: {
     flex: 1,
@@ -84,15 +89,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: "800",
-    color: "#1a73e8",
+    color: "#007ea7", // blu Home
     letterSpacing: -0.5,
-    textShadowColor: "rgba(26, 115, 232, 0.2)",
+    textShadowColor: "rgba(0, 126, 167, 0.2)",
     textShadowRadius: 4,
   },
   underline: {
     width: 60,
     height: 4,
-    backgroundColor: "#1a73e8",
+    backgroundColor: "#007ea7",
     borderRadius: 2,
     marginTop: 8,
     marginBottom: 16,
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: "#5f6368",
+    color: "#4a6572",
     textAlign: "center",
     lineHeight: 22,
     letterSpacing: 0.2,
@@ -116,14 +121,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#1a73e8",
+    shadowColor: "#007ea7",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
-  medicalIcon: {
-    fontSize: 40,
+  medicalImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   buttonsContainer: {
     width: "100%",
@@ -134,8 +141,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 24,
     borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
@@ -146,7 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   signupButton: {
-    backgroundColor: "#1a73e8",
+    backgroundColor: "#007ea7",
   },
   buttonPressed: {
     transform: [{ scale: 0.98 }],
@@ -155,7 +162,7 @@ const styles = StyleSheet.create({
   loginButtonText: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1a73e8",
+    color: "#007ea7",
     textAlign: "center",
     marginBottom: 4,
   },
@@ -168,21 +175,15 @@ const styles = StyleSheet.create({
   },
   buttonSubtext: {
     fontSize: 14,
-    color: "#5f6368",
+    color: "#4a6572",
     textAlign: "center",
     fontWeight: "400",
   },
   footerText: {
     fontSize: 13,
-    color: "#80868b",
+    color: "#4a6572",
     textAlign: "center",
     marginTop: 20,
     fontStyle: "italic",
   },
-  medicalImage: {
-  width: 80,
-  height: 80,
-  borderRadius: 40,
-},
-
 });

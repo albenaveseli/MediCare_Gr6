@@ -1,8 +1,8 @@
 import * as DocumentPicker from "expo-document-picker";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   FlatList,
   Modal,
   StyleSheet,
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Header from "../../components/Header";
 
 export default function UploadDocuments() {
   const [documents, setDocuments] = useState([]);
@@ -20,25 +21,23 @@ export default function UploadDocuments() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: [
-          "image/*", // çdo lloj fotoje (jpg, png, heic, etj)
+          "image/*",
           "application/pdf",
           "application/msword",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "text/plain",
         ],
         copyToCacheDirectory: true,
-        multiple: true, // lejon zgjedhjen e disa file-ve njeheresh 
+        multiple: true,
       });
 
       if (result.canceled) return;
-      
       const pickedFiles = result.assets || [result];
       const newDocs = pickedFiles.map((file) => {
         const name = file.name || "Unnamed file";
-        const type =
-          (name.split(".").pop()?.toUpperCase() ||
-            "Unknown").replace("APPLICATION/", "").replace("IMAGE/", "");
-
+        const type = (name.split(".").pop()?.toUpperCase() || "Unknown")
+          .replace("APPLICATION/", "")
+          .replace("IMAGE/", "");
         return {
           id: Date.now().toString() + Math.random(),
           name,
@@ -46,11 +45,11 @@ export default function UploadDocuments() {
           date: new Date().toLocaleDateString(),
         };
       });
-
       setDocuments((prev) => [...prev, ...newDocs]);
     } catch (error) {
       console.log("Error picking document:", error);
-      Alert.alert("Error", "There was an error choosing the document.");
+      setModalMessage("There was an error choosing the document.");
+      setShowModal(true);
     }
   };
 
@@ -60,21 +59,25 @@ export default function UploadDocuments() {
       setShowModal(true);
       return;
     }
-
     setModalMessage(`${documents.length} document(s) uploaded successfully!`);
     setShowModal(true);
-    setDocuments([]); // Clear list after upload
+    setDocuments([]);
   };
 
   return (
     <View style={styles.container}>
+      {/* Header */}
+      <Header
+        title="Upload Documents"
+        onBack={() => router.push("/patient/home")}
+      />
+
       <View style={styles.cardWrapper}>
         <Text style={styles.title}>Upload Medical Documents</Text>
 
-        {/* Choose File Button */}
         <TouchableOpacity onPress={handleChooseFile} style={{ width: "80%" }}>
           <LinearGradient
-            colors={["#007bff", "#00c6ff"]}
+            colors={["#007ea7", "#00cfff"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientButton}
@@ -83,7 +86,6 @@ export default function UploadDocuments() {
           </LinearGradient>
         </TouchableOpacity>
 
-        {/* Info Text */}
         <Text style={styles.infoText}>
           {documents.length > 0
             ? documents.length === 1
@@ -92,7 +94,6 @@ export default function UploadDocuments() {
             : "No documents selected yet"}
         </Text>
 
-        {/* File List */}
         <View style={styles.listContainer}>
           <FlatList
             data={documents}
@@ -108,7 +109,6 @@ export default function UploadDocuments() {
           />
         </View>
 
-        {/* Upload Button */}
         <TouchableOpacity
           onPress={handleUpload}
           disabled={documents.length === 0}
@@ -152,73 +152,50 @@ export default function UploadDocuments() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f2f7ff",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
+  container: { flex: 1, backgroundColor: "#e8f6f8", padding: 20 },
   cardWrapper: {
     width: "100%",
     backgroundColor: "#fff",
     borderRadius: 20,
     padding: 25,
-    shadowColor: "#000",
+    shadowColor: "#007ea7",
     shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 8,
     elevation: 4,
     alignItems: "center",
+    marginTop: 20,
   },
   title: {
     fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: "#1a237e",
+    fontWeight: "700",
+    marginBottom: 16,
+    color: "#007ea7",
     textAlign: "center",
   },
   gradientButton: {
-    borderRadius: 12,
-    paddingVertical: 12,
+    borderRadius: 14,
+    paddingVertical: 14,
     alignItems: "center",
+    marginTop: 10,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
+  buttonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
   infoText: {
-    marginTop: 12,
-    color: "#0066cc",
+    marginTop: 14,
+    color: "#007ea7",
     fontWeight: "500",
     fontSize: 15,
   },
-  listContainer: {
-    width: "100%",
-    marginTop: 10,
-    maxHeight: 220,
-  },
+  listContainer: { width: "100%", marginTop: 12, maxHeight: 220 },
   docCard: {
-    backgroundColor: "#e3f2fd",
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 5,
+    backgroundColor: "#f0f9ff",
+    borderRadius: 12,
+    padding: 12,
+    marginVertical: 6,
   },
-  docName: {
-    fontWeight: "600",
-    fontSize: 16,
-    color: "#0d47a1",
-  },
-  docDetails: {
-    fontSize: 13,
-    color: "#555",
-    marginTop: 2,
-  },
-  uploadWrapper: {
-    width: "80%",
-    marginTop: 18,
-  },
+  docName: { fontWeight: "600", fontSize: 16, color: "#007ea7" },
+  docDetails: { fontSize: 13, color: "#555", marginTop: 2 },
+  uploadWrapper: { width: "80%", marginTop: 20 },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.45)",
@@ -227,25 +204,22 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 16,
+    padding: 22,
     width: "80%",
     alignItems: "center",
   },
   modalText: {
     fontSize: 16,
     color: "#333",
-    marginBottom: 14,
+    marginBottom: 16,
     textAlign: "center",
   },
   modalButton: {
-    backgroundColor: "#007bff",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: "#007ea7",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
   },
-  modalButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
+  modalButtonText: { color: "#fff", fontWeight: "600", fontSize: 15 },
 });

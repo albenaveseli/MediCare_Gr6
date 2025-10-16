@@ -10,6 +10,7 @@ export default function Layout() {
           headerStyle: { backgroundColor: "#fff" },
           headerTitleStyle: { color: "#333" },
           headerBackTitleVisible: false,
+          headerShown: false,
         }}
       />
     </>

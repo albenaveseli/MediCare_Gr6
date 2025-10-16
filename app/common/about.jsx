@@ -1,38 +1,46 @@
+import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Header from "../../components/Header";
+import InfoSection from "../../components/InfoSection";
 
 export default function About() {
   return (
     <View style={styles.container}>
+      <Header title="About MediCare" onBack={() => router.push("/doctor/home")} />
+
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}> About MediCare</Text>
-        
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>What is MediCare?</Text>
+
+        <InfoSection title="What is MediCare?" style={styles.card}>
           <Text style={styles.description}>
-            MediCare is a mobile application developed for comprehensive management of patient-doctor relationships 
-            and all hospital services. The platform provides a simple and secure way for booking appointments, 
-            online consultations, and accessing medical documents.
+            MediCare is a mobile application developed for comprehensive management
+            of patient-doctor relationships and all hospital services. The platform
+            provides a simple and secure way for booking appointments, online consultations,
+            and accessing medical documents.
           </Text>
-        </View>
+        </InfoSection>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Key Features</Text>
+        <InfoSection title="Key Features" style={styles.card}>
           <View style={styles.featureList}>
-            <Text style={styles.feature}>✓ Secure Registration & Login</Text>
-            <Text style={styles.feature}>✓ Online appointment booking</Text>
-            <Text style={styles.feature}>✓ Personalized dashboard</Text>
-            <Text style={styles.feature}>✓ Medical document management</Text>
-            <Text style={styles.feature}>✓ GPS & Hospital Finder</Text>
-            <Text style={styles.feature}>✓ Electronic Prescription (E-Recipe)</Text>
-            <Text style={styles.feature}>✓ Notifications and reminders</Text>
-            <Text style={styles.feature}>✓ Emergency / SOS</Text>
-            <Text style={styles.feature}>✓ Medication reminders</Text>
-            <Text style={styles.feature}>✓ Analytics for doctors</Text>
+            {[
+              "✓ Secure Registration & Login",
+              "✓ Online appointment booking",
+              "✓ Personalized dashboard",
+              "✓ Medical document management",
+              "✓ GPS & Hospital Finder",
+              "✓ Electronic Prescription (E-Recipe)",
+              "✓ Notifications and reminders",
+              "✓ Emergency / SOS",
+              "✓ Medication reminders",
+              "✓ Analytics for doctors",
+            ].map((feature, index) => (
+              <Text key={index} style={styles.feature}>
+                {feature}
+              </Text>
+            ))}
           </View>
-        </View>
+        </InfoSection>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Who is MediCare For?</Text>
+        <InfoSection title="Who is MediCare For?" style={styles.card}>
           <View style={styles.audienceContainer}>
             <View style={styles.audienceBox}>
               <Text style={styles.audienceTitle}>For Doctors</Text>
@@ -47,31 +55,35 @@ export default function About() {
               </Text>
             </View>
           </View>
-        </View>
+        </InfoSection>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Development Team</Text>
+        <InfoSection title="Development Team" style={styles.card}>
           <Text style={styles.teamText}>
-            This application was developed by a team of students from the Faculty of Electrical and Computer Engineering (FIEK):
+            This application was developed by a team of students from the Faculty of
+            Electrical and Computer Engineering (FIEK):
           </Text>
           <View style={styles.teamList}>
-            <Text style={styles.teamMember}>• Albena Veseli</Text>
-            <Text style={styles.teamMember}>• Amela Syla</Text>
-            <Text style={styles.teamMember}>• Anita Cacaj</Text>
-            <Text style={styles.teamMember}>• Ardit Hyseni</Text>
-            <Text style={styles.teamMember}>• Dua Gashi</Text>
-            <Text style={styles.teamMember}>• Erzana Beqaj</Text>
+            {[
+              "Albena Veseli",
+              "Amela Syla",
+              "Anita Cacaj",
+              "Ardit Hyseni",
+              "Dua Gashi",
+              "Erzana Beqaj",
+            ].map((member, index) => (
+              <Text key={index} style={styles.teamMember}>
+                • {member}
+              </Text>
+            ))}
           </View>
-        </View>
+        </InfoSection>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact</Text>
+        <InfoSection title="Contact" style={styles.card}>
           <Text style={styles.contactText}>
             For any questions or assistance, please contact us at:{"\n"}
-             support@medicare.com{"\n"}
-             +355 123 456 789
+            support@medicare.com{"\n"}+355 123 456 789
           </Text>
-        </View>
+        </InfoSection>
 
         <Text style={styles.version}>Version 1.0</Text>
       </ScrollView>
@@ -82,44 +94,29 @@ export default function About() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#e8f6f8",
   },
   scrollView: {
     width: "100%",
+    padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#2c5aa0",
-    marginBottom: 25,
-    marginTop: 10,
-  },
-  section: {
+  card: {
     backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 18,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderRadius: 18,
+    padding: 20,
+    marginBottom: 18,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
     elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1a3a6e",
-    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#d4f1f4",
   },
   description: {
     fontSize: 14,
     lineHeight: 20,
-    color: "#4a5568",
+    color: "#033d49",
     textAlign: "justify",
   },
   featureList: {
@@ -127,7 +124,7 @@ const styles = StyleSheet.create({
   },
   feature: {
     fontSize: 14,
-    color: "#2d3748",
+    color: "#007ea7",
     marginBottom: 6,
     lineHeight: 20,
   },
@@ -136,26 +133,29 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   audienceBox: {
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#b9ecf0",
     padding: 15,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#2c5aa0",
+    borderRadius: 12,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   audienceTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1a3a6e",
+    color: "#033d49",
     marginBottom: 5,
   },
   audienceText: {
     fontSize: 13,
-    color: "#4a5568",
+    color: "#4a6572",
     lineHeight: 18,
   },
   teamText: {
     fontSize: 14,
-    color: "#4a5568",
+    color: "#4a6572",
     marginBottom: 10,
     lineHeight: 20,
   },
@@ -164,18 +164,18 @@ const styles = StyleSheet.create({
   },
   teamMember: {
     fontSize: 13,
-    color: "#2d3748",
+    color: "#033d49",
     marginBottom: 4,
   },
   contactText: {
     fontSize: 14,
-    color: "#4a5568",
+    color: "#4a6572",
     lineHeight: 22,
   },
   version: {
     textAlign: "center",
     fontSize: 12,
-    color: "#718096",
+    color: "#6c757d",
     marginTop: 10,
     marginBottom: 20,
     fontStyle: "italic",

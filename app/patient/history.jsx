@@ -1,27 +1,36 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Header from "../../components/Header";
 
 export default function History() {
-  const [appointments, setAppointments] = useState([]);
-  const [documents, setDocuments] = useState([]);
+  const [appointments] = useState([
+    {
+      doctorName: "Dr. Arben Krasniqi",
+      date: "2025-09-10",
+      status: "Completed",
+    },
+    { doctorName: "Dr. Elira Gashi", date: "2025-08-22", status: "Cancelled" },
+    { doctorName: "Dr. Besnik Hoxha", date: "2025-07-15", status: "Completed" },
+  ]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedAppointments = await AsyncStorage.getItem("appointments");
-        const storedDocuments = await AsyncStorage.getItem("documents");
-        if (storedAppointments) setAppointments(JSON.parse(storedAppointments));
-        if (storedDocuments) setDocuments(JSON.parse(storedDocuments));
-      } catch (error) {
-        console.error("Error loading data", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const [documents] = useState([
+    { type: "Blood Test Report", date: "2025-09-11" },
+    { type: "X-Ray Result", date: "2025-08-25" },
+    { type: "Prescription File", date: "2025-07-20" },
+  ]);
 
   return (
     <ScrollView style={styles.container}>
+      {/* Header */}
+      <Header title="History" />
+
       <Text style={styles.title}>Your Past Visits</Text>
 
       <View style={styles.section}>
@@ -46,7 +55,9 @@ export default function History() {
                   <Text
                     style={[
                       styles.status,
-                      item.status === "Completed" ? styles.completed : styles.cancelled,
+                      item.status === "Completed"
+                        ? styles.completed
+                        : styles.cancelled,
                     ]}
                   >
                     {item.status}
@@ -91,50 +102,51 @@ export default function History() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    backgroundColor: "#e8f6f8",
+    paddingVertical: 20,
   },
   title: {
-    fontSize: 24,
+    marginTop:30,
+    fontSize: 22,
     fontWeight: "700",
-    color: "#1F2937",
+    color: "#007ea7",
     marginBottom: 20,
     textAlign: "center",
   },
   section: {
     marginBottom: 25,
+    paddingHorizontal: 20,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#374151",
-    marginBottom: 10,
+    color: "#1f3c88",
+    marginBottom: 12,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 15,
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    padding: 16,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
     elevation: 3,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
+    marginBottom: 6,
   },
   label: {
     fontSize: 15,
-    color: "#6B7280",
+    color: "#4a6572",
     fontWeight: "500",
   },
   value: {
     fontSize: 15,
-    color: "#111827",
+    color: "#1f3c88",
     fontWeight: "500",
   },
   status: {
@@ -142,14 +154,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   completed: {
-    color: "#16A34A",
+    color: "#28a745",
   },
   cancelled: {
-    color: "#DC2626",
+    color: "#dc3545",
   },
   emptyText: {
     fontSize: 14,
-    color: "#9CA3AF",
+    color: "#6b7280",
     textAlign: "center",
     marginTop: 10,
   },
