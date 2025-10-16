@@ -24,6 +24,7 @@ export default function ERecipeScreen() {
   const [generated, setGenerated] = useState(false);
   const [viewRecipe, setViewRecipe] = useState(false);
   const [showForm, setShowForm] = useState(true);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [sendModal, setSendModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -57,54 +58,37 @@ export default function ERecipeScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Header
-        title="Create Prescription"
-        onBack={() => router.push("/doctor/home")}
-      />
+      <Header title="Create Prescription" onBack={() => setShowForm(true)} />
 
+      {/* FORM VIEW */}
       {showForm && (
         <View>
           <Text style={styles.title}>Prescription Details</Text>
 
           {[
-            "Patient Name",
-            "Diagnosis",
-            "Medications",
-            "Treatment Steps",
-            "Additional Notes",
-          ].map((placeholder, idx) => (
+            { placeholder: "Patient Name", value: patient, setter: setPatient },
+            { placeholder: "Diagnosis", value: diagnosis, setter: setDiagnosis },
+            { placeholder: "Medications (separate with commas)", value: medications, setter: setMedications },
+            { placeholder: "Treatment Steps", value: steps, setter: setSteps },
+          ].map((field, idx) => (
             <TextInput
               key={idx}
-              placeholder={placeholder}
-              style={[
-                styles.input,
-                placeholder === "Additional Notes" ? { height: 80 } : {},
-              ]}
-              value={
-                placeholder === "Patient Name"
-                  ? patient
-                  : placeholder === "Diagnosis"
-                  ? diagnosis
-                  : placeholder === "Medications"
-                  ? medications
-                  : placeholder === "Treatment Steps"
-                  ? steps
-                  : notes
-              }
-              onChangeText={
-                placeholder === "Patient Name"
-                  ? setPatient
-                  : placeholder === "Diagnosis"
-                  ? setDiagnosis
-                  : placeholder === "Medications"
-                  ? setMedications
-                  : placeholder === "Treatment Steps"
-                  ? setSteps
-                  : setNotes
-              }
-              multiline={placeholder === "Additional Notes"}
+              placeholder={field.placeholder}
+              placeholderTextColor="#9fb3bd"
+              style={styles.input}
+              value={field.value}
+              onChangeText={field.setter}
             />
           ))}
+
+          <TextInput
+            placeholder="Additional Notes"
+            placeholderTextColor="#9fb3bd"
+            style={[styles.input, { height: 80 }]}
+            multiline
+            value={notes}
+            onChangeText={setNotes}
+          />
 
           <Text style={styles.label}>Urgency Level</Text>
           <View style={styles.urgencyContainer}>
@@ -153,23 +137,62 @@ export default function ERecipeScreen() {
         </View>
       )}
 
+      {/* VIEW PRESCRIPTION */}
       {viewRecipe && (
         <View style={styles.detailsContainer}>
           <ScrollView contentContainerStyle={styles.detailsContent}>
-            <Text style={styles.title}>Prescription Details</Text>
-            <Text style={styles.label}>Patient: {patient}</Text>
-            <Text style={styles.label}>Diagnosis: {diagnosis}</Text>
-            <Text style={styles.label}>Medications: {medications}</Text>
-            <Text style={styles.label}>Treatment Steps: {steps}</Text>
-            {notes ? <Text style={styles.label}>Notes: {notes}</Text> : null}
-            <Text style={styles.label}>Urgency: {urgency}</Text>
+            <View style={styles.detailsHeaderRow}>
+              <View>
+                <Text style={styles.detailsDoctor}>Dr. Ardit Hyseni</Text>
+                <Text style={styles.detailsProfession}>Cardiologist</Text>
+              </View>
+              <Text style={styles.detailsDate}>
+                {new Date().toLocaleDateString()}
+              </Text>
+            </View>
+
+            <View
+              style={[
+                styles.separator,
+                urgency === "Emergency"
+                  ? { backgroundColor: "#e74c3c" }
+                  : urgency === "Medium"
+                  ? { backgroundColor: "#f1c40f" }
+                  : { backgroundColor: "#48c774" },
+              ]}
+            />
+
+            {[
+              { label: "Patient", value: patient },
+              { label: "Diagnosis", value: diagnosis },
+              {
+                label: "Medications",
+                value: medications.split(",").map((m, i) => `• ${m.trim()}`).join("\n"),
+              },
+              { label: "Treatment Steps", value: steps },
+              notes && { label: "Additional Notes", value: notes },
+            ]
+              .filter(Boolean)
+              .map((section, idx) => (
+                <View key={idx} style={styles.cardSection}>
+                  <Text style={styles.label}>{section.label}</Text>
+                  <Text style={styles.value}>{section.value}</Text>
+                </View>
+              ))}
+
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "#28a745", marginBottom: 10 }]}
+              onPress={handleSend}
+            >
+              <Text style={styles.modalButtonText}>Send to Patient</Text>
+            </TouchableOpacity>
 
             <View style={styles.dualButtonContainer}>
               <TouchableOpacity
-                style={[styles.halfButton, { backgroundColor: "#28a745" }]}
-                onPress={handleSend}
+                style={[styles.halfButton, { backgroundColor: "#e74c3c" }]}
+                onPress={handleDelete}
               >
-                <Text style={styles.buttonText}>Send</Text>
+                <Text style={styles.buttonText}>Delete</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.halfButton, { backgroundColor: "#6c757d" }]}
@@ -185,26 +208,41 @@ export default function ERecipeScreen() {
         </View>
       )}
 
-      {/* Modals */}
-      {[
-        {
-          modal: modalVisible,
-          set: setModalVisible,
-          text: "Prescription generated successfully!",
-          color: "#007ea7",
-          action: handleViewRecipe,
-        },
-        {
+      {/* MODALS */}
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.successText}>Prescription generated successfully!</Text>
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#007ea7" }]}
+                onPress={handleViewRecipe}
+              >
+                <Text style={styles.modalButtonText}>View Prescription</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#48c774" }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* OTHER MODALS */}
+      {[{
           modal: sendModal,
           set: setSendModal,
-          text: "Sent to patient successfully!",
+          text: `Prescription successfully sent to ${patient || "the patient"}!`,
           color: "#28a745",
           action: handleClear,
         },
         {
           modal: deleteModal,
           set: setDeleteModal,
-          text: "Deleted successfully!",
+          text: "Prescription deleted successfully!",
           color: "#e74c3c",
           action: handleClear,
         },
@@ -216,8 +254,8 @@ export default function ERecipeScreen() {
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: m.color }]}
                 onPress={() => {
-                  m.set(false); 
-                  m.action(); 
+                  m.set(false);
+                  m.action();
                 }}
               >
                 <Text style={styles.modalButtonText}>OK</Text>
@@ -258,33 +296,20 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  label: {
+    fontWeight: "700",
+    fontSize: 17,
+    marginBottom: 6,
+    color: "#033d49",
+  },
   button: {
     backgroundColor: "#48c774",
     padding: 14,
     borderRadius: 14,
     alignItems: "center",
     marginTop: 10,
-    shadowColor: "#48c774",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 4,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "800",
-    fontSize: 16,
-    letterSpacing: 0.5,
-  },
-  label: {
-    fontWeight: "700",
-    fontSize: 17,
-    marginBottom: 6,
-    color: "#033d49",
-    textShadowColor: "rgba(0,0,0,0.05)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
-  },
+  buttonText: { color: "#fff", fontWeight: "800", fontSize: 16 },
   urgencyContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -301,12 +326,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  urgencyText: {
-    fontWeight: "700",
-    textAlign: "center",
-    color: "#033d49",
-    fontSize: 15,
-  },
+  urgencyText: { fontWeight: "700", textAlign: "center", color: "#033d49" },
   dualButtonContainer: { flexDirection: "row", gap: 12, marginTop: 12 },
   halfButton: {
     flex: 1,
@@ -332,6 +352,27 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   detailsContent: { padding: 10 },
+  detailsHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  detailsDoctor: { fontSize: 22, fontWeight: "900", color: "#007ea7" },
+  detailsProfession: { fontSize: 16, color: "#033d49" },
+  detailsDate: { fontSize: 15, color: "#033d49" },
+  separator: { height: 5, borderRadius: 3, marginVertical: 20 },
+  cardSection: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  value: { fontSize: 16, color: "#033d49", marginTop: 4 },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -355,6 +396,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: "center",
     color: "#033d49",
+  },
+  modalButtonRow: {
+    flexDirection: "row",
+    gap: 12,
   },
   modalButton: {
     paddingVertical: 12,
