@@ -84,7 +84,13 @@ const BookingScreen = () => {
       `Your appointment with ${
         doctor.name
       } is confirmed for ${selectedDate.toDateString()} at ${selectedTime}`,
-      [{ text: "OK", onPress: () => router.back() }]
+      [{ text: "OK", onPress: () => {
+        setSelectedDate(new Date());
+          setSelectedTime(null);
+          setPatientName("");
+          setNotes("");
+          router.back();
+      }, },]
     );
   };
 
