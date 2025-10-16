@@ -23,7 +23,7 @@ export default function Home() {
       </View>
 
       <View style={styles.welcomeCard}>
-        <Text style={styles.welcomeTitle}>Welcome, doctorName 🌿</Text>
+        <Text style={styles.welcomeTitle}>Welcome🌿</Text>
         <Text style={styles.welcomeText}>
           Monitor patient data, create prescriptions, and manage analytics all in one place. Your digital clinic companion is here.
         </Text>

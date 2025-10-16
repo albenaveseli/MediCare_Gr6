@@ -3,7 +3,6 @@ import { router } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -115,10 +114,7 @@ export default function DoctorList() {
     },
   ];
 
-  const specialties = [
-    "All",
-    ...new Set(doctors.map((doctor) => doctor.specialty)),
-  ];
+  const specialties = ["All", ...new Set(doctors.map((doc) => doc.specialty))];
 
   const filteredDoctors = doctors.filter((doctor) => {
     const matchesSearch =
@@ -196,105 +192,94 @@ export default function DoctorList() {
     <View style={styles.container}>
       <Header title="Available Doctors" />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
+      <FlatList
+        data={filteredDoctors}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderDoctorCard}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <Ionicons
-            name="search"
-            size={20}
-            color="#64748b"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search doctors by name or specialty..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor="#94a3b8"
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity
-              onPress={() => setSearchQuery("")}
-              style={styles.clearButton}
-            >
-              <Ionicons name="close-circle" size={20} color="#64748b" />
-            </TouchableOpacity>
-          )}
-        </View>
-
-       
-        <View style={styles.filterSection}>
-          <Text style={styles.filterTitle}>Specialty</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterContainer}
-          >
-            {specialties.map((specialty) => (
-              <TouchableOpacity
-                key={specialty}
-                style={[
-                  styles.filterChip,
-                  selectedSpecialty === specialty && styles.filterChipActive,
-                ]}
-                onPress={() => setSelectedSpecialty(specialty)}
-              >
-                <Text
-                  style={[
-                    styles.filterChipText,
-                    selectedSpecialty === specialty &&
-                      styles.filterChipTextActive,
-                  ]}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Ionicons name="search-outline" size={64} color="#cbd5e1" />
+            <Text style={styles.emptyStateTitle}>No doctors found</Text>
+            <Text style={styles.emptyStateText}>
+              Try adjusting your search or filter criteria
+            </Text>
+          </View>
+        }
+        ListHeaderComponent={
+          <>
+            {/* Search Bar */}
+            <View style={styles.searchContainer}>
+              <Ionicons
+                name="search"
+                size={20}
+                color="#64748b"
+                style={styles.searchIcon}
+              />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search doctors by name or specialty..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholderTextColor="#94a3b8"
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => setSearchQuery("")}
+                  style={styles.clearButton}
                 >
-                  {specialty}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        
-        <Text style={styles.resultsText}>
-          {filteredDoctors.length} doctor
-          {filteredDoctors.length !== 1 ? "s" : ""} found
-        </Text>
-
-        
-        <FlatList
-          data={filteredDoctors}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderDoctorCard}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Ionicons name="search-outline" size={64} color="#cbd5e1" />
-              <Text style={styles.emptyStateTitle}>No doctors found</Text>
-              <Text style={styles.emptyStateText}>
-                Try adjusting your search or filter criteria
-              </Text>
+                  <Ionicons name="close-circle" size={20} color="#64748b" />
+                </TouchableOpacity>
+              )}
             </View>
-          }
-        />
-      </ScrollView>
+
+            {/* Specialty Filters */}
+            <View style={styles.filterSection}>
+              <Text style={styles.filterTitle}>Specialty</Text>
+              <FlatList
+                horizontal
+                data={specialties}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.filterChip,
+                      selectedSpecialty === item && styles.filterChipActive,
+                    ]}
+                    onPress={() => setSelectedSpecialty(item)}
+                  >
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        selectedSpecialty === item &&
+                          styles.filterChipTextActive,
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+
+            {/* Results Count */}
+            <Text style={styles.resultsText}>
+              {filteredDoctors.length} doctor
+              {filteredDoctors.length !== 1 ? "s" : ""} found
+            </Text>
+          </>
+        }
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#e8f6f8",
-  },
-  scrollContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-  },
+  container: { flex: 1, backgroundColor: "#e8f6f8" },
   searchContainer: {
-    marginTop:30,
+    marginTop: 30,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#ffffff",
@@ -320,7 +305,6 @@ const styles = StyleSheet.create({
     color: "#1e293b",
     marginBottom: 12,
   },
-  filterContainer: { paddingRight: 20 },
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,

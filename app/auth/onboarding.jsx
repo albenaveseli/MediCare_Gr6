@@ -1,5 +1,4 @@
 import Slider from "@react-native-community/slider";
-import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -9,7 +8,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 export default function OnBoarding() {
@@ -43,6 +42,12 @@ export default function OnBoarding() {
     );
   }
 
+  const genders = [
+    { label: "Female", value: "F" },
+    { label: "Male", value: "M" },
+    { label: "Other", value: "T" },
+  ];
+
   return (
     <ScrollView
       style={styles.container}
@@ -54,24 +59,33 @@ export default function OnBoarding() {
         <TextInput
           style={styles.input}
           placeholder="e.g. 25/12/1990"
+          placeholderTextColor="#888"
           value={birthDate}
           onChangeText={setBirthDate}
         />
       </View>
 
-      {/* Gender */}
+      {/* Gender as Radio Buttons */}
       <View style={styles.card}>
         <Text style={styles.label}>Gender:</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={gender}
-            onValueChange={setGender}
-            style={styles.picker}
-          >
-            <Picker.Item label="Female" value="F" />
-            <Picker.Item label="Male" value="M" />
-            <Picker.Item label="Other" value="T" />
-          </Picker>
+        <View style={styles.radioGroup}>
+          {genders.map((item) => (
+            <TouchableOpacity
+              key={item.value}
+              style={styles.radioButton}
+              onPress={() => setGender(item.value)}
+            >
+              <View
+                style={[
+                  styles.radioOuter,
+                  gender === item.value && styles.radioSelectedOuter,
+                ]}
+              >
+                {gender === item.value && <View style={styles.radioInner} />}
+              </View>
+              <Text style={styles.radioLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
@@ -86,6 +100,7 @@ export default function OnBoarding() {
           onValueChange={setWeight}
           minimumTrackTintColor="#007ea7"
           maximumTrackTintColor="#d1d5db"
+          thumbTintColor="#007ea7"
         />
       </View>
 
@@ -100,6 +115,7 @@ export default function OnBoarding() {
           onValueChange={setHeight}
           minimumTrackTintColor="#007ea7"
           maximumTrackTintColor="#d1d5db"
+          thumbTintColor="#007ea7"
         />
       </View>
 
@@ -114,6 +130,7 @@ export default function OnBoarding() {
         />
       </View>
 
+      {/* Next Button */}
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
@@ -151,14 +168,36 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
     color: "#033d49",
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 12,
-    backgroundColor: "#f9fafb",
+
+  radioGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  picker: {
-    height: 50,
+  radioButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: "#007ea7",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+  },
+  radioSelectedOuter: {
+    borderColor: "#007ea7",
+  },
+  radioInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#007ea7",
+  },
+  radioLabel: {
+    fontSize: 16,
     color: "#033d49",
   },
 

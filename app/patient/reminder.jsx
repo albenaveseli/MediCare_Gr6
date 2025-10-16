@@ -3,6 +3,9 @@ import { useState } from "react";
 import {
   Alert,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -45,14 +48,16 @@ export default function Reminder() {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#e8f6f8" }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+    >
       <Header
         title="Medicine Reminders"
         icon={<Ionicons name="medkit-outline" size={28} color="#007ea7" />}
       />
 
-      {/* List of medicines */}
       <FlatList
         data={medicines}
         renderItem={renderItem}
@@ -64,34 +69,33 @@ export default function Reminder() {
         }}
       />
 
-      {/* Inputs */}
-      <TextInput
-        style={styles.input}
-        placeholder="Medicine Name"
-        value={newMedicineName}
-        onChangeText={setNewMedicineName}
-      />
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 30 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <TextInput
+          style={styles.input}
+          placeholder="Medicine Name"
+          value={newMedicineName}
+          onChangeText={setNewMedicineName}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Time (e.g., 08:00 AM)"
-        value={newMedicineTime}
-        onChangeText={setNewMedicineTime}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Time (e.g., 08:00 AM)"
+          value={newMedicineTime}
+          onChangeText={setNewMedicineTime}
+        />
 
-      <TouchableOpacity style={styles.addButton} onPress={addMedicine}>
-        <Text style={styles.addButtonText}>Add Reminder</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.addButton} onPress={addMedicine}>
+          <Text style={styles.addButtonText}>Add Reminder</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#e8f6f8",
-    paddingTop: 20,
-  },
   card: {
     backgroundColor: "#ffffff",
     padding: 16,
