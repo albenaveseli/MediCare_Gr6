@@ -320,10 +320,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   approveButton: {
-    backgroundColor: "#4db8ff", // blu e lehtë, ndjesi pozitive
+    backgroundColor: "#4db8ff",
   },
   cancelButton: {
-    backgroundColor: "#007ea7", // blu më e thellë për anulim
+    backgroundColor: "#007ea7",
   },
   singleButton: {
     marginTop: 4,
