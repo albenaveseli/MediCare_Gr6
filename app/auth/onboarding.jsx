@@ -2,6 +2,7 @@ import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Switch,
@@ -20,8 +21,19 @@ export default function OnBoarding() {
   const [hasAllergy, setHasAllergy] = useState(false);
 
   const handleNext = () => {
+    // ✅ Validim për formatin e datës (DD/MM/YYYY)
+    const birthDatePattern = /^\d{2}\/\d{2}\/\d{4}$/;
+
+    if (!birthDatePattern.test(birthDate)) {
+      Alert.alert(
+        "Format i pavlefshëm",
+        "Ju lutem shkruani datëlindjen në formatin e saktë (DD/MM/YYYY)."
+      );
+      return;
+    }
+
     console.log({ birthDate, gender, weight, height, hasAllergy });
-    alert("Your information has been saved!");
+    Alert.alert("Sukses!", "Të dhënat u ruajtën me sukses!");
     router.replace("/patient/home");
   };
 
