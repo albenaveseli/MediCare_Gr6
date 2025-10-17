@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Card from "../../components/Card";
-import Header from "../../components/Header"; // importojmë header-in
+import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
 export default function DoctorDetails() {

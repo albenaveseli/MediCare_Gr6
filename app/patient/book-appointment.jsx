@@ -237,15 +237,6 @@ const BookingScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: "#e8f6f8",
-  },
-  headerTitle: { fontSize: 18, fontWeight: "700", color: "#007ea7" },
   content: { flex: 1, padding: 16 },
   card: {
     marginBottom: 16,
