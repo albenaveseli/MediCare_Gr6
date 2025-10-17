@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const MyAppointmentsScreen = () => {
+export default function MyAppointmentsScreen(){
   const [appointments, setAppointments] = useState([
     {
       id: "1",
@@ -341,5 +341,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-export default MyAppointmentsScreen;

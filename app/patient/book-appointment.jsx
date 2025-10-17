@@ -17,7 +17,8 @@ import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
 
-const BookingScreen = () => {
+
+export default function BookingScreen(){
   const {
     doctorId,
     doctorName,
@@ -233,7 +234,7 @@ const BookingScreen = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
@@ -305,5 +306,3 @@ const styles = StyleSheet.create({
   textArea: { height: 80, textAlignVertical: "top" },
   buttonContainer: { padding: 20, backgroundColor: "#e8f6f8" },
 });
-
-export default BookingScreen;
