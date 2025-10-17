@@ -13,8 +13,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from "../../components/Header"; // importojmë header-in
+import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
-
 export default function DoctorDetails() {
   const {
     id,
@@ -168,8 +168,8 @@ export default function DoctorDetails() {
 
       {/* Book Button */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.bookButton}
+<PrimaryButton
+          title="Book Appointment"
           onPress={() =>
             router.push({
               pathname: "/patient/book-appointment",
@@ -183,10 +183,8 @@ export default function DoctorDetails() {
               },
             })
           }
-        >
-          <Text style={styles.bookButtonText}>Book Appointment</Text>
-          <FontAwesome5 name="calendar-check" size={20} color="#fff" />
-        </TouchableOpacity>
+          icon={() => <FontAwesome5 name="calendar-check" size={20} color="#fff" />}
+        />
       </View>
     </SafeAreaView>
   );
@@ -284,25 +282,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: "#d0e8f2",
-  },
-  bookButton: {
-    backgroundColor: "#007ea7",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 16,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  bookButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    marginRight: 8,
   },
   heartButton: { padding: 4 },
 });

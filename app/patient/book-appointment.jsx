@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from "../../components/Header";
+import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
 
 const BookingScreen = () => {
@@ -221,22 +222,12 @@ const BookingScreen = () => {
 
         {/* Confirm Button */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.confirmButton,
-              (isWeekend(selectedDate) || !selectedTime || !patientName) &&
-                styles.disabledButton,
-            ]}
+           <PrimaryButton
+            title={isWeekend(selectedDate) ? "Weekend - Not Available" : "Confirm Appointment"}
             onPress={handleBooking}
             disabled={isWeekend(selectedDate) || !selectedTime || !patientName}
-          >
-            <Text style={styles.confirmButtonText}>
-              {isWeekend(selectedDate)
-                ? "Weekend - Not Available"
-                : "Confirm Appointment"}
-            </Text>
-            <Ionicons name="checkmark-circle" size={24} color="#fff" />
-          </TouchableOpacity>
+            icon={() => <Ionicons name="checkmark-circle" size={24} color="#fff" />}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -329,26 +320,6 @@ const styles = StyleSheet.create({
   },
   textArea: { height: 80, textAlignVertical: "top" },
   buttonContainer: { padding: 20, backgroundColor: "#e8f6f8" },
-  confirmButton: {
-    backgroundColor: "#007ea7",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 16,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  disabledButton: { backgroundColor: "#6c757d", shadowColor: "#6c757d" },
-  confirmButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    marginRight: 8,
-  },
 });
 
 export default BookingScreen;
