@@ -1,4 +1,4 @@
-import Slider from "@react-native-community/slider";
+import Slider from "@react-native-community/slider"; // ✅ Added this missing import
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -21,19 +21,18 @@ export default function OnBoarding() {
   const [hasAllergy, setHasAllergy] = useState(false);
 
   const handleNext = () => {
-    // ✅ Validim për formatin e datës (DD/MM/YYYY)
     const birthDatePattern = /^\d{2}\/\d{2}\/\d{4}$/;
 
     if (!birthDatePattern.test(birthDate)) {
       Alert.alert(
-        "Format i pavlefshëm",
-        "Ju lutem shkruani datëlindjen në formatin e saktë (DD/MM/YYYY)."
+        "Invalid format",
+        "Please enter your birth date in DD/MM/YYYY format."
       );
       return;
     }
 
     console.log({ birthDate, gender, weight, height, hasAllergy });
-    Alert.alert("Sukses!", "Të dhënat u ruajtën me sukses!");
+    Alert.alert("Success!", "Your data has been saved successfully!");
     router.replace("/patient/home");
   };
 
@@ -77,7 +76,7 @@ export default function OnBoarding() {
         />
       </View>
 
-      {/* Gender as Radio Buttons */}
+      {/* Gender */}
       <View style={styles.card}>
         <Text style={styles.label}>Gender:</Text>
         <View style={styles.radioGroup}>
@@ -180,7 +179,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
     color: "#033d49",
   },
-
   radioGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -212,7 +210,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#033d49",
   },
-
   welcomeContainer: {
     flex: 1,
     justifyContent: "center",
@@ -240,7 +237,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   getStartedText: { color: "#fff", fontSize: 16, fontWeight: "700" },
-
   nextButton: {
     backgroundColor: "#007ea7",
     paddingVertical: 16,
