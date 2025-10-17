@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons"; // ✅ built-in icons
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -21,7 +21,7 @@ export default function ProfileCard({
 
   const [name, setName] = useState(initialName || "Arta Krasniqi");
   const [email, setEmail] = useState(initialEmail || "arta.krasniqi@gmail.com");
-  const [role] = useState(roleType || "Patient");
+  const role = roleType || "Patient";
   const [isEditing, setIsEditing] = useState(false);
 
   // New fields
@@ -36,8 +36,8 @@ export default function ProfileCard({
   const handleSave = () => setIsEditing(false);
   const handleAbout = () => router.push("/common/about");
 
-  const renderIcon = (name) => (
-    <Ionicons name={name} size={20} color="#007ea7" style={styles.icon} />
+  const renderIcon = (iconName) => (
+    <Ionicons name={iconName} size={20} color="#007ea7" style={styles.icon} />
   );
 
   return (
@@ -92,15 +92,16 @@ export default function ProfileCard({
 
             <View style={styles.inputRow}>
               {renderIcon("male-female-outline")}
-              <Picker
-                selectedValue={gender}
-                style={styles.input}
-                onValueChange={(itemValue) => setGender(itemValue)}
-              >
-                <Picker.Item label="Female" value="Female" />
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Other" value="Other" />
-              </Picker>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={gender}
+                  onValueChange={(itemValue) => setGender(itemValue)}
+                >
+                  <Picker.Item label="Female" value="Female" />
+                  <Picker.Item label="Male" value="Male" />
+                  <Picker.Item label="Other" value="Other" />
+                </Picker>
+              </View>
             </View>
 
             <View style={styles.inputRow}>
@@ -129,14 +130,15 @@ export default function ProfileCard({
 
             <View style={styles.inputRow}>
               {renderIcon("medkit-outline")}
-              <Picker
-                selectedValue={allergies}
-                style={styles.input}
-                onValueChange={(itemValue) => setAllergies(itemValue)}
-              >
-                <Picker.Item label="Yes" value="Yes" />
-                <Picker.Item label="No" value="No" />
-              </Picker>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={allergies}
+                  onValueChange={(itemValue) => setAllergies(itemValue)}
+                >
+                  <Picker.Item label="Yes" value="Yes" />
+                  <Picker.Item label="No" value="No" />
+                </Picker>
+              </View>
             </View>
           </>
         ) : (
@@ -285,6 +287,14 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
+  },
+  pickerContainer: {
+    flex: 1,
+    borderRadius: 10,
+    overflow: "hidden",
+    backgroundColor: "#f2f9fb",
+    borderWidth: 1,
+    borderColor: "#d4f1f4",
   },
   label: {
     fontSize: 15,
