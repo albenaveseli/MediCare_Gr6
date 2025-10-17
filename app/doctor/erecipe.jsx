@@ -319,12 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 12,
     paddingHorizontal: 22,
-    borderWidth: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 2
   },
   urgencyText: { fontWeight: "700", textAlign: "center", color: "#033d49" },
   dualButtonContainer: { flexDirection: "row", gap: 12, marginTop: 12 },
