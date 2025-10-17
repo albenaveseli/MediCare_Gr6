@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 17,
     marginBottom: 6,
-    color: "#033d49",
+    color: "#2b8fb0ff",
   },
   button: {
     backgroundColor: "#48c774",
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     flex: 1,
-    backgroundColor: "#f7f9fb",
+    backgroundColor: "#e8f6f8",
     marginVertical: 10,
     borderRadius: 16,
     padding: 15,
@@ -352,8 +352,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 15,
   },
-  detailsDoctor: { fontSize: 22, fontWeight: "900", color: "#007ea7" },
-  detailsProfession: { fontSize: 16, color: "#033d49" },
+  detailsDoctor: { fontSize: 25, fontWeight: "900", color: "#007ea7" },
+  detailsProfession: { fontSize: 20, color: "#033d49" },
   detailsDate: { fontSize: 15, color: "#033d49" },
   separator: { height: 5, borderRadius: 3, marginVertical: 20 },
   cardSection: {
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  value: { fontSize: 16, color: "#033d49", marginTop: 4 },
+  value: { fontSize: 16, color: "#000000ff", marginTop: 4 },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "#fff",
     fontWeight: "800",
-    fontSize: 16,
+    fontSize: 17,
     letterSpacing: 0.5,
-  },
+  }
 });
