@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons"; // ✅ built-in icons
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -20,10 +21,10 @@ export default function ProfileCard({
 
   const [name, setName] = useState(initialName || "Arta Krasniqi");
   const [email, setEmail] = useState(initialEmail || "arta.krasniqi@gmail.com");
-  const [role] = useState(roleType || "Pacient");
+  const [role] = useState(roleType || "Patient");
   const [isEditing, setIsEditing] = useState(false);
 
-  // Fusha të reja
+  // New fields
   const [birthdate, setBirthdate] = useState("2001-05-14");
   const [gender, setGender] = useState("Female");
   const [height, setHeight] = useState("168");
@@ -34,6 +35,10 @@ export default function ProfileCard({
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
   const handleAbout = () => router.push("/common/about");
+
+  const renderIcon = (name) => (
+    <Ionicons name={name} size={20} color="#007ea7" style={styles.icon} />
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -51,130 +56,178 @@ export default function ProfileCard({
       <View style={styles.infoCard}>
         {isEditing ? (
           <>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder="Emri"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Emaili"
-              placeholderTextColor="#999"
-              keyboardType="email-address"
-            />
+            <View style={styles.inputRow}>
+              {renderIcon("person-outline")}
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="Full Name"
+                placeholderTextColor="#999"
+              />
+            </View>
 
-            <TextInput
-              style={styles.input}
-              value={birthdate}
-              onChangeText={setBirthdate}
-              placeholder="Data e lindjes (YYYY-MM-DD)"
-              placeholderTextColor="#999"
-            />
+            <View style={styles.inputRow}>
+              {renderIcon("mail-outline")}
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Email"
+                placeholderTextColor="#999"
+                keyboardType="email-address"
+              />
+            </View>
 
-            <Picker
-              selectedValue={gender}
-              style={styles.input}
-              onValueChange={(itemValue) => setGender(itemValue)}
-            >
-              <Picker.Item label="Female" value="Female" />
-              <Picker.Item label="Male" value="Male" />
-              <Picker.Item label="Other" value="Other" />
-            </Picker>
+            <View style={styles.inputRow}>
+              {renderIcon("calendar-outline")}
+              <TextInput
+                style={styles.input}
+                value={birthdate}
+                onChangeText={setBirthdate}
+                placeholder="Birthdate (YYYY-MM-DD)"
+                placeholderTextColor="#999"
+              />
+            </View>
 
-            <TextInput
-              style={styles.input}
-              value={height}
-              onChangeText={setHeight}
-              placeholder="Gjatësia (cm)"
-              keyboardType="numeric"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.input}
-              value={weight}
-              onChangeText={setWeight}
-              placeholder="Pesha (kg)"
-              keyboardType="numeric"
-              placeholderTextColor="#999"
-            />
+            <View style={styles.inputRow}>
+              {renderIcon("male-female-outline")}
+              <Picker
+                selectedValue={gender}
+                style={styles.input}
+                onValueChange={(itemValue) => setGender(itemValue)}
+              >
+                <Picker.Item label="Female" value="Female" />
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Other" value="Other" />
+              </Picker>
+            </View>
 
-            <Picker
-              selectedValue={allergies}
-              style={styles.input}
-              onValueChange={(itemValue) => setAllergies(itemValue)}
-            >
-              <Picker.Item label="Yes" value="Yes" />
-              <Picker.Item label="No" value="No" />
-            </Picker>
+            <View style={styles.inputRow}>
+              {renderIcon("resize-outline")}
+              <TextInput
+                style={styles.input}
+                value={height}
+                onChangeText={setHeight}
+                placeholder="Height (cm)"
+                keyboardType="numeric"
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.inputRow}>
+              {renderIcon("barbell-outline")}
+              <TextInput
+                style={styles.input}
+                value={weight}
+                onChangeText={setWeight}
+                placeholder="Weight (kg)"
+                keyboardType="numeric"
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.inputRow}>
+              {renderIcon("medkit-outline")}
+              <Picker
+                selectedValue={allergies}
+                style={styles.input}
+                onValueChange={(itemValue) => setAllergies(itemValue)}
+              >
+                <Picker.Item label="Yes" value="Yes" />
+                <Picker.Item label="No" value="No" />
+              </Picker>
+            </View>
           </>
         ) : (
           <>
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Emri</Text>
-              <Text style={styles.value}>{name}</Text>
+              {renderIcon("person-outline")}
+              <View>
+                <Text style={styles.label}>Full Name</Text>
+                <Text style={styles.value}>{name}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Email</Text>
-              <Text style={styles.value}>{email}</Text>
+              {renderIcon("mail-outline")}
+              <View>
+                <Text style={styles.label}>Email</Text>
+                <Text style={styles.value}>{email}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Roli</Text>
-              <Text style={styles.value}>{role}</Text>
+              {renderIcon("briefcase-outline")}
+              <View>
+                <Text style={styles.label}>Role</Text>
+                <Text style={styles.value}>{role}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Data e Lindjes</Text>
-              <Text style={styles.value}>{birthdate}</Text>
+              {renderIcon("calendar-outline")}
+              <View>
+                <Text style={styles.label}>Birthdate</Text>
+                <Text style={styles.value}>{birthdate}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Gjinia</Text>
-              <Text style={styles.value}>{gender}</Text>
+              {renderIcon("male-female-outline")}
+              <View>
+                <Text style={styles.label}>Gender</Text>
+                <Text style={styles.value}>{gender}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Gjatësia (cm)</Text>
-              <Text style={styles.value}>{height}</Text>
+              {renderIcon("resize-outline")}
+              <View>
+                <Text style={styles.label}>Height (cm)</Text>
+                <Text style={styles.value}>{height}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Pesha (kg)</Text>
-              <Text style={styles.value}>{weight}</Text>
+              {renderIcon("barbell-outline")}
+              <View>
+                <Text style={styles.label}>Weight (kg)</Text>
+                <Text style={styles.value}>{weight}</Text>
+              </View>
             </View>
 
             <View style={styles.infoItem}>
-              <Text style={styles.label}>Alergji</Text>
-              <Text style={styles.value}>{allergies}</Text>
+              {renderIcon("medkit-outline")}
+              <View>
+                <Text style={styles.label}>Allergies</Text>
+                <Text style={styles.value}>{allergies}</Text>
+              </View>
             </View>
           </>
         )}
 
+        {/* Buttons */}
         <View style={styles.buttonsContainer}>
           {isEditing ? (
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveText}>Ruaj Ndryshimet</Text>
+              <Text style={styles.saveText}>Save Changes</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-              <Text style={styles.editText}>Përditëso Profilin</Text>
+              <Text style={styles.editText}>Edit Profile</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Dil nga Llogaria</Text>
+            <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* About Button */}
       <TouchableOpacity style={styles.aboutButton} onPress={handleAbout}>
-        <Text style={styles.aboutText}>Rreth Aplikacionit</Text>
+        <Text style={styles.aboutText}>About App</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -221,7 +274,17 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   infoItem: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 15,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 6,
+  },
+  icon: {
+    marginRight: 10,
   },
   label: {
     fontSize: 15,
@@ -234,12 +297,11 @@ const styles = StyleSheet.create({
     color: "#033d49",
   },
   input: {
+    flex: 1,
     backgroundColor: "#f2f9fb",
     borderRadius: 10,
     padding: 12,
     fontSize: 16,
-    marginVertical: 6,
-    width: "100%",
     borderWidth: 1,
     borderColor: "#d4f1f4",
   },
