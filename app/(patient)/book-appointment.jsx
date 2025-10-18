@@ -2,15 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -110,14 +102,12 @@ export default function BookingScreen(){
         style={styles.content}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        {/* Doctor Info */}
         <Card style={styles.card}>
           <Text style={styles.doctorName}>{doctor.name}</Text>
           <Text style={styles.specialty}>{doctor.specialty}</Text>
           <Text style={styles.price}>{doctor.price} per consultation</Text>
         </Card>
 
-        {/* Date Selection */}
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Select Date</Text>
           <TouchableOpacity
@@ -144,7 +134,6 @@ export default function BookingScreen(){
           />
         )}
 
-        {/* Time Selection */}
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>
             Select Time {isWeekend(selectedDate) ? "(Not Available)" : ""}
@@ -208,7 +197,6 @@ export default function BookingScreen(){
           </Text>
         </Card>
 
-        {/* Patient Details */}
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Patient Information</Text>
           <TextInput
@@ -226,8 +214,7 @@ export default function BookingScreen(){
             numberOfLines={3}
           />
         </Card>
-
-        {/* Confirm Button */}
+        
         <View style={styles.buttonContainer}>
            <PrimaryButton
             title={isWeekend(selectedDate) ? "Weekend - Not Available" : "Confirm Appointment"}

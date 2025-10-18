@@ -2,14 +2,7 @@ import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -110,7 +103,6 @@ export default function DoctorDetails() {
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        {/* Doctor Photo and Info */}
         <View style={styles.profileSection}>
           <Image source={{ uri: doctor.image }} style={styles.doctorImage} />
           <View style={styles.infoContainer}>
@@ -131,12 +123,10 @@ export default function DoctorDetails() {
           </TouchableOpacity>
         </View>
 
-        {/* Description */}
         <Card style={styles.card}>
           <Text style={styles.descriptionText}>{doctor.description}</Text>
         </Card>
 
-        {/* Features */}
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Details</Text>
           {features.map((f, i) => (
@@ -147,7 +137,6 @@ export default function DoctorDetails() {
           ))}
         </Card>
 
-        {/* Availability */}
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Available Hours</Text>
 
@@ -168,7 +157,6 @@ export default function DoctorDetails() {
         </Card>
       </ScrollView>
 
-      {/* Book Button */}
       <View style={styles.buttonContainer}>
         <PrimaryButton
           title="Book Appointment"
