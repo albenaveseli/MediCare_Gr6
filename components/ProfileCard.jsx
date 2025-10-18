@@ -34,7 +34,11 @@ export default function ProfileCard({
   const handleLogout = () => router.replace("/auth/login");
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
-  const handleAbout = () => router.push("/common/about");
+  const handleAbout = () =>
+    router.push({
+      pathname: "/common/about",
+      params: { role: roleType.toLowerCase() },
+    });
 
   const renderIcon = (iconName) => (
     <Ionicons name={iconName} size={20} color="#007ea7" style={styles.icon} />
