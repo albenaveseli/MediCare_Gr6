@@ -102,7 +102,7 @@ export default function DoctorDetails() {
     <View style={styles.container}>
       <Header
         title="Doctor Profile"
-        onBack={() => router.push("/(patient)/doctor-list")}
+        onBack={() => router.push("/doctor-list")}
       />
 
       <ScrollView
@@ -149,17 +149,20 @@ export default function DoctorDetails() {
 
         {/* Availability */}
         <Card style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            {isWeekend() ? "Available Hours (Next Week)" : "Available Hours"}
-          </Text>
-          <TimeSlots
-            slots={doctor.availability}
-            selected={selectedTime}
-            onSelect={setSelectedTime}
-          />
+          <Text style={styles.sectionTitle}>Available Hours</Text>
+
+          {isWeekend() ? (
+            <Text style={styles.unavailableText}>Unavailable</Text>
+          ) : (
+            <TimeSlots
+              slots={doctor.availability}
+              selected={selectedTime}
+              onSelect={setSelectedTime}
+            />
+          )}
           <Text style={styles.availabilityNote}>
             {isWeekend()
-              ? "Today is weekend. Available hours for next working days."
+              ? "Today is weekend — the doctor is unavailable. On workdays: 08:00-16:00"
               : "For today: doctor's specific availability. For other days: 08:00-16:00"}
           </Text>
         </Card>
@@ -276,4 +279,11 @@ const styles = StyleSheet.create({
     borderTopColor: "#d0e8f2",
   },
   heartButton: { padding: 4 },
+  unavailableText: {
+  fontSize: 16,
+  color: "#FF3B30",
+  textAlign: "center",
+  fontWeight: "600",
+  marginVertical: 10,
+},
 });
