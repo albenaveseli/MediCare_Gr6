@@ -77,8 +77,14 @@ export default function BookingScreen(){
     });
 
   const handleBooking = () => {
-    if (!selectedTime || !patientName)
-      return Alert.alert("Error", "Please fill all required fields");
+    const trimmedName = patientName.trim();
+    if (!trimmedName) {
+    return Alert.alert("Error", "Please enter your full name.");
+  }
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(trimmedName)) {
+      return Alert.alert("Error", "Name can only contain letters and spaces.");
+    }
     if (isWeekend(selectedDate))
       return Alert.alert("Weekend", "Appointments not available on weekends");
     Alert.alert(
