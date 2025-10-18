@@ -1,28 +1,36 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
-import InfoSection from "../../components/InfoSection";
 
 export default function About() {
   const { role } = useLocalSearchParams();
-
 
   const handleBack = () => {
     if (role === "doctor") router.replace("/doctor/profile");
     else router.replace("/patient/profile");
   };
+
+  const InfoSection = ({ title, children, style }) => (
+    <View style={[styles.section, style]}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {children}
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Header title="About MediCare" onBack={handleBack} />
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <InfoSection title="What is MediCare?" style={styles.card}>
           <Text style={styles.description}>
-            MediCare is a mobile application developed for comprehensive management
-            of patient-doctor relationships and all hospital services. The platform
-            provides a simple and secure way for booking appointments, online consultations,
-            and accessing medical documents.
+            MediCare is a mobile application developed for comprehensive
+            management of patient-doctor relationships and all hospital
+            services. The platform provides a simple and secure way for booking
+            appointments, online consultations, and accessing medical documents.
           </Text>
         </InfoSection>
 
@@ -52,13 +60,15 @@ export default function About() {
             <View style={styles.audienceBox}>
               <Text style={styles.audienceTitle}>For Doctors</Text>
               <Text style={styles.audienceText}>
-                Manage your schedule, monitor patients, and improve work efficiency.
+                Manage your schedule, monitor patients, and improve work
+                efficiency.
               </Text>
             </View>
             <View style={styles.audienceBox}>
               <Text style={styles.audienceTitle}>For Patients</Text>
               <Text style={styles.audienceText}>
-                Manage your health in an organized way and receive personalized care.
+                Manage your health in an organized way and receive personalized
+                care.
               </Text>
             </View>
           </View>
@@ -66,8 +76,8 @@ export default function About() {
 
         <InfoSection title="Development Team" style={styles.card}>
           <Text style={styles.teamText}>
-            This application was developed by a team of students from the Faculty of
-            Electrical and Computer Engineering (FIEK):
+            This application was developed by a team of students from the
+            Faculty of Electrical and Computer Engineering (FIEK):
           </Text>
           <View style={styles.teamList}>
             {[
@@ -88,7 +98,7 @@ export default function About() {
         <InfoSection title="Contact" style={styles.card}>
           <Text style={styles.contactText}>
             For any questions or assistance, please contact us at:{"\n"}
-            support@medicare.com{"\n"}+355 123 456 789
+            support@medicare.com{"\n"}+383 *** *** ***
           </Text>
         </InfoSection>
 
@@ -99,14 +109,8 @@ export default function About() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#e8f6f8",
-  },
-  scrollView: {
-    width: "100%",
-    padding: 20,
-  },
+  container: { flex: 1, backgroundColor: "#e8f6f8" },
+  scrollView: { width: "100%", padding: 20 },
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 18,
@@ -120,25 +124,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d4f1f4",
   },
+  section: {
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1a3a6e",
+    marginBottom: 12,
+  },
   description: {
     fontSize: 14,
     lineHeight: 20,
     color: "#033d49",
     textAlign: "justify",
   },
-  featureList: {
-    marginTop: 5,
-  },
-  feature: {
-    fontSize: 14,
-    color: "#007ea7",
-    marginBottom: 6,
-    lineHeight: 20,
-  },
-  audienceContainer: {
-    flexDirection: "column",
-    gap: 12,
-  },
+  featureList: { marginTop: 5 },
+  feature: { fontSize: 14, color: "#007ea7", marginBottom: 6, lineHeight: 20 },
+  audienceContainer: { flexDirection: "column", gap: 12 },
   audienceBox: {
     backgroundColor: "#b9ecf0",
     padding: 15,
@@ -155,30 +166,16 @@ const styles = StyleSheet.create({
     color: "#033d49",
     marginBottom: 5,
   },
-  audienceText: {
-    fontSize: 13,
-    color: "#4a6572",
-    lineHeight: 18,
-  },
+  audienceText: { fontSize: 13, color: "#4a6572", lineHeight: 18 },
   teamText: {
     fontSize: 14,
     color: "#4a6572",
     marginBottom: 10,
     lineHeight: 20,
   },
-  teamList: {
-    marginLeft: 10,
-  },
-  teamMember: {
-    fontSize: 13,
-    color: "#033d49",
-    marginBottom: 4,
-  },
-  contactText: {
-    fontSize: 14,
-    color: "#4a6572",
-    lineHeight: 22,
-  },
+  teamList: { marginLeft: 10 },
+  teamMember: { fontSize: 13, color: "#033d49", marginBottom: 4 },
+  contactText: { fontSize: 14, color: "#4a6572", lineHeight: 22 },
   version: {
     textAlign: "center",
     fontSize: 12,
