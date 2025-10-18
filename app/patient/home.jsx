@@ -1,4 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import DashboardCards from "../../components/DashboardCards";
 
 export default function Home() {
@@ -12,9 +13,12 @@ export default function Home() {
   ];
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {/* Header */}
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+       
         <View style={styles.headerContainer}>
           <Image
             source={require("../../assets/images/logo.jpg")}
@@ -24,30 +28,26 @@ export default function Home() {
           <Text style={styles.subtitle}>Select a section to continue</Text>
         </View>
 
-        {/* Welcome Card */}
+       
         <View style={styles.welcomeCard}>
           <Text style={styles.welcomeTitle}>Welcome🌿</Text>
           <Text style={styles.welcomeText}>
-            Manage your appointments, view prescriptions, and stay connected with your doctors anytime, anywhere.
+            Manage your appointments, view prescriptions, and stay connected
+            with your doctors anytime, anywhere.
           </Text>
         </View>
 
-        {/* Dashboard Cards */}
         <DashboardCards pages={pages} />
-
-        {/* Quote Section */}
         <View style={styles.quoteCard}>
           <Text style={styles.quoteMark}>“</Text>
-          <Text style={styles.quoteText}>
-            The greatest wealth is health.
-          </Text>
+          <Text style={styles.quoteText}>The greatest wealth is health.</Text>
           <Text style={styles.quoteAuthor}>– Virgil</Text>
         </View>
 
-        {/* Footer */}
-        <Text style={styles.footer}>Your health, our priority 💙</Text>
+        
+        <Text style={styles.footer}>Your health, our priority 🌿</Text>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -100,14 +100,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#007ea7",
     marginBottom: 8,
+    textAlign: "center",
   },
   welcomeText: {
+    textAlign: "center",
     fontSize: 15,
     color: "#033d49",
     lineHeight: 20,
   },
   quoteCard: {
-    marginTop: 30,
+    marginTop: -25,
     backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 18,

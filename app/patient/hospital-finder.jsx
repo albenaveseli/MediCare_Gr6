@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     marginTop:30,
     fontSize: 22,
     fontWeight: "700",
-    color: "#1f3c88",
+    color: "#007ea7",
     marginBottom: 20,
     textAlign: "center",
   },
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   hospitalName: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#1f3c88",
+    color: "#007ea7",
     flex: 1,
     marginRight: 10,
   },
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#1f3c88",
+    borderColor: "#007ea7",
   },
   waitTimeText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#1f3c88",
+    color: "#007ea7",
   },
   distance: {
     fontSize: 15,

@@ -5,14 +5,7 @@ export default function Layout() {
   return (
     <>
       <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: "#fff" },
-          headerTitleStyle: { color: "#333" },
-          headerBackTitleVisible: false,
-          headerShown: false,
-        }}
-      />
+      <Stack screenOptions={{ headerShown: false }} />
     </>
   );
 }
