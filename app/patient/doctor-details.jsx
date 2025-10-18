@@ -5,13 +5,11 @@ import { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -101,11 +99,11 @@ export default function DoctorDetails() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#e8f6f8" />
-
-      {/* Komponenti Header */}
-      <Header title="Doctor Profile" onBack={() => router.back()} />
+    <View style={styles.container}>
+      <Header
+        title="Doctor Profile"
+        onBack={() => router.push("/patient/doctor-list")}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -154,11 +152,11 @@ export default function DoctorDetails() {
           <Text style={styles.sectionTitle}>
             {isWeekend() ? "Available Hours (Next Week)" : "Available Hours"}
           </Text>
-           <TimeSlots
-        slots={doctor.availability}
-        selected={selectedTime}
-        onSelect={setSelectedTime}
-      />
+          <TimeSlots
+            slots={doctor.availability}
+            selected={selectedTime}
+            onSelect={setSelectedTime}
+          />
           <Text style={styles.availabilityNote}>
             {isWeekend()
               ? "Today is weekend. Available hours for next working days."
@@ -184,10 +182,12 @@ export default function DoctorDetails() {
               },
             })
           }
-          icon={() => <FontAwesome5 name="calendar-check" size={20} color="#fff" />}
+          icon={() => (
+            <FontAwesome5 name="calendar-check" size={20} color="#fff" />
+          )}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

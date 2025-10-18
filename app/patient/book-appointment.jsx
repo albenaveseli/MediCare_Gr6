@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -98,8 +97,8 @@ export default function BookingScreen(){
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header title="Book Appointment" onBack={() => router.back()} />
+    <View style={styles.container}>
+      <Header title="Book Appointment" onBack={() => router.push("/patient/doctor-list")} />
 
       <ScrollView
         style={styles.content}
@@ -232,7 +231,7 @@ export default function BookingScreen(){
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

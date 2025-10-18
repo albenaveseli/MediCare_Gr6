@@ -79,6 +79,7 @@ export default function ViewRecipeScreen() {
     <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
       <Header
         title={selectedRecipe ? "Prescription Details" : "My Prescriptions"}
+        onBack={selectedRecipe ? () => setSelectedRecipe(null) : undefined}
       />
 
       <ScrollView
@@ -119,7 +120,6 @@ export default function ViewRecipeScreen() {
             ))}
           </View>
         ) : (
-          // Details view
           <View style={styles.detailsWrapper}>
             <View style={styles.detailsHeaderRow}>
               <View>
@@ -175,13 +175,6 @@ export default function ViewRecipeScreen() {
               onPress={() => handleCopy(selectedRecipe)}
             >
               <Text style={styles.copyButtonText}>Copy Prescription</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.backToListButton}
-              onPress={() => setSelectedRecipe(null)}
-            >
-              <Text style={styles.backToListText}>← Back to List</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -263,18 +256,4 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   copyButtonText: { color: "#fff", fontSize: 17, fontWeight: "700" },
-
-  backToListButton: {
-    marginTop: 20,
-    alignItems: "center",
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "#ffffff",
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  backToListText: { color: "#007ea7", fontSize: 16, fontWeight: "600" },
 });
