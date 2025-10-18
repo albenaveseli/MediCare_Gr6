@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OnBoarding() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -55,6 +56,7 @@ export default function OnBoarding() {
   ];
 
   return (
+    <SafeAreaView style={styles.safecontainer}>
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.card}>
         <Text style={styles.label}>Birth Date (DD/MM/YYYY):</Text>
@@ -132,12 +134,17 @@ export default function OnBoarding() {
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#e8f6f8", padding: 20 },
+  safecontainer:{
+    flex:1,
+     backgroundColor: "#e8f6f8"
+  },
+  container: {  backgroundColor: "#e8f6f8", padding: 20 },
   scrollContent: { paddingBottom: 40 },
 
   card: {
