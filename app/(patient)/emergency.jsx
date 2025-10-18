@@ -1,6 +1,4 @@
 import {
-  Alert,
-  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,18 +7,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const cardShadow = {
-  shadowColor: "#007ea7",
-  shadowOffset: { width: 0, height: 3 },
-  shadowOpacity: 0.08,
-  shadowRadius: 4,
-  elevation: 3,
-};
-
 const emergencyNumbers = [
-  { label: "Police", number: "192", color: "#4da294ff" },
-  { label: "Fire Dept", number: "193", color: "#1da593ff" },
-  { label: "Ambulance", number: "194", color: "#38737bff" },
+  { label: "Police", number: "192", color: "#4da294" },
+  { label: "Fire Dept", number: "193", color: "#1da593" },
+  { label: "Ambulance", number: "194", color: "#38737b" },
 ];
 
 const quickSteps = [
@@ -31,42 +21,42 @@ const quickSteps = [
   "Assist the victim if safe until help arrives",
 ];
 
-const EmergencyCard = ({ label, number, color, callNumber }) => (
-  <TouchableOpacity
-    style={[styles.card, { borderLeftColor: color }]}
-    onPress={() => callNumber(number)}
-  >
-    <Text style={[styles.cardText, { color }]}>{label}</Text>
-    <Text style={[styles.cardNumber, { color }]}>{number}</Text>
-  </TouchableOpacity>
-);
-
 export default function Emergency() {
-  const handleSOS = () => {
-    Alert.alert("SOS Activated!", "Emergency services will be contacted.");
-  };
-
-  const callNumber = (num) => Linking.openURL(`tel:${num}`);
+  const handleSOS = () =>
+    alert("SOS Activated! Emergency services will be contacted.");
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <TouchableOpacity style={[styles.sosButton, cardShadow]} onPress={handleSOS}>
+      <ScrollView contentContainerStyle={styles.content}>
+        
+        <TouchableOpacity style={styles.sosButton} onPress={handleSOS}>
           <Text style={styles.sosText}>SOS</Text>
         </TouchableOpacity>
         <Text style={styles.description}>Press in case of emergency</Text>
 
-        <View style={styles.cardsContainer}>
-          {emergencyNumbers.map((item, index) => (
-            <EmergencyCard key={index} {...item} callNumber={callNumber} />
+        
+        <View style={styles.cards}>
+          {emergencyNumbers.map((item, i) => (
+            <View
+              key={i}
+              style={[styles.card, { borderLeftColor: item.color }]}
+            >
+              <Text style={[styles.cardLabel, { color: item.color }]}>
+                {item.label}
+              </Text>
+              <Text style={[styles.cardNumber, { color: item.color }]}>
+                {item.number}
+              </Text>
+            </View>
           ))}
         </View>
 
-        <View style={styles.stepsContainer}>
+        
+        <View style={styles.steps}>
           <Text style={styles.stepsTitle}>Quick Steps in Emergency</Text>
-          {quickSteps.map((step, idx) => (
-            <View key={idx} style={styles.stepItem}>
-              <View style={[styles.stepBullet, { backgroundColor: "#007ea7" }]} />
+          {quickSteps.map((step, i) => (
+            <View key={i} style={styles.stepItem}>
+              <View style={styles.bullet} />
               <Text style={styles.stepText}>{step}</Text>
             </View>
           ))}
@@ -78,7 +68,7 @@ export default function Emergency() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
-  contentContainer: { alignItems: "center", paddingHorizontal: 20 },
+  content: { alignItems: "center", padding: 20 },
 
   sosButton: {
     marginTop: 50,
@@ -89,13 +79,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 15,
+    elevation: 3,
   },
-  sosText: {
-    color: "#fff",
-    fontSize: 36,
-    fontWeight: "700",
-    letterSpacing: 1,
-  },
+  sosText: { color: "#fff", fontSize: 36, fontWeight: "700" },
   description: {
     fontSize: 16,
     color: "#033d49",
@@ -103,37 +89,37 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
 
-  cardsContainer: { width: "100%", marginBottom: 30 },
+  cards: { width: "100%", marginBottom: 30 },
   card: {
     padding: 18,
     borderRadius: 16,
     marginBottom: 14,
     backgroundColor: "#fff",
     borderLeftWidth: 6,
-    ...cardShadow,
+    elevation: 3,
   },
-  cardText: { fontSize: 18, fontWeight: "700", marginBottom: 4 },
+  cardLabel: { fontSize: 18, fontWeight: "700", marginBottom: 4 },
   cardNumber: { fontSize: 16, fontWeight: "600" },
 
-  stepsContainer: { width: "100%" },
+  steps: { width: "100%" },
   stepsTitle: {
     fontSize: 20,
     fontWeight: "700",
     color: "#007ea7",
     marginBottom: 12,
-    alignSelf: "flex-start",
   },
   stepItem: {
     flexDirection: "row",
     alignItems: "flex-start",
     marginBottom: 10,
   },
-  stepBullet: {
+  bullet: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginTop: 8,
     marginRight: 10,
+    backgroundColor: "#007ea7",
   },
   stepText: { fontSize: 16, color: "#033d49", flexShrink: 1 },
 });
