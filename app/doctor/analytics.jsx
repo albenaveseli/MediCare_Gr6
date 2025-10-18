@@ -1,5 +1,11 @@
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { BarChart } from "react-native-chart-kit";
 import Header from "../../components/Header";
 
@@ -7,56 +13,78 @@ export default function Analytics() {
   const router = useRouter();
 
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
     datasets: [{ data: [23, 41, 32, 46, 35, 27, 43, 35, 29, 48, 22, 40] }],
   };
 
   const { width: screenWidth } = useWindowDimensions();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Header title="Patient Analytics" onBack={() => router.push("/doctor/home")} />
+    <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
+     
+      <Header
+        title="Patient Analytics"
+        onBack={() => router.push("/doctor/home")}
+      />
 
-      <Text style={styles.subtitle}>Monthly Patient Visits</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.subtitle}>Monthly Patient Visits</Text>
 
-      <View style={styles.chartCard}>
-        <BarChart
-          data={data}
-          width={screenWidth - 40}
-          height={250}
-          fromZero
-          showValuesOnTopOfBars
-          chartConfig={{
-            backgroundColor: "#e8f6f8",
-            backgroundGradientFrom: "#f0f9ff",
-            backgroundGradientTo: "#e0f2fe",
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(0, 126, 167, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(3, 61, 73, ${opacity})`,
-            barPercentage: 0.6,
-          }}
-          style={styles.chart}
-        />
-      </View>
+        <View style={styles.chartCard}>
+          <BarChart
+            data={data}
+            width={screenWidth - 40}
+            height={250}
+            fromZero
+            showValuesOnTopOfBars
+            chartConfig={{
+              backgroundColor: "#e8f6f8",
+              backgroundGradientFrom: "#f0f9ff",
+              backgroundGradientTo: "#e0f2fe",
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(0, 126, 167, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(3, 61, 73, ${opacity})`,
+              barPercentage: 0.6,
+            }}
+            style={styles.chart}
+          />
+        </View>
 
-      {/* 🔹 Seksioni poshtë grafikut */}
-      <View style={styles.insightCard}>
-        <Text style={styles.insightTitle}>Insights & Observations</Text>
-        <Text style={styles.insightText}>
-          The number of patient visits shows an upward trend between March and October, 
-          suggesting increased activity during mid-year. A noticeable drop appears in November,
-          which may be linked to seasonal changes or reduced appointment bookings.
+        {/* 🔹 Seksioni poshtë grafikut */}
+        <View style={styles.insightCard}>
+          <Text style={styles.insightTitle}>Insights & Observations</Text>
+          <Text style={styles.insightText}>
+            The number of patient visits shows an upward trend between March and
+            October, suggesting increased activity during mid-year. A noticeable
+            drop appears in November, which may be linked to seasonal changes or
+            reduced appointment bookings.
+          </Text>
+          <Text style={styles.insightHighlight}>
+            💡 Recommendation: Consider scheduling awareness campaigns during
+            early winter to maintain steady patient engagement and preventive
+            care visits.
+          </Text>
+        </View>
+
+        <Text style={styles.footerNote}>
+          Data generated from MediCare system reports · Last updated: October
+          2025
         </Text>
-        <Text style={styles.insightHighlight}>
-          💡 Recommendation: Consider scheduling awareness campaigns during early winter to 
-          maintain steady patient engagement and preventive care visits.
-        </Text>
-      </View>
-
-      <Text style={styles.footerNote}>
-        Data generated from MediCare system reports · Last updated: October 2025
-      </Text>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
