@@ -12,13 +12,13 @@ import {
   View,
 } from "react-native";
 
-export default function ProfileCard() {
+export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
   const [name, setName] = useState("Arta Krasniqi");
   const [email, setEmail] = useState("arta.krasniqi@gmail.com");
-  const role = "Patient";
+  const role = roleType;
 
   const [birthdate, setBirthdate] = useState("2001-05-14");
   const [gender, setGender] = useState("Female");
@@ -32,7 +32,7 @@ export default function ProfileCard() {
   const handleAbout = () =>
     router.push({
       pathname: "/common/about",
-      params: { role: roleType.toLowerCase() },
+      params: { role: role.toLowerCase() },
     });
 
   return (
