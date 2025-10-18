@@ -1,6 +1,5 @@
 import * as DocumentPicker from "expo-document-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
@@ -69,7 +68,6 @@ export default function UploadDocuments() {
       {/* Header */}
       <Header
         title="Upload Documents"
-        onBack={() => router.push("/patient/home")}
       />
 
       <View style={styles.cardWrapper}>
@@ -152,7 +150,7 @@ export default function UploadDocuments() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#e8f6f8", padding: 20 },
+  container: { flex: 1, backgroundColor: "#e8f6f8" },
   cardWrapper: {
     width: "100%",
     backgroundColor: "#fff",

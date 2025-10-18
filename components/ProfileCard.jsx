@@ -29,7 +29,11 @@ export default function ProfileCard() {
   const handleLogout = () => router.replace("/auth/login");
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
-  const handleAbout = () => router.push("/common/about");
+  const handleAbout = () =>
+    router.push({
+      pathname: "/common/about",
+      params: { role: roleType.toLowerCase() },
+    });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

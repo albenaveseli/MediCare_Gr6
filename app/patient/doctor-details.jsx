@@ -5,14 +5,13 @@ import { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Header from "../../components/Header"; // importojmë header-in
+import Card from "../../components/Card";
+import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
 export default function DoctorDetails() {
@@ -100,11 +99,11 @@ export default function DoctorDetails() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#e8f6f8" />
-
-      {/* Komponenti Header */}
-      <Header title="Doctor Profile" onBack={() => router.back()} />
+    <View style={styles.container}>
+      <Header
+        title="Doctor Profile"
+        onBack={() => router.push("/patient/doctor-list")}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -133,12 +132,12 @@ export default function DoctorDetails() {
         </View>
 
         {/* Description */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.descriptionText}>{doctor.description}</Text>
-        </View>
+        </Card>
 
         {/* Features */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Details</Text>
           {features.map((f, i) => (
             <View key={i} style={styles.featureItem}>
@@ -146,29 +145,29 @@ export default function DoctorDetails() {
               <Text style={styles.featureText}>{f.text}</Text>
             </View>
           ))}
-        </View>
+        </Card>
 
         {/* Availability */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.sectionTitle}>
             {isWeekend() ? "Available Hours (Next Week)" : "Available Hours"}
           </Text>
-           <TimeSlots
-        slots={doctor.availability}
-        selected={selectedTime}
-        onSelect={setSelectedTime}
-      />
+          <TimeSlots
+            slots={doctor.availability}
+            selected={selectedTime}
+            onSelect={setSelectedTime}
+          />
           <Text style={styles.availabilityNote}>
             {isWeekend()
               ? "Today is weekend. Available hours for next working days."
               : "For today: doctor's specific availability. For other days: 08:00-16:00"}
           </Text>
-        </View>
+        </Card>
       </ScrollView>
 
       {/* Book Button */}
       <View style={styles.buttonContainer}>
-<PrimaryButton
+        <PrimaryButton
           title="Book Appointment"
           onPress={() =>
             router.push({
@@ -183,14 +182,15 @@ export default function DoctorDetails() {
               },
             })
           }
-          icon={() => <FontAwesome5 name="calendar-check" size={20} color="#fff" />}
+          icon={() => (
+            <FontAwesome5 name="calendar-check" size={20} color="#fff" />
+          )}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
-// Stilat mbeten të njejtë
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
   scrollView: { flex: 1 },
@@ -232,16 +232,8 @@ const styles = StyleSheet.create({
   },
   reviews: { fontSize: 14, color: "#666" },
   card: {
-    backgroundColor: "#fff",
     marginHorizontal: 16,
     marginTop: 16,
-    padding: 18,
-    borderRadius: 16,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
   },
   descriptionText: {
     fontSize: 15,

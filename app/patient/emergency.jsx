@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Emergency() {
   const handleSOS = () => {
@@ -22,57 +23,56 @@ export default function Emergency() {
   const callNumber = (num) => Linking.openURL(`tel:${num}`);
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
-      {/* SOS Button */}
-      <TouchableOpacity style={styles.sosButton} onPress={handleSOS}>
-        <Text style={styles.sosText}>SOS</Text>
-      </TouchableOpacity>
-      <Text style={styles.description}>Press in case of emergency</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {/* SOS Button */}
+        <TouchableOpacity style={styles.sosButton} onPress={handleSOS}>
+          <Text style={styles.sosText}>SOS</Text>
+        </TouchableOpacity>
+        <Text style={styles.description}>Press in case of emergency</Text>
 
-      {/* Emergency Numbers */}
-      <View style={styles.cardsContainer}>
-        {emergencyNumbers.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.card, { borderLeftColor: item.color }]}
-            onPress={() => callNumber(item.number)}
-          >
-            <Text style={[styles.cardText, { color: item.color }]}>
-              {item.label}
-            </Text>
-            <Text style={[styles.cardNumber, { color: item.color }]}>
-              {item.number}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* Emergency Numbers */}
+        <View style={styles.cardsContainer}>
+          {emergencyNumbers.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, { borderLeftColor: item.color }]}
+              onPress={() => callNumber(item.number)}
+            >
+              <Text style={[styles.cardText, { color: item.color }]}>
+                {item.label}
+              </Text>
+              <Text style={[styles.cardNumber, { color: item.color }]}>
+                {item.number}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* Quick Steps */}
-      <View style={styles.stepsContainer}>
-        <Text style={styles.stepsTitle}>Quick Steps in Emergency</Text>
-        {[
-          "Stay calm and assess the situation",
-          "Call the appropriate emergency service immediately",
-          "Provide your location clearly",
-          "Follow instructions from the dispatcher",
-          "Assist the victim if safe until help arrives",
-        ].map((step, idx) => (
-          <View key={idx} style={styles.stepItem}>
-            <View style={[styles.stepBullet, { backgroundColor: "#007ea7" }]} />
-            <Text style={styles.stepText}>{step}</Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+        {/* Quick Steps */}
+        <View style={styles.stepsContainer}>
+          <Text style={styles.stepsTitle}>Quick Steps in Emergency</Text>
+          {[
+            "Stay calm and assess the situation",
+            "Call the appropriate emergency service immediately",
+            "Provide your location clearly",
+            "Follow instructions from the dispatcher",
+            "Assist the victim if safe until help arrives",
+          ].map((step, idx) => (
+            <View key={idx} style={styles.stepItem}>
+              <View style={[styles.stepBullet, { backgroundColor: "#007ea7" }]} />
+              <Text style={styles.stepText}>{step}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
-  contentContainer: { alignItems: "center", padding: 20 },
+  contentContainer: { alignItems: "center", paddingHorizontal:20},
 
   sosButton: {
     marginTop: 50,

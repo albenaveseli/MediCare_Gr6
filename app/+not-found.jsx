@@ -1,9 +1,10 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotFound() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>404</Text>
       <Text style={styles.subtitle}>Page Not Found</Text>
       <Text style={styles.description}>
@@ -12,10 +13,10 @@ export default function NotFound() {
 
       <Link href="/">
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Go Back to Home</Text>
+          <Text style={styles.buttonText}>Return to Welcome Page</Text>
         </TouchableOpacity>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }
 

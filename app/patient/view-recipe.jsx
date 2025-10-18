@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -76,134 +75,116 @@ export default function ViewRecipeScreen() {
     Alert.alert("Copied", message);
   };
 
-  // List view
-  if (!selectedRecipe) {
-    return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 30 }}
-      >
-        <Header
-          title="My Prescriptions"
-          onBack={() => router.push("/patient/home")}
-        />
-
-        <View style={styles.listWrapper}>
-          {prescriptions.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={[
-                styles.listItem,
-                item.urgency === "Urgent" && styles.urgentBorder,
-                item.urgency === "Normal" && styles.normalBorder,
-                item.urgency === "Monitoring" && styles.monitorBorder,
-              ]}
-              onPress={() => setSelectedRecipe(item)}
-            >
-              <View style={styles.listTextContainer}>
-                <Text style={styles.doctorName}>{item.doctor}</Text>
-                <Text style={styles.profession}>{item.profession}</Text>
-                <Text style={styles.dateText}>{item.date}</Text>
-              </View>
-              <View
-                style={[
-                  styles.badge,
-                  item.urgency === "Urgent"
-                    ? styles.badgeUrgent
-                    : item.urgency === "Monitoring"
-                    ? styles.badgeMonitor
-                    : styles.badgeNormal,
-                ]}
-              >
-                <Text style={styles.badgeText}>{item.urgency}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    );
-  }
-
-  // Details view
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
+    <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
       <Header
-        title="Prescription Details"
-        onBack={() => setSelectedRecipe(null)}
+        title={selectedRecipe ? "Prescription Details" : "My Prescriptions"}
+        onBack={selectedRecipe ? () => setSelectedRecipe(null) : undefined}
       />
 
-      <View style={styles.detailsWrapper}>
-        <View style={styles.detailsHeaderRow}>
-          <View>
-            <Text style={styles.detailsDoctor}>{selectedRecipe.doctor}</Text>
-            <Text style={styles.detailsProfession}>
-              {selectedRecipe.profession}
-            </Text>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        {!selectedRecipe ? (
+          <View style={styles.listWrapper}>
+            {prescriptions.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.listItem,
+                  item.urgency === "Urgent" && styles.urgentBorder,
+                  item.urgency === "Normal" && styles.normalBorder,
+                  item.urgency === "Monitoring" && styles.monitorBorder,
+                ]}
+                onPress={() => setSelectedRecipe(item)}
+              >
+                <View style={styles.listTextContainer}>
+                  <Text style={styles.doctorName}>{item.doctor}</Text>
+                  <Text style={styles.profession}>{item.profession}</Text>
+                  <Text style={styles.dateText}>{item.date}</Text>
+                </View>
+                <View
+                  style={[
+                    styles.badge,
+                    item.urgency === "Urgent"
+                      ? styles.badgeUrgent
+                      : item.urgency === "Monitoring"
+                      ? styles.badgeMonitor
+                      : styles.badgeNormal,
+                  ]}
+                >
+                  <Text style={styles.badgeText}>{item.urgency}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
-          <Text style={styles.detailsDate}>{selectedRecipe.date}</Text>
-        </View>
+        ) : (
+          <View style={styles.detailsWrapper}>
+            <View style={styles.detailsHeaderRow}>
+              <View>
+                <Text style={styles.detailsDoctor}>
+                  {selectedRecipe.doctor}
+                </Text>
+                <Text style={styles.detailsProfession}>
+                  {selectedRecipe.profession}
+                </Text>
+              </View>
+              <Text style={styles.detailsDate}>{selectedRecipe.date}</Text>
+            </View>
 
-        <View
-          style={[
-            styles.separator,
-            selectedRecipe.urgency === "Urgent"
-              ? { backgroundColor: "#d9534f" }
-              : selectedRecipe.urgency === "Monitoring"
-              ? { backgroundColor: "#f1c40f" }
-              : { backgroundColor: "#4CAF50" },
-          ]}
-        />
+            <View
+              style={[
+                styles.separator,
+                selectedRecipe.urgency === "Urgent"
+                  ? { backgroundColor: "#d9534f" }
+                  : selectedRecipe.urgency === "Monitoring"
+                  ? { backgroundColor: "#f1c40f" }
+                  : { backgroundColor: "#4CAF50" },
+              ]}
+            />
 
-        <View style={styles.cardSection}>
-          <Text style={styles.label}>Diagnosis</Text>
-          <Text style={styles.value}>{selectedRecipe.diagnosis}</Text>
-        </View>
+            <View style={styles.cardSection}>
+              <Text style={styles.label}>Diagnosis</Text>
+              <Text style={styles.value}>{selectedRecipe.diagnosis}</Text>
+            </View>
 
-        <View style={styles.cardSection}>
-          <Text style={styles.label}>Medications</Text>
-          {selectedRecipe.medications.map((m, i) => (
-            <Text key={i} style={styles.value}>
-              • {m}
-            </Text>
-          ))}
-        </View>
+            <View style={styles.cardSection}>
+              <Text style={styles.label}>Medications</Text>
+              {selectedRecipe.medications.map((m, i) => (
+                <Text key={i} style={styles.value}>
+                  • {m}
+                </Text>
+              ))}
+            </View>
 
-        <View style={styles.cardSection}>
-          <Text style={styles.label}>Treatment Steps</Text>
-          <Text style={styles.value}>{selectedRecipe.steps}</Text>
-        </View>
+            <View style={styles.cardSection}>
+              <Text style={styles.label}>Treatment Steps</Text>
+              <Text style={styles.value}>{selectedRecipe.steps}</Text>
+            </View>
 
-        {selectedRecipe.notes && (
-          <View style={styles.cardSection}>
-            <Text style={styles.label}>Additional Notes</Text>
-            <Text style={styles.value}>{selectedRecipe.notes}</Text>
+            {selectedRecipe.notes && (
+              <View style={styles.cardSection}>
+                <Text style={styles.label}>Additional Notes</Text>
+                <Text style={styles.value}>{selectedRecipe.notes}</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={styles.copyButton}
+              onPress={() => handleCopy(selectedRecipe)}
+            >
+              <Text style={styles.copyButtonText}>Copy Prescription</Text>
+            </TouchableOpacity>
           </View>
         )}
-
-        <TouchableOpacity
-          style={styles.copyButton}
-          onPress={() => handleCopy(selectedRecipe)}
-        >
-          <Text style={styles.copyButtonText}>Copy Prescription</Text>
-        </TouchableOpacity>
-
-        {/* Back to List Button */}
-        <TouchableOpacity
-          style={styles.backToListButton}
-          onPress={() => setSelectedRecipe(null)}
-        >
-          <Text style={styles.backToListText}>← Back to List</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#e8f6f8" },
+  container: { flex: 1 },
   listWrapper: { paddingHorizontal: 20, paddingTop: 20 },
   listItem: {
     backgroundColor: "#ffffff",
@@ -275,18 +256,4 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   copyButtonText: { color: "#fff", fontSize: 17, fontWeight: "700" },
-
-  backToListButton: {
-    marginTop: 20,
-    alignItems: "center",
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "#ffffff",
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  backToListText: { color: "#007ea7", fontSize: 16, fontWeight: "600" },
 });

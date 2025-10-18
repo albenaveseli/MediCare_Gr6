@@ -1,20 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
 import {
   FlatList,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Header from "../../components/Header";
 
 export default function DoctorList() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("All");
-
   const doctors = [
     {
       id: 1,
@@ -114,16 +109,15 @@ export default function DoctorList() {
     },
   ];
 
-  const specialties = ["All", ...new Set(doctors.map((doc) => doc.specialty))];
-
-  const filteredDoctors = doctors.filter((doctor) => {
-    const matchesSearch =
-      doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSpecialty =
-      selectedSpecialty === "All" || doctor.specialty === selectedSpecialty;
-    return matchesSearch && matchesSpecialty;
-  });
+  const getDoctorPrice = (specialty) => {
+    const prices = {
+      Cardiologist: "$150",
+      Dermatologist: "$120",
+      Neurologist: "$180",
+      Pediatrician: "$100",
+    };
+    return prices[specialty] || "$120";
+  };
 
   const renderDoctorCard = ({ item }) => (
     <TouchableOpacity
@@ -178,99 +172,15 @@ export default function DoctorList() {
     </TouchableOpacity>
   );
 
-  const getDoctorPrice = (specialty) => {
-    const prices = {
-      Cardiologist: "$150",
-      Dermatologist: "$120",
-      Neurologist: "$180",
-      Pediatrician: "$100",
-    };
-    return prices[specialty] || "$120";
-  };
-
   return (
     <View style={styles.container}>
       <Header title="Available Doctors" />
-
       <FlatList
-        data={filteredDoctors}
+        data={doctors}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderDoctorCard}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Ionicons name="search-outline" size={64} color="#cbd5e1" />
-            <Text style={styles.emptyStateTitle}>No doctors found</Text>
-            <Text style={styles.emptyStateText}>
-              Try adjusting your search or filter criteria
-            </Text>
-          </View>
-        }
-        ListHeaderComponent={
-          <>
-            {/* Search Bar */}
-            <View style={styles.searchContainer}>
-              <Ionicons
-                name="search"
-                size={20}
-                color="#64748b"
-                style={styles.searchIcon}
-              />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search doctors by name or specialty..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor="#94a3b8"
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => setSearchQuery("")}
-                  style={styles.clearButton}
-                >
-                  <Ionicons name="close-circle" size={20} color="#64748b" />
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {/* Specialty Filters */}
-            <View style={styles.filterSection}>
-              <Text style={styles.filterTitle}>Specialty</Text>
-              <FlatList
-                horizontal
-                data={specialties}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.filterChip,
-                      selectedSpecialty === item && styles.filterChipActive,
-                    ]}
-                    onPress={() => setSelectedSpecialty(item)}
-                  >
-                    <Text
-                      style={[
-                        styles.filterChipText,
-                        selectedSpecialty === item &&
-                          styles.filterChipTextActive,
-                      ]}
-                    >
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                showsHorizontalScrollIndicator={false}
-              />
-            </View>
-
-            {/* Results Count */}
-            <Text style={styles.resultsText}>
-              {filteredDoctors.length} doctor
-              {filteredDoctors.length !== 1 ? "s" : ""} found
-            </Text>
-          </>
-        }
       />
     </View>
   );
@@ -278,53 +188,8 @@ export default function DoctorList() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
-  searchContainer: {
-    marginTop: 30,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#d0e8f2",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  searchIcon: { marginRight: 12 },
-  searchInput: { flex: 1, fontSize: 16, color: "#1e293b", padding: 0 },
-  clearButton: { padding: 4 },
-  filterSection: { marginBottom: 16 },
-  filterTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 12,
-  },
-  filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: "#ffffff",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#d0e8f2",
-    marginRight: 8,
-  },
-  filterChipActive: { backgroundColor: "#3b82f6", borderColor: "#3b82f6" },
-  filterChipText: { fontSize: 14, fontWeight: "500", color: "#64748b" },
-  filterChipTextActive: { color: "#fff" },
-  resultsText: {
-    fontSize: 14,
-    color: "#64748b",
-    fontWeight: "500",
-    marginBottom: 12,
-  },
-  listContent: { paddingBottom: 20 },
   card: {
+    marginTop:15,
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
@@ -361,23 +226,4 @@ const styles = StyleSheet.create({
   rating: { fontSize: 14, color: "#1e293b", fontWeight: "600", marginLeft: 2 },
   experience: { fontSize: 13, color: "#64748b", fontWeight: "500" },
   arrowContainer: { padding: 4 },
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 20,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#475569",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 14,
-    color: "#64748b",
-    textAlign: "center",
-    lineHeight: 20,
-  },
 });

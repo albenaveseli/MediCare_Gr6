@@ -21,55 +21,52 @@ export default function HospitalFinder() {
   ];
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
+    <View style={styles.firstContainer}>
       <Header title="Hospital Finder" />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Nearby Hospitals</Text>
 
-      <Text style={styles.title}>Nearby Hospitals</Text>
-
-      {hospitals.map((hospital, index) => (
-        <View key={index} style={styles.hospitalCard}>
-          <View style={styles.hospitalHeader}>
-            <Text style={styles.hospitalName}>{hospital.name}</Text>
-            <View style={styles.waitTimeBadge}>
-              <Text style={styles.waitTimeText}>{hospital.waitTime}</Text>
+        {hospitals.map((hospital, index) => (
+          <View key={index} style={styles.hospitalCard}>
+            <View style={styles.hospitalHeader}>
+              <Text style={styles.hospitalName}>{hospital.name}</Text>
+              <View style={styles.waitTimeBadge}>
+                <Text style={styles.waitTimeText}>{hospital.waitTime}</Text>
+              </View>
+            </View>
+            <Text style={styles.distance}>{hospital.distance}</Text>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactText}>+1 555-0123</Text>
+              <Text style={styles.contactText}>24/7 Emergency</Text>
             </View>
           </View>
-          <Text style={styles.distance}>{hospital.distance}</Text>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactText}>+1 555-0123</Text>
-            <Text style={styles.contactText}>24/7 Emergency</Text>
-          </View>
-        </View>
-      ))}
-    </ScrollView>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  firstContainer: { flex: 1, backgroundColor: "#e8f6f8" },
   container: {
     flex: 1,
-    backgroundColor: "#e8f6f8",
     paddingVertical: 20,
     paddingHorizontal: 20,
+    backgroundColor: "#e8f6f8",
   },
   title: {
-    marginTop:30,
+    marginTop: 10,
     fontSize: 22,
     fontWeight: "700",
-    color: "#1f3c88",
+    color: "#007ea7",
     marginBottom: 20,
     textAlign: "center",
   },
   hospitalCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#fff",
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#1f3c88",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
     elevation: 3,
   },
   hospitalHeader: {
@@ -81,7 +78,7 @@ const styles = StyleSheet.create({
   hospitalName: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#1f3c88",
+    color: "#007ea7",
     flex: 1,
     marginRight: 10,
   },
@@ -91,13 +88,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#1f3c88",
+    borderColor: "#007ea7",
   },
-  waitTimeText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#1f3c88",
-  },
+  waitTimeText: { fontSize: 12, fontWeight: "600", color: "#007ea7" },
   distance: {
     fontSize: 15,
     color: "#4a4a4a",
@@ -109,9 +102,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 4,
   },
-  contactText: {
-    fontSize: 13,
-    color: "#555",
-    fontWeight: "500",
-  },
+  contactText: { fontSize: 13, color: "#555", fontWeight: "500" },
 });

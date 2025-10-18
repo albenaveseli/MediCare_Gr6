@@ -11,12 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
 
-const BookingScreen = () => {
+
+export default function BookingScreen(){
   const {
     doctorId,
     doctorName,
@@ -96,22 +97,22 @@ const BookingScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header title="Book Appointment" onBack={() => router.back()} />
+    <View style={styles.container}>
+      <Header title="Book Appointment" onBack={() => router.push("/patient/doctor-list")} />
 
       <ScrollView
         style={styles.content}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Doctor Info */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.doctorName}>{doctor.name}</Text>
           <Text style={styles.specialty}>{doctor.specialty}</Text>
           <Text style={styles.price}>{doctor.price} per consultation</Text>
-        </View>
+        </Card>
 
         {/* Date Selection */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Select Date</Text>
           <TouchableOpacity
             style={styles.dateButton}
@@ -125,7 +126,7 @@ const BookingScreen = () => {
               ⚠️ Appointments are not available on weekends
             </Text>
           )}
-        </View>
+        </Card>
 
         {showDatePicker && (
           <DateTimePicker
@@ -138,7 +139,7 @@ const BookingScreen = () => {
         )}
 
         {/* Time Selection */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.sectionTitle}>
             Select Time {isWeekend(selectedDate) ? "(Not Available)" : ""}
           </Text>
@@ -199,10 +200,10 @@ const BookingScreen = () => {
               ? "Today: Doctor's specific availability"
               : "Other days: Full availability from 08:00 to 16:00"}
           </Text>
-        </View>
+        </Card>
 
         {/* Patient Details */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Patient Information</Text>
           <TextInput
             style={styles.input}
@@ -218,7 +219,7 @@ const BookingScreen = () => {
             multiline
             numberOfLines={3}
           />
-        </View>
+        </Card>
 
         {/* Confirm Button */}
         <View style={styles.buttonContainer}>
@@ -230,32 +231,15 @@ const BookingScreen = () => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: "#e8f6f8",
-  },
-  headerTitle: { fontSize: 18, fontWeight: "700", color: "#007ea7" },
   content: { flex: 1, padding: 16 },
   card: {
-    backgroundColor: "#fff",
-    padding: 18,
-    borderRadius: 16,
     marginBottom: 16,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 3,
   },
   doctorName: {
     fontSize: 20,
@@ -321,5 +305,3 @@ const styles = StyleSheet.create({
   textArea: { height: 80, textAlignVertical: "top" },
   buttonContainer: { padding: 20, backgroundColor: "#e8f6f8" },
 });
-
-export default BookingScreen;

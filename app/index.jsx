@@ -1,14 +1,14 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomeScreen() {
   const [isPressed, setIsPressed] = useState(null);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>MediCare</Text>
           <View style={styles.underline} />
@@ -17,7 +17,6 @@ export default function WelcomeScreen() {
           </Text>
         </View>
 
-        {/* Logo */}
         <View style={styles.iconContainer}>
           <View style={styles.circle}>
             <Image
@@ -28,7 +27,7 @@ export default function WelcomeScreen() {
           </View>
         </View>
 
-        {/* Buttons */}
+        
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={[
@@ -61,19 +60,19 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
+        
         <Text style={styles.footerText}>
           Trusted by thousands of patients and doctors
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e8f6f8", // si Home
+    backgroundColor: "#e8f6f8",
   },
   content: {
     flex: 1,
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: "800",
-    color: "#007ea7", // blu Home
+    color: "#007ea7",
     letterSpacing: -0.5,
     textShadowColor: "rgba(0, 126, 167, 0.2)",
     textShadowRadius: 4,

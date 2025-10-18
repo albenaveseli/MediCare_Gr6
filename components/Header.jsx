@@ -2,12 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Header({ title }) {
+export default function Header({ title, onBack }) {
   const router = useRouter();
+
+  const handleBack = onBack ? onBack : () => router.back();
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <TouchableOpacity onPress={handleBack} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
 
@@ -25,7 +27,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#e8f6f8",
     borderBottomWidth: 1,
     borderBottomColor: '#d0e8f2', 
     width: '100%',
@@ -45,4 +47,3 @@ const styles = StyleSheet.create({
     fontFamily: "System",
   },
 });
-

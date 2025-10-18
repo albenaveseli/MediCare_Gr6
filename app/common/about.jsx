@@ -1,12 +1,19 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
 import InfoSection from "../../components/InfoSection";
 
 export default function About() {
+  const { role } = useLocalSearchParams();
+
+
+  const handleBack = () => {
+    if (role === "doctor") router.replace("/doctor/profile");
+    else router.replace("/patient/profile");
+  };
   return (
     <View style={styles.container}>
-      <Header title="About MediCare" onBack={() => router.push("/doctor/home")} />
+      <Header title="About MediCare" onBack={handleBack} />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
 

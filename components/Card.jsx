@@ -7,8 +7,6 @@ export default function Card({ children, style }) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginTop: 16,
     padding: 18,
     borderRadius: 16,
     shadowColor: '#007ea7',
