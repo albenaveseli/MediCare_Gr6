@@ -9,26 +9,25 @@ import {
 import { BarChart } from "react-native-chart-kit";
 import Header from "../../components/Header";
 
+  const cardShadow = {
+  shadowColor: "#007ea7",
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.08,
+  shadowRadius: 6,
+};
+
 export default function Analytics() {
   const router = useRouter();
 
-  const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    datasets: [{ data: [23, 41, 32, 46, 35, 27, 43, 35, 29, 48, 22, 40] }],
+  const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const MONTH_DATA = [23, 41, 32, 46, 35, 27, 43, 35, 29, 48, 22, 40];
+
+  const chartData = {
+    labels: MONTH_LABELS,
+    datasets: [{ data: MONTH_DATA }],
   };
+
+
 
   const { width: screenWidth } = useWindowDimensions();
 
@@ -45,7 +44,7 @@ export default function Analytics() {
 
         <View style={styles.chartCard}>
           <BarChart
-            data={data}
+            data={chartData}
             width={screenWidth - 40}
             height={250}
             fromZero
@@ -63,7 +62,7 @@ export default function Analytics() {
           />
         </View>
 
-        {/* 🔹 Seksioni poshtë grafikut */}
+
         <View style={styles.insightCard}>
           <Text style={styles.insightTitle}>Insights & Observations</Text>
           <Text style={styles.insightText}>
@@ -92,7 +91,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
-    backgroundColor: "#e8f6f8",
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
@@ -107,13 +105,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     padding: 16,
     borderRadius: 18,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
     elevation: 3,
     borderWidth: 1,
     borderColor: "#d4f1f4",
+    ...cardShadow,
   },
   chart: {
     borderRadius: 16,
@@ -125,10 +120,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderLeftWidth: 4,
     borderLeftColor: "#007ea7",
-    shadowColor: "#007ea7",
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    ...cardShadow,
   },
   insightTitle: {
     fontSize: 18,
