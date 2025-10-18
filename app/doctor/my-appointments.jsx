@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function MyAppointmentsScreen(){
+export default function MyAppointmentsScreen() {
   const [appointments, setAppointments] = useState([
     {
       id: "1",
@@ -124,6 +124,8 @@ export default function MyAppointmentsScreen(){
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.screenTitle}>My Appointments</Text>
+
       <ScrollView style={styles.content}>
         {Object.keys(groupedAppointments).length > 0 ? (
           Object.entries(groupedAppointments).map(
@@ -226,13 +228,13 @@ export default function MyAppointmentsScreen(){
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#e8f6f8",
-    paddingTop: 80,
+    paddingTop:30
   },
   content: {
     padding: 16,
@@ -340,4 +342,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: "center",
   },
+  screenTitle: {
+  fontSize: 24,
+  fontWeight: "700",
+  color: "#007ea7",
+  marginBottom: 16,
+  textAlign: "center",
+  paddingHorizontal: 8
+},
+
 });
