@@ -6,8 +6,8 @@ export default function About() {
   const { role } = useLocalSearchParams();
 
   const handleBack = () => {
-    if (role === "doctor") router.replace("/doctor/profile");
-    else router.replace("/patient/profile");
+    if (role === "doctor") router.replace("/(doctor)/profile");
+    else router.replace("/(patient)/profile");
   };
 
   const InfoSection = ({ title, children, style }) => (

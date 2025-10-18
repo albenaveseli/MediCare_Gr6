@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotFound() {
@@ -11,10 +11,8 @@ export default function NotFound() {
         The URL you are trying to access does not exist or has been moved.
       </Text>
 
-      <Link href="/">
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Return to Welcome Page</Text>
-        </TouchableOpacity>
+      <Link href="/" style={styles.button}>
+        <Text style={styles.buttonText}>Return to Welcome Page</Text>
       </Link>
     </SafeAreaView>
   );
@@ -57,5 +55,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "700",
+    textAlign: "center",
   },
 });

@@ -98,7 +98,7 @@ export default function BookingScreen(){
 
   return (
     <View style={styles.container}>
-      <Header title="Book Appointment" onBack={() => router.push("/patient/doctor-list")} />
+      <Header title="Book Appointment" onBack={() => router.push("/(patient)/doctor-list")} />
 
       <ScrollView
         style={styles.content}

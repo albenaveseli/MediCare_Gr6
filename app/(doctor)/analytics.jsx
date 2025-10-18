@@ -37,7 +37,7 @@ export default function Analytics() {
      
       <Header
         title="Patient Analytics"
-        onBack={() => router.push("/doctor/home")}
+        onBack={() => router.push("/(doctor)/home")}
       />
 
       <ScrollView contentContainerStyle={styles.container}>

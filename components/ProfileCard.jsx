@@ -26,12 +26,12 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
   const [weight, setWeight] = useState("58");
   const [allergies, setAllergies] = useState("No");
 
-  const handleLogout = () => router.replace("/auth/login");
+  const handleLogout = () => router.replace("/login");
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
   const handleAbout = () =>
     router.push({
-      pathname: "/common/about",
+      pathname: "/about",
       params: { role: role.toLowerCase() },
     });
 

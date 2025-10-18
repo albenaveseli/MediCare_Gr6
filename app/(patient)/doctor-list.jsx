@@ -124,7 +124,7 @@ export default function DoctorList() {
       style={styles.card}
       onPress={() =>
         router.push({
-          pathname: "/patient/doctor-details",
+          pathname: "/(patient)/doctor-details",
           params: {
             id: item.id.toString(),
             name: item.name,

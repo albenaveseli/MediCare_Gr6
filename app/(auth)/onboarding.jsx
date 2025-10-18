@@ -28,7 +28,7 @@ export default function OnBoarding() {
     }
     console.log({ birthDate, gender, weight, height, hasAllergy });
     Alert.alert("Success!", "Your data has been saved successfully!");
-    router.replace("/patient/home");
+    router.replace("/(patient)/home");
   };
 
   if (showWelcome) {
