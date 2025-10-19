@@ -130,7 +130,6 @@ export default function UploadDocuments() {
       <Modal
         visible={showModal}
         transparent
-        animationType="fade"
         onRequestClose={() => setShowModal(false)}
       >
         <View style={styles.modalOverlay}>
