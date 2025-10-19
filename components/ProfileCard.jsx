@@ -12,41 +12,31 @@ import {
   View,
 } from "react-native";
 
-export default function ProfileCard({
-  name: initialName,
-  email: initialEmail,
-  roleType,
-}) {
+export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
   const router = useRouter();
-
-  const [name, setName] = useState(initialName || "Arta Krasniqi");
-  const [email, setEmail] = useState(initialEmail || "arta.krasniqi@gmail.com");
-  const role = roleType || "Patient";
   const [isEditing, setIsEditing] = useState(false);
 
-  // New fields
+  const [name, setName] = useState("Arta Krasniqi");
+  const [email, setEmail] = useState("arta.krasniqi@gmail.com");
+  const role = roleType;
+
   const [birthdate, setBirthdate] = useState("2001-05-14");
   const [gender, setGender] = useState("Female");
   const [height, setHeight] = useState("168");
   const [weight, setWeight] = useState("58");
   const [allergies, setAllergies] = useState("No");
 
-  const handleLogout = () => router.replace("/auth/login");
+  const handleLogout = () => router.replace("/login");
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
   const handleAbout = () =>
     router.push({
-      pathname: "/common/about",
-      params: { role: roleType.toLowerCase() },
+      pathname: "/about",
+      params: { role: role.toLowerCase() },
     });
-
-  const renderIcon = (iconName) => (
-    <Ionicons name={iconName} size={20} color="#007ea7" style={styles.icon} />
-  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Profile Top Section */}
       <View style={styles.topSection}>
         <Image
           source={require("../assets/images/profilepicture.jpg")}
@@ -56,51 +46,43 @@ export default function ProfileCard({
         <Text style={styles.role}>{role}</Text>
       </View>
 
-      {/* Info Card */}
       <View style={styles.infoCard}>
         {isEditing ? (
           <>
             <View style={styles.inputRow}>
-              {renderIcon("person-outline")}
+              <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
                 placeholder="Full Name"
-                placeholderTextColor="#999"
               />
             </View>
 
             <View style={styles.inputRow}>
-              {renderIcon("mail-outline")}
+              <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
                 placeholder="Email"
-                placeholderTextColor="#999"
-                keyboardType="email-address"
               />
             </View>
 
             <View style={styles.inputRow}>
-              {renderIcon("calendar-outline")}
+              <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 value={birthdate}
                 onChangeText={setBirthdate}
                 placeholder="Birthdate (YYYY-MM-DD)"
-                placeholderTextColor="#999"
               />
             </View>
 
             <View style={styles.inputRow}>
-              {renderIcon("male-female-outline")}
+              <Ionicons name="male-female-outline" size={20} color="#007ea7" style={styles.icon} />
               <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={gender}
-                  onValueChange={(itemValue) => setGender(itemValue)}
-                >
+                <Picker selectedValue={gender} onValueChange={setGender}>
                   <Picker.Item label="Female" value="Female" />
                   <Picker.Item label="Male" value="Male" />
                   <Picker.Item label="Other" value="Other" />
@@ -109,36 +91,31 @@ export default function ProfileCard({
             </View>
 
             <View style={styles.inputRow}>
-              {renderIcon("resize-outline")}
+              <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 value={height}
                 onChangeText={setHeight}
                 placeholder="Height (cm)"
                 keyboardType="numeric"
-                placeholderTextColor="#999"
               />
             </View>
 
             <View style={styles.inputRow}>
-              {renderIcon("barbell-outline")}
+              <Ionicons name="barbell-outline" size={20} color="#007ea7" style={styles.icon} />
               <TextInput
                 style={styles.input}
                 value={weight}
                 onChangeText={setWeight}
                 placeholder="Weight (kg)"
                 keyboardType="numeric"
-                placeholderTextColor="#999"
               />
             </View>
 
             <View style={styles.inputRow}>
-              {renderIcon("medkit-outline")}
+              <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
               <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={allergies}
-                  onValueChange={(itemValue) => setAllergies(itemValue)}
-                >
+                <Picker selectedValue={allergies} onValueChange={setAllergies}>
                   <Picker.Item label="Yes" value="Yes" />
                   <Picker.Item label="No" value="No" />
                 </Picker>
@@ -148,72 +125,36 @@ export default function ProfileCard({
         ) : (
           <>
             <View style={styles.infoItem}>
-              {renderIcon("person-outline")}
-              <View>
-                <Text style={styles.label}>Full Name</Text>
-                <Text style={styles.value}>{name}</Text>
-              </View>
+              <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{name}</Text>
             </View>
-
             <View style={styles.infoItem}>
-              {renderIcon("mail-outline")}
-              <View>
-                <Text style={styles.label}>Email</Text>
-                <Text style={styles.value}>{email}</Text>
-              </View>
+              <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{email}</Text>
             </View>
-
             <View style={styles.infoItem}>
-              {renderIcon("briefcase-outline")}
-              <View>
-                <Text style={styles.label}>Role</Text>
-                <Text style={styles.value}>{role}</Text>
-              </View>
+              <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{birthdate}</Text>
             </View>
-
             <View style={styles.infoItem}>
-              {renderIcon("calendar-outline")}
-              <View>
-                <Text style={styles.label}>Birthdate</Text>
-                <Text style={styles.value}>{birthdate}</Text>
-              </View>
+              <Ionicons name="male-female-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{gender}</Text>
             </View>
-
             <View style={styles.infoItem}>
-              {renderIcon("male-female-outline")}
-              <View>
-                <Text style={styles.label}>Gender</Text>
-                <Text style={styles.value}>{gender}</Text>
-              </View>
+              <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{height} cm</Text>
             </View>
-
             <View style={styles.infoItem}>
-              {renderIcon("resize-outline")}
-              <View>
-                <Text style={styles.label}>Height (cm)</Text>
-                <Text style={styles.value}>{height}</Text>
-              </View>
+              <Ionicons name="barbell-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{weight} kg</Text>
             </View>
-
             <View style={styles.infoItem}>
-              {renderIcon("barbell-outline")}
-              <View>
-                <Text style={styles.label}>Weight (kg)</Text>
-                <Text style={styles.value}>{weight}</Text>
-              </View>
-            </View>
-
-            <View style={styles.infoItem}>
-              {renderIcon("medkit-outline")}
-              <View>
-                <Text style={styles.label}>Allergies</Text>
-                <Text style={styles.value}>{allergies}</Text>
-              </View>
+              <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Text>{allergies}</Text>
             </View>
           </>
         )}
 
-        {/* Buttons */}
         <View style={styles.buttonsContainer}>
           {isEditing ? (
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -224,21 +165,18 @@ export default function ProfileCard({
               <Text style={styles.editText}>Edit Profile</Text>
             </TouchableOpacity>
           )}
-
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* About Button */}
       <TouchableOpacity style={styles.aboutButton} onPress={handleAbout}>
         <Text style={styles.aboutText}>About App</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#E9F8F9",

@@ -2,14 +2,7 @@ import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -102,7 +95,7 @@ export default function DoctorDetails() {
     <View style={styles.container}>
       <Header
         title="Doctor Profile"
-        onBack={() => router.push("/patient/doctor-list")}
+        onBack={() => router.push("/doctor-list")}
       />
 
       <ScrollView
@@ -110,7 +103,6 @@ export default function DoctorDetails() {
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
-        {/* Doctor Photo and Info */}
         <View style={styles.profileSection}>
           <Image source={{ uri: doctor.image }} style={styles.doctorImage} />
           <View style={styles.infoContainer}>
@@ -131,12 +123,10 @@ export default function DoctorDetails() {
           </TouchableOpacity>
         </View>
 
-        {/* Description */}
         <Card style={styles.card}>
           <Text style={styles.descriptionText}>{doctor.description}</Text>
         </Card>
 
-        {/* Features */}
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Details</Text>
           {features.map((f, i) => (
@@ -147,31 +137,32 @@ export default function DoctorDetails() {
           ))}
         </Card>
 
-        {/* Availability */}
         <Card style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            {isWeekend() ? "Available Hours (Next Week)" : "Available Hours"}
-          </Text>
-          <TimeSlots
-            slots={doctor.availability}
-            selected={selectedTime}
-            onSelect={setSelectedTime}
-          />
+          <Text style={styles.sectionTitle}>Available Hours</Text>
+
+          {isWeekend() ? (
+            <Text style={styles.unavailableText}>Unavailable</Text>
+          ) : (
+            <TimeSlots
+              slots={doctor.availability}
+              selected={selectedTime}
+              onSelect={setSelectedTime}
+            />
+          )}
           <Text style={styles.availabilityNote}>
             {isWeekend()
-              ? "Today is weekend. Available hours for next working days."
+              ? "Today is weekend — the doctor is unavailable. On workdays: 08:00-16:00"
               : "For today: doctor's specific availability. For other days: 08:00-16:00"}
           </Text>
         </Card>
       </ScrollView>
 
-      {/* Book Button */}
       <View style={styles.buttonContainer}>
         <PrimaryButton
           title="Book Appointment"
           onPress={() =>
             router.push({
-              pathname: "/patient/book-appointment",
+              pathname: "/book-appointment",
               params: {
                 doctorId: doctor.id,
                 doctorName: doctor.name,
@@ -276,4 +267,11 @@ const styles = StyleSheet.create({
     borderTopColor: "#d0e8f2",
   },
   heartButton: { padding: 4 },
+  unavailableText: {
+  fontSize: 16,
+  color: "#FF3B30",
+  textAlign: "center",
+  fontWeight: "600",
+  marginVertical: 10,
+},
 });

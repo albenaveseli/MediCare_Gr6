@@ -1,4 +1,4 @@
-import Slider from "@react-native-community/slider"; // ✅ Added this missing import
+import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OnBoarding() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -22,18 +23,13 @@ export default function OnBoarding() {
 
   const handleNext = () => {
     const birthDatePattern = /^\d{2}\/\d{2}\/\d{4}$/;
-
     if (!birthDatePattern.test(birthDate)) {
-      Alert.alert(
-        "Invalid format",
-        "Please enter your birth date in DD/MM/YYYY format."
-      );
+      Alert.alert("Invalid format", "Please enter your birth date in DD/MM/YYYY format.");
       return;
     }
-
     console.log({ birthDate, gender, weight, height, hasAllergy });
     Alert.alert("Success!", "Your data has been saved successfully!");
-    router.replace("/patient/home");
+    router.replace("/(patient)/home");
   };
 
   if (showWelcome) {
@@ -60,11 +56,8 @@ export default function OnBoarding() {
   ];
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Birth Date */}
+    <SafeAreaView style={styles.safecontainer}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.card}>
         <Text style={styles.label}>Birth Date (DD/MM/YYYY):</Text>
         <TextInput
@@ -76,7 +69,6 @@ export default function OnBoarding() {
         />
       </View>
 
-      {/* Gender */}
       <View style={styles.card}>
         <Text style={styles.label}>Gender:</Text>
         <View style={styles.radioGroup}>
@@ -100,7 +92,6 @@ export default function OnBoarding() {
         </View>
       </View>
 
-      {/* Weight */}
       <View style={styles.card}>
         <Text style={styles.label}>Weight (kg): {weight}</Text>
         <Slider
@@ -115,7 +106,6 @@ export default function OnBoarding() {
         />
       </View>
 
-      {/* Height */}
       <View style={styles.card}>
         <Text style={styles.label}>Height (cm): {height}</Text>
         <Slider
@@ -130,7 +120,6 @@ export default function OnBoarding() {
         />
       </View>
 
-      {/* Allergies */}
       <View style={styles.card}>
         <Text style={styles.label}>Do you have any medication allergies?</Text>
         <Switch
@@ -141,16 +130,21 @@ export default function OnBoarding() {
         />
       </View>
 
-      {/* Next Button */}
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#e8f6f8", padding: 20 },
+  safecontainer:{
+    flex:1,
+     backgroundColor: "#e8f6f8"
+  },
+  container: {  backgroundColor: "#e8f6f8", padding: 20 },
   scrollContent: { paddingBottom: 40 },
 
   card: {

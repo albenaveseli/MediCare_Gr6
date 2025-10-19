@@ -21,7 +21,7 @@ export default function DoctorLayout() {
         },
       }}
     >
-      {/* Vetëm këto 3 do jenë në menunë poshtë */}
+      
       <Tabs.Screen
         name="home"
         options={{

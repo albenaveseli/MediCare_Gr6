@@ -2,8 +2,8 @@ import DashboardLayout from "../../components/DashboardLayout";
 
 export default function Home() {
   const pages = [
-    { title: "Analytics", icon: "bar-chart-outline", path: "/doctor/analytics" },
-    { title: "E-Recipe", icon: "medkit-outline", path: "/doctor/erecipe" },
+    { title: "Analytics", icon: "bar-chart-outline", path: "/(doctor)/analytics" },
+    { title: "E-Recipe", icon: "medkit-outline", path: "/(doctor)/erecipe" },
   ];
 
   return (

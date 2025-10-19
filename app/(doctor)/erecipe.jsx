@@ -81,7 +81,7 @@ export default function ERecipeScreen() {
             setViewRecipe(false);
             setShowForm(true);
           } else {
-            router.push("/doctor/home");
+            router.push("/(doctor)/home");
           }
         }}
       />

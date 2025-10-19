@@ -28,8 +28,8 @@ export default function Login() {
         return;
       }
 
-      if (user.role === "patient") router.replace("/patient/home");
-      else if (user.role === "doctor") router.replace("/doctor/home");
+      if (user.role === "patient") router.replace("/(patient)/home");
+      else if (user.role === "doctor") router.replace("/(doctor)/home");
     } catch (error) {
       console.error(error);
     }
@@ -41,7 +41,7 @@ export default function Login() {
       buttonText="Login"
       onSubmit={handleLogin}
       linkText="Don’t have an account? Sign Up"
-      onLinkPress={() => router.push("/auth/signup")}
+      onLinkPress={() => router.push("/(auth)/signup")}
     >
       <AuthInput placeholder="Email" value={email} onChangeText={setEmail} />
       <AuthInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />

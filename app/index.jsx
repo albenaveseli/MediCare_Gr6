@@ -35,7 +35,7 @@ export default function WelcomeScreen() {
               styles.loginButton,
               isPressed === "login" && styles.buttonPressed,
             ]}
-            onPress={() => router.push("/auth/login")}
+            onPress={() => router.push("/(auth)/login")}
             onPressIn={() => setIsPressed("login")}
             onPressOut={() => setIsPressed(null)}
             activeOpacity={0.9}
@@ -50,7 +50,7 @@ export default function WelcomeScreen() {
               styles.signupButton,
               isPressed === "signup" && styles.buttonPressed,
             ]}
-            onPress={() => router.push("/auth/signup")}
+            onPress={() => router.push("/(auth)/signup")}
             onPressIn={() => setIsPressed("signup")}
             onPressOut={() => setIsPressed(null)}
             activeOpacity={0.9}

@@ -38,8 +38,8 @@ export default function Signup() {
       await AsyncStorage.setItem(email, JSON.stringify(userData));
 
       Alert.alert("Success", "Account created successfully!");
-      if (role === "patient") router.replace("/auth/onboarding");
-      else if (role === "doctor") router.replace("/doctor/home");
+      if (role === "patient") router.replace("/(auth)/onboarding");
+      else if (role === "doctor") router.replace("/(doctor)/home");
     } catch (error) {
       console.error(error);
     }
@@ -52,7 +52,7 @@ export default function Signup() {
       onSubmit={handleSignup}
       buttonColor="#34C759"
       linkText="Already have an account? Login"
-      onLinkPress={() => router.push("/auth/login")}
+      onLinkPress={() => router.push("/(auth)/login")}
     >
       <AuthInput placeholder="Full Name" value={fullName} onChangeText={setFullName} />
       <AuthInput placeholder="Email" value={email} onChangeText={setEmail} />

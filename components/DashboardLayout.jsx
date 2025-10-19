@@ -18,7 +18,7 @@ export default function DashboardLayout({
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+       
         <View style={styles.headerContainer}>
           <Image
             source={require("../assets/images/logo.jpg")}
@@ -28,23 +28,23 @@ export default function DashboardLayout({
           <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
 
-        {/* Welcome Card */}
+        
         <View style={styles.welcomeCard}>
           <Text style={styles.welcomeTitle}>{welcomeTitle}</Text>
           <Text style={styles.welcomeText}>{welcomeText}</Text>
         </View>
 
-        {/* Cards */}
+        
         <DashboardCards pages={pages} />
 
-        {/* Quote */}
+        
         <View style={styles.quoteCard}>
           <Text style={styles.quoteMark}>“</Text>
           <Text style={styles.quoteText}>{quoteText}</Text>
           <Text style={styles.quoteAuthor}>{quoteAuthor}</Text>
         </View>
 
-        {/* Footer */}
+        
         <Text style={styles.footer}>{footerText}</Text>
       </ScrollView>
     </SafeAreaView>
