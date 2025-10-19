@@ -1,10 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Header({ title, onBack }) {
-  const router = useRouter();
-
   const handleBack = onBack ? onBack : () => router.back();
 
   return (

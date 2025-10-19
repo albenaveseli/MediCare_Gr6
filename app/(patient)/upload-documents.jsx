@@ -65,7 +65,7 @@ export default function UploadDocuments() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+     
       <Header
         title="Upload Documents"
       />

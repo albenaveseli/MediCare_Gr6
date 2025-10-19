@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   Modal,
@@ -12,7 +12,6 @@ import {
 import Header from "../../components/Header";
 
 export default function ERecipeScreen() {
-  const router = useRouter();
 
   const [patient, setPatient] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
@@ -29,7 +28,7 @@ export default function ERecipeScreen() {
   const [sendModal, setSendModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
-  // 🔹 Shtohet modal për gabime në validim
+
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [missingFields, setMissingFields] = useState([]);
 
@@ -87,7 +86,7 @@ export default function ERecipeScreen() {
       />
 
       <ScrollView style={styles.container}>
-        {/* FORM VIEW */}
+        
         {showForm && (
           <View>
             <Text style={styles.title}>Prescription Details</Text>
@@ -168,7 +167,7 @@ export default function ERecipeScreen() {
           </View>
         )}
 
-        {/* VIEW PRESCRIPTION */}
+        
         {viewRecipe && (
           <View style={styles.detailsContainer}>
             <ScrollView contentContainerStyle={styles.detailsContent}>
@@ -231,21 +230,12 @@ export default function ERecipeScreen() {
                 >
                   <Text style={styles.buttonText}>Delete</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity
-                  style={[styles.halfButton, { backgroundColor: "#6c757d" }]}
-                  onPress={() => {
-                    setViewRecipe(false);
-                    setShowForm(true);
-                  }}
-                >
-                  <Text style={styles.buttonText}>Back</Text>
-                </TouchableOpacity> */}
               </View>
             </ScrollView>
           </View>
         )}
 
-        {/* SUCCESS MODAL */}
+        
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -253,12 +243,7 @@ export default function ERecipeScreen() {
                 Prescription generated successfully!
               </Text>
               <View style={styles.modalButtonRow}>
-                {/* <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: "#007ea7" }]}
-                  onPress={handleViewRecipe}
-                >
-                  <Text style={styles.modalButtonText}>View Prescription</Text>
-                </TouchableOpacity> */}
+              
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: "#48c774" }]}
                   onPress={() => setModalVisible(false)}
@@ -270,7 +255,7 @@ export default function ERecipeScreen() {
           </View>
         </Modal>
 
-        {/* 🔹 ERROR VALIDATION MODAL */}
+       
         <Modal visible={errorModalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -295,7 +280,7 @@ export default function ERecipeScreen() {
           </View>
         </Modal>
 
-        {/* OTHER MODALS */}
+       
         {[
           {
             modal: sendModal,

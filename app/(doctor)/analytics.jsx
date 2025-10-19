@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
 
@@ -18,8 +18,6 @@ const MONTH_DATA = [
 ];
 
 export default function Analytics() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
       <Header
