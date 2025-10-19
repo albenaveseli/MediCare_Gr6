@@ -29,8 +29,24 @@ export default function ERecipeScreen() {
   const [sendModal, setSendModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
+  // 🔹 Shtohet modal për gabime në validim
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [missingFields, setMissingFields] = useState([]);
+
   const handleGenerate = () => {
-    if (!diagnosis || !medications || !steps) return;
+    const missing = [];
+
+    if (!patient) missing.push("Patient Name");
+    if (!diagnosis) missing.push("Diagnosis");
+    if (!medications) missing.push("Medications");
+    if (!steps) missing.push("Treatment Steps");
+
+    if (missing.length > 0) {
+      setMissingFields(missing);
+      setErrorModalVisible(true);
+      return;
+    }
+
     setGenerated(true);
     setModalVisible(true);
   };
@@ -77,26 +93,14 @@ export default function ERecipeScreen() {
             <Text style={styles.title}>Prescription Details</Text>
 
             {[
-              {
-                placeholder: "Patient Name",
-                value: patient,
-                setter: setPatient,
-              },
-              {
-                placeholder: "Diagnosis",
-                value: diagnosis,
-                setter: setDiagnosis,
-              },
+              { placeholder: "Patient Name", value: patient, setter: setPatient },
+              { placeholder: "Diagnosis", value: diagnosis, setter: setDiagnosis },
               {
                 placeholder: "Medications (separate with commas)",
                 value: medications,
                 setter: setMedications,
               },
-              {
-                placeholder: "Treatment Steps",
-                value: steps,
-                setter: setSteps,
-              },
+              { placeholder: "Treatment Steps", value: steps, setter: setSteps },
             ].map((field, idx) => (
               <TextInput
                 key={idx}
@@ -109,7 +113,7 @@ export default function ERecipeScreen() {
             ))}
 
             <TextInput
-              placeholder="Additional Notes"
+              placeholder="Additional Notes (optional)"
               placeholderTextColor="#9fb3bd"
               style={[styles.input, { height: 80 }]}
               multiline
@@ -147,12 +151,12 @@ export default function ERecipeScreen() {
 
             {generated && (
               <View style={styles.dualButtonContainer}>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   style={[styles.halfButton, { backgroundColor: "#007ea7" }]}
                   onPress={handleViewRecipe}
                 >
                   <Text style={styles.buttonText}>View Prescription</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity> 
                 <TouchableOpacity
                   style={[styles.halfButton, { backgroundColor: "#6c757d" }]}
                   onPress={handleClear}
@@ -241,7 +245,7 @@ export default function ERecipeScreen() {
           </View>
         )}
 
-        {/* MODALS */}
+        {/* SUCCESS MODAL */}
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -249,12 +253,12 @@ export default function ERecipeScreen() {
                 Prescription generated successfully!
               </Text>
               <View style={styles.modalButtonRow}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: "#007ea7" }]}
                   onPress={handleViewRecipe}
                 >
                   <Text style={styles.modalButtonText}>View Prescription</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                   style={[styles.modalButton, { backgroundColor: "#48c774" }]}
                   onPress={() => setModalVisible(false)}
@@ -262,6 +266,31 @@ export default function ERecipeScreen() {
                   <Text style={styles.modalButtonText}>OK</Text>
                 </TouchableOpacity>
               </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* 🔹 ERROR VALIDATION MODAL */}
+        <Modal visible={errorModalVisible} transparent animationType="fade">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={[styles.successText, { color: "#e74c3c" }]}>
+                Please fill out all required fields before generating.
+              </Text>
+              <Text style={{ textAlign: "center", color: "#033d49", marginBottom: 15 }}>
+                The following fields are missing:
+              </Text>
+              {missingFields.map((field, idx) => (
+                <Text key={idx} style={{ color: "#007ea7", fontWeight: "600", marginVertical: 2 }}>
+                  • {field}
+                </Text>
+              ))}
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#e74c3c", marginTop: 15 }]}
+                onPress={() => setErrorModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -423,6 +452,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 4,
+    width: "80%",
   },
   successText: {
     fontSize: 17,
