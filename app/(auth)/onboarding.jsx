@@ -1,5 +1,6 @@
 import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
+import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
 import {
   Alert,
@@ -12,6 +13,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { auth, db } from "../../components/firebase";
+ // siguro rrugën relative
 
 export default function OnBoarding() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -21,15 +24,37 @@ export default function OnBoarding() {
   const [height, setHeight] = useState(170);
   const [hasAllergy, setHasAllergy] = useState(false);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const birthDatePattern = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!birthDatePattern.test(birthDate)) {
       Alert.alert("Invalid format", "Please enter your birth date in DD/MM/YYYY format.");
       return;
     }
-    console.log({ birthDate, gender, weight, height, hasAllergy });
-    Alert.alert("Success!", "Your data has been saved successfully!");
-    router.replace("/(patient)/home");
+
+    try {
+      const user = auth.currentUser; // përdoruesi i loguar
+      if (!user) {
+        Alert.alert("Error", "User not logged in.");
+        return;
+      }
+
+      // Ruaj të dhënat në Firestore
+      await addDoc(collection(db, "patients"), {
+        userId: user.uid,
+        birthDate,
+        gender,
+        weight,
+        height,
+        hasAllergy,
+        createdAt: new Date(),
+      });
+
+      Alert.alert("Success!", "Your data has been saved successfully!");
+      router.replace("/(patient)/home");
+    } catch (error) {
+      console.error("Error saving data:", error);
+      Alert.alert("Error", "Failed to save your data. Please try again.");
+    }
   };
 
   if (showWelcome) {
@@ -57,87 +82,86 @@ export default function OnBoarding() {
 
   return (
     <SafeAreaView style={styles.safecontainer}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.card}>
-        <Text style={styles.label}>Birth Date (DD/MM/YYYY):</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. 25/12/1990"
-          placeholderTextColor="#888"
-          value={birthDate}
-          onChangeText={setBirthDate}
-        />
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>Gender:</Text>
-        <View style={styles.radioGroup}>
-          {genders.map((item) => (
-            <TouchableOpacity
-              key={item.value}
-              style={styles.radioButton}
-              onPress={() => setGender(item.value)}
-            >
-              <View
-                style={[
-                  styles.radioOuter,
-                  gender === item.value && styles.radioSelectedOuter,
-                ]}
-              >
-                {gender === item.value && <View style={styles.radioInner} />}
-              </View>
-              <Text style={styles.radioLabel}>{item.label}</Text>
-            </TouchableOpacity>
-          ))}
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.card}>
+          <Text style={styles.label}>Birth Date (DD/MM/YYYY):</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. 25/12/1990"
+            placeholderTextColor="#888"
+            value={birthDate}
+            onChangeText={setBirthDate}
+          />
         </View>
-      </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Weight (kg): {weight}</Text>
-        <Slider
-          minimumValue={30}
-          maximumValue={150}
-          step={1}
-          value={weight}
-          onValueChange={setWeight}
-          minimumTrackTintColor="#007ea7"
-          maximumTrackTintColor="#d1d5db"
-          thumbTintColor="#007ea7"
-        />
-      </View>
+        <View style={styles.card}>
+          <Text style={styles.label}>Gender:</Text>
+          <View style={styles.radioGroup}>
+            {genders.map((item) => (
+              <TouchableOpacity
+                key={item.value}
+                style={styles.radioButton}
+                onPress={() => setGender(item.value)}
+              >
+                <View
+                  style={[
+                    styles.radioOuter,
+                    gender === item.value && styles.radioSelectedOuter,
+                  ]}
+                >
+                  {gender === item.value && <View style={styles.radioInner} />}
+                </View>
+                <Text style={styles.radioLabel}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Height (cm): {height}</Text>
-        <Slider
-          minimumValue={100}
-          maximumValue={220}
-          step={1}
-          value={height}
-          onValueChange={setHeight}
-          minimumTrackTintColor="#007ea7"
-          maximumTrackTintColor="#d1d5db"
-          thumbTintColor="#007ea7"
-        />
-      </View>
+        <View style={styles.card}>
+          <Text style={styles.label}>Weight (kg): {weight}</Text>
+          <Slider
+            minimumValue={30}
+            maximumValue={150}
+            step={1}
+            value={weight}
+            onValueChange={setWeight}
+            minimumTrackTintColor="#007ea7"
+            maximumTrackTintColor="#d1d5db"
+            thumbTintColor="#007ea7"
+          />
+        </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Do you have any medication allergies?</Text>
-        <Switch
-          value={hasAllergy}
-          onValueChange={setHasAllergy}
-          trackColor={{ false: "#d1d5db", true: "#007ea7" }}
-          thumbColor={hasAllergy ? "#ffffff" : "#f4f3f4"}
-        />
-      </View>
+        <View style={styles.card}>
+          <Text style={styles.label}>Height (cm): {height}</Text>
+          <Slider
+            minimumValue={100}
+            maximumValue={220}
+            step={1}
+            value={height}
+            onValueChange={setHeight}
+            minimumTrackTintColor="#007ea7"
+            maximumTrackTintColor="#d1d5db"
+            thumbTintColor="#007ea7"
+          />
+        </View>
 
-      <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <View style={styles.card}>
+          <Text style={styles.label}>Do you have any medication allergies?</Text>
+          <Switch
+            value={hasAllergy}
+            onValueChange={setHasAllergy}
+            trackColor={{ false: "#d1d5db", true: "#007ea7" }}
+            thumbColor={hasAllergy ? "#ffffff" : "#f4f3f4"}
+          />
+        </View>
+
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>Next</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   safecontainer:{
@@ -240,3 +264,6 @@ const styles = StyleSheet.create({
   },
   nextButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 });
+
+
+

@@ -2,10 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
-import { useState } from "react";
+import { collection, doc, onSnapshot, query, setDoc, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,52 +14,107 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../components/firebase";
+import { auth, db } from "./firebase";
 
-export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
+export default function ProfileCard({ roleType = "Patient" }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [docId, setDocId] = useState(null);
 
-  const [name, setName] = useState("Arta Krasniqi");
-  const [email, setEmail] = useState("arta.krasniqi@gmail.com");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [gender, setGender] = useState("Female");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [allergies, setAllergies] = useState("No");
   const role = roleType;
 
-  const [birthdate, setBirthdate] = useState("2001-05-14");
-  const [gender, setGender] = useState("Female");
-  const [height, setHeight] = useState("168");
-  const [weight, setWeight] = useState("58");
-  const [allergies, setAllergies] = useState("No");
+  // 🔹 Merr të dhënat nga Firestore
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-  // ✅ Logout nga Firebase dhe ridrejtim në ekranin e hyrjes
-  const handleLogout = async () => {
+    const q = query(collection(db, "patients"), where("userId", "==", user.uid));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const data = lastDoc.data();
+
+        setName(data.name || "");
+        setEmail(data.email || user.email || "");
+        setBirthdate(data.birthDate || "");
+        setGender(data.gender || "Female");
+        setHeight(data.height?.toString() || "");
+        setWeight(data.weight?.toString() || "");
+        setAllergies(data.hasAllergy ? "Yes" : "No");
+
+        setDocId(lastDoc.id);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007ea7" />
+      </View>
+    );
+  }
+
+  const handleSave = async () => {
+    if (!docId) {
+      Alert.alert("Error", "Document not found");
+      return;
+    }
+
+    setIsEditing(false);
     try {
-      await signOut(auth);
-      Alert.alert("Logged out", "You have been logged out successfully!");
-      router.replace("/(auth)/login"); // Kthehu te login
+      const user = auth.currentUser;
+      if (!user) return;
+
+      await setDoc(
+        doc(db, "patients", docId),
+        {
+          name,
+          email,
+          birthDate: birthdate,
+          gender,
+          height: Number(height),
+          weight: Number(weight),
+          hasAllergy: allergies === "Yes",
+        },
+        { merge: true }
+      );
+
+      Alert.alert("Success", "Profile updated successfully!");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
   const handleEdit = () => setIsEditing(true);
-  const handleSave = () => setIsEditing(false);
-  const handleAbout = () =>
-    router.push({
-      pathname: "/about",
-      params: { role: role.toLowerCase() },
-    });
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      Alert.alert("Logged out", "You have been logged out successfully!");
+      router.replace("/(auth)/login");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.topSection}>
-        <Image
-          source={require("../assets/images/profilepicture.jpg")}
-          style={styles.profileImage}
-        />
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.role}>{role}</Text>
-      </View>
-
       <View style={styles.infoCard}>
         {isEditing ? (
           <>
@@ -137,34 +193,13 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
           </>
         ) : (
           <>
-            <View style={styles.infoItem}>
-              <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{name}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{email}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{birthdate}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="male-female-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{gender}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{height} cm</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="barbell-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{weight} kg</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
-              <Text>{allergies}</Text>
-            </View>
+            <Text style={styles.label}>Name: {name}</Text>
+            <Text style={styles.label}>Email: {email}</Text>
+            <Text style={styles.label}>Birth Date: {birthdate}</Text>
+            <Text style={styles.label}>Gender: {gender}</Text>
+            <Text style={styles.label}>Height: {height} cm</Text>
+            <Text style={styles.label}>Weight: {weight} kg</Text>
+            <Text style={styles.label}>Medication Allergy: {allergies}</Text>
           </>
         )}
 
@@ -183,10 +218,6 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
           </TouchableOpacity>
         </View>
       </View>
-
-      <TouchableOpacity style={styles.aboutButton} onPress={handleAbout}>
-        <Text style={styles.aboutText}>About App</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -196,28 +227,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E9F8F9",
     alignItems: "center",
     paddingVertical: 40,
-  },
-  topSection: {
-    alignItems: "center",
-    marginBottom: 25,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: "#4DB8FF",
-    marginBottom: 12,
-  },
-  name: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#033d49",
-  },
-  role: {
-    fontSize: 16,
-    color: "#4a6572",
-    marginTop: 4,
   },
   infoCard: {
     width: "90%",
@@ -230,11 +239,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
-  },
-  infoItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
   },
   inputRow: {
     flexDirection: "row",
@@ -260,6 +264,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#d4f1f4",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 10,
+    color: "#033d49",
   },
   buttonsContainer: {
     marginTop: 20,
@@ -298,17 +308,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  aboutButton: {
-    marginTop: 25,
-    backgroundColor: "#48c774",
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 12,
-    elevation: 3,
-  },
-  aboutText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
   },
 });
