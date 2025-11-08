@@ -30,18 +30,15 @@ export default function Signup() {
     }
 
     try {
-      // 1️⃣ Krijo përdoruesin në Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2️⃣ Ruaj full name dhe role në displayName si JSON
       await updateProfile(user, {
         displayName: JSON.stringify({ fullName, role }),
       });
 
       Alert.alert("Success", "Account created successfully!");
 
-      // 3️⃣ Navigo sipas rolit
       if (role === "patient") router.replace("/(auth)/onboarding");
       else if (role === "doctor") router.replace("/(doctor)/home");
     } catch (error) {
