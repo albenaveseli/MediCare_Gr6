@@ -1,9 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AuthForm from "../../components/AuthForm";
 import AuthInput from "../../components/AuthInput";
+import { auth } from "../../components/firebase";
 
 export default function Signup() {
   const [fullName, setFullName] = useState("");
@@ -17,7 +18,8 @@ export default function Signup() {
       Alert.alert("Error", "Please fill in all fields!");
       return;
     }
-        if (password.length < 8) {
+
+    if (password.length < 8) {
       Alert.alert("Error", "Password must be at least 8 characters long!");
       return;
     }
@@ -28,20 +30,22 @@ export default function Signup() {
     }
 
     try {
-      const existing = await AsyncStorage.getItem(email);
-      if (existing) {
-        Alert.alert("This email already exists!");
-        return;
-      }
+      // 1️⃣ Krijo përdoruesin në Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      const userData = { fullName, email, password, role };
-      await AsyncStorage.setItem(email, JSON.stringify(userData));
+      // 2️⃣ Ruaj full name dhe role në displayName si JSON
+      await updateProfile(user, {
+        displayName: JSON.stringify({ fullName, role }),
+      });
 
       Alert.alert("Success", "Account created successfully!");
+
+      // 3️⃣ Navigo sipas rolit
       if (role === "patient") router.replace("/(auth)/onboarding");
       else if (role === "doctor") router.replace("/(doctor)/home");
     } catch (error) {
-      console.error(error);
+      Alert.alert("Error", error.message);
     }
   };
 

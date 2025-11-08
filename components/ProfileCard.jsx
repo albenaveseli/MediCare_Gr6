@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { auth } from "../components/firebase";
 
 export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
   const router = useRouter();
@@ -26,7 +29,17 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
   const [weight, setWeight] = useState("58");
   const [allergies, setAllergies] = useState("No");
 
-  const handleLogout = () => router.replace("/login");
+  // ✅ Logout nga Firebase dhe ridrejtim në ekranin e hyrjes
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      Alert.alert("Logged out", "You have been logged out successfully!");
+      router.replace("/(auth)/login"); // Kthehu te login
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
   const handleAbout = () =>
@@ -177,6 +190,7 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/" }) {
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#E9F8F9",
@@ -237,16 +251,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f9fb",
     borderWidth: 1,
     borderColor: "#d4f1f4",
-  },
-  label: {
-    fontSize: 15,
-    color: "#6c757d",
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 17,
-    fontWeight: "500",
-    color: "#033d49",
   },
   input: {
     flex: 1,
