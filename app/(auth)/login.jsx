@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { GithubAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -60,6 +60,31 @@ export default function Login() {
       Alert.alert("Google Login Error", error.message);
     }
   };
+  const handleGitHubLogin = async () => {
+    try {
+      const provider = new GithubAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+   const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          fullName: user.displayName || "",
+          email: user.email,
+          role: "patient",  // Default role, mund ta ndryshosh sipas nevojës
+          createdAt: serverTimestamp(),
+        });
+        router.replace("/(auth)/onboarding"); // P.sh. për pacientë të rinj me Google
+      } else {
+        const data = userDoc.data();
+        if (data.role === "patient") router.replace("/(patient)/home");
+        else if (data.role === "doctor") router.replace("/(doctor)/home");
+      }
+    } catch (error) {
+      Alert.alert("Github Login Error", error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -90,6 +115,10 @@ export default function Login() {
 
       <TouchableOpacity style={[styles.button, { backgroundColor: "#DB4437" }]} onPress={handleGoogleLogin}>
         <Text style={styles.buttonText}>Login with Google</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={[styles.button, { backgroundColor: "#DB4437" }]} onPress={handleGitHubLogin}>
+        <Text style={styles.buttonText}>Login with Github</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
