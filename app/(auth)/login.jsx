@@ -60,32 +60,39 @@ export default function Login() {
       Alert.alert("Google Login Error", error.message);
     }
   };
-  const handleGitHubLogin = async () => {
-    try {
-      const provider = new GithubAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+ const handleGitHubLogin = async () => {
+  try {
+    const provider = new GithubAuthProvider();
+    const result = await signInWithPopup(auth, provider); // Mbaj popup për web
+    const user = result.user;
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
 
-   const userDoc = await getDoc(doc(db, "users", user.uid));
+    const email = user.email || "";
+    const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
 
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, "users", user.uid), {
-          fullName: user.displayName || "",
-          email: user.email,
-          role: "patient",  // Default role, mund ta ndryshosh sipas nevojës
-          createdAt: serverTimestamp(),
-        });
-        router.replace("/(auth)/onboarding"); // P.sh. për pacientë të rinj me Google
-      } else {
-        const data = userDoc.data();
-        if (data.role === "patient") router.replace("/(patient)/home");
-        else if (data.role === "doctor") router.replace("/(doctor)/home");
+    if (!userDoc.exists()) {
+      // Pacient i ri → onboarding
+      await setDoc(userRef, {
+        fullName: user.displayName || "",
+        email,
+        role,
+        createdAt: serverTimestamp(),
+      });
+      router.replace("/(auth)/onboarding");
+    } else {
+      // Pacient ekzistues → dashboard
+      const data = userDoc.data();
+      if (data.role !== role) {
+        await updateDoc(userRef, { role }); // Përditëso role nëse ndryshon
       }
-    } catch (error) {
-      Alert.alert("Github Login Error", error.message);
+      if (role === "doctor") router.replace("/(doctor)/home");
+      else router.replace("/(patient)/home");
     }
-  };
-
+  } catch (error) {
+    Alert.alert("Github Login Error", error.message);
+  }
+};
   return (
     <View style={styles.container}>
       <Image source={require("../../assets/images/logo.jpg")} style={styles.logo} />
