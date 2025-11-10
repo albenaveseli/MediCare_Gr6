@@ -1,36 +1,42 @@
 import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
-export default function DoctorDetails() {
-  const {
-    id,
-    name,
-    specialty,
-    experience,
-    rating,
-    reviews,
-    description,
-    image,
-    education,
-    languages,
-    location,
-    availability,
-    price,
-  } = useLocalSearchParams();
+import { db } from "../../components/firebase";
 
+export default function DoctorDetails() {
+  const params = useLocalSearchParams();
+  const [doctor, setDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
-  const LIKE_KEY = `doctor_${id}_liked`;
   const [selectedTime, setSelectedTime] = useState(null);
+  const LIKE_KEY = `doctor_${params.id}_liked`;
 
   useEffect(() => {
+    const fetchDoctor = async () => {
+      try {
+        if (params.id) {
+          const docRef = doc(db, "doctors", params.id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) setDoctor({ id: docSnap.id, ...docSnap.data() });
+          else console.warn("Doctor not found in Firestore");
+        }
+      } catch (error) {
+        console.error("Error fetching doctor details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctor();
     loadLikeStatus();
-  }, [id]);
+  }, [params.id]);
 
   const loadLikeStatus = async () => {
     try {
@@ -52,6 +58,22 @@ export default function DoctorDetails() {
     }
   };
 
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center" }]}>
+        <ActivityIndicator size="large" color="#007ea7" />
+      </View>
+    );
+  }
+
+  if (!doctor) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <Text>No doctor found.</Text>
+      </View>
+    );
+  }
+  
   const getAvailabilityArray = () => {
     if (!availability) return [];
     if (typeof availability === "string" && availability.includes("|"))
@@ -63,25 +85,6 @@ export default function DoctorDetails() {
   const isWeekend = () => {
     const day = new Date().getDay();
     return day === 0 || day === 6;
-  };
-
-  const doctor = {
-    id: id || "1",
-    name: name || "Dr. Unknown",
-    specialty: specialty || "General Practitioner",
-    experience,
-    rating,
-    reviews,
-    description:
-      description ||
-      `Experienced ${specialty} with over ${experience} in medical care.`,
-    image,
-    education,
-    languages:
-      typeof languages === "string" ? languages.split(",") : ["English"],
-    location,
-    availability: getAvailabilityArray(),
-    price,
   };
 
   const features = [
@@ -144,7 +147,7 @@ export default function DoctorDetails() {
             <Text style={styles.unavailableText}>Unavailable</Text>
           ) : (
             <TimeSlots
-              slots={doctor.availability}
+              slots={doctor.availability || []}
               selected={selectedTime}
               onSelect={setSelectedTime}
             />

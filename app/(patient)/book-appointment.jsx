@@ -1,13 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
+import { getAuth } from "firebase/auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
+import { db } from "../../components/firebase"; // sigurohu që auth dhe db janë eksportuar
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
-
 
 export default function BookingScreen(){
   const {
@@ -68,7 +70,7 @@ export default function BookingScreen(){
       day: "numeric",
     });
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     const trimmedName = patientName.trim();
     if (!trimmedName) {
     return Alert.alert("Error", "Please enter your full name.");
@@ -79,21 +81,45 @@ export default function BookingScreen(){
     }
     if (isWeekend(selectedDate))
       return Alert.alert("Weekend", "Appointments not available on weekends");
-    Alert.alert(
-      "Appointment Booked!",
-      `Your appointment with ${
-        doctor.name
-      } is confirmed for ${selectedDate.toDateString()} at ${selectedTime}`,
-      [{ text: "OK", onPress: () => {
-        setSelectedDate(new Date());
-          setSelectedTime(null);
-          setPatientName("");
-          setNotes("");
-          router.back();
-      }, },]
-    );
-  };
+ try {
+    const user = getAuth().currentUser;
+    if (!user) return Alert.alert("Error", "You must be logged in to book.");
 
+    // Ruaj rezervimin në Firestore
+    await addDoc(collection(db, "appointments"), {
+      doctorId,
+      patientId: user.uid,
+      doctorName,
+      patientName: trimmedName,
+      date: selectedDate.toDateString(),
+      time: selectedTime,
+      reason: "General Consultation", 
+      notes,
+      status: "pending",
+      createdAt: serverTimestamp(),
+    });
+
+    Alert.alert(
+      "Success",
+      `Appointment booked with ${doctorName} on ${selectedDate.toDateString()} at ${selectedTime}`,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            setSelectedDate(new Date());
+            setSelectedTime(null);
+            setPatientName("");
+            setNotes("");
+            router.back();
+          },
+        },
+      ]
+    );
+  } catch (error) {
+    console.error("Error saving appointment:", error);
+    Alert.alert("Error", "Could not save appointment. Please try again.");
+  }
+};
   return (
     <View style={styles.container}>
       <Header title="Book Appointment" onBack={() => router.push("/(patient)/doctor-list")} />
