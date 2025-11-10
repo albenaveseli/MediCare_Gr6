@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import AuthForm from "../../components/AuthForm";
 import AuthInput from "../../components/AuthInput";
 import { auth, db } from "../../components/firebase";
@@ -12,10 +12,9 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState(null);
 
   const handleSignup = async () => {
-    if (!fullName || !email || !password || !confirmPassword || !role) {
+    if (!fullName || !email || !password || !confirmPassword) {
       Alert.alert("Error", "Please fill in all fields!");
       return;
     }
@@ -27,17 +26,26 @@ export default function Signup() {
       Alert.alert("Error", "Passwords do not match!");
       return;
     }
+
+    if (email.toLowerCase().endsWith("@doctor.com")) {
+      Alert.alert("Registration Closed", "Doctor registration is currently closed.");
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      const role = "patient";
+
       await setDoc(doc(db, "users", user.uid), {
         fullName,
         email,
         role,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       });
-      if (role === "patient") router.replace("/(auth)/onboarding");
-      else if (role === "doctor") router.replace("/(doctor)/home");
+
+      router.replace("/(auth)/onboarding");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -61,28 +69,8 @@ export default function Signup() {
         onChangeText={setConfirmPassword}
         secureTextEntry
       />
-      <View style={styles.roleContainer}>
-        <TouchableOpacity
-          style={[styles.roleButton, role === "patient" && styles.active]}
-          onPress={() => setRole("patient")}
-        >
-          <Text style={role === "patient" ? styles.roleTextActive : styles.roleText}>Patient</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.roleButton, role === "doctor" && styles.active]}
-          onPress={() => setRole("doctor")}
-        >
-          <Text style={role === "doctor" ? styles.roleTextActive : styles.roleText}>Doctor</Text>
-        </TouchableOpacity>
-      </View>
     </AuthForm>
   );
 }
 
-const styles = StyleSheet.create({
-  roleContainer: { flexDirection: "row", marginVertical: 10 },
-  roleButton: { padding: 10, marginHorizontal: 10, borderRadius: 8, backgroundColor: "#f0f0f0" },
-  active: { backgroundColor: "#007AFF" },
-  roleText: { color: "#333" },
-  roleTextActive: { color: "#fff", fontWeight: "600" },
-});
+const styles = StyleSheet.create({});
