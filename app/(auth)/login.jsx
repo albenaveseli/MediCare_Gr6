@@ -1,8 +1,9 @@
 import { router } from "expo-router";
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { auth } from "../../components/firebase";
+import { auth, db } from "../../components/firebase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,10 +21,15 @@ export default function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
       const user = userCredential.user;
-      const data = user.displayName ? JSON.parse(user.displayName) : {};
+      const userDoc = await getDoc(doc(db, "users", user.uid));
 
-      if (data.role === "patient") router.replace("/(patient)/home");
-      else if (data.role === "doctor") router.replace("/(doctor)/home");
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        if (data.role === "patient") router.replace("/(patient)/home");
+        else if (data.role === "doctor") router.replace("/(doctor)/home");
+      } else {
+        Alert.alert("Error", "User data not found!");
+      }
     } catch (error) {
       Alert.alert("Login Error", error.message);
     }
@@ -34,7 +40,22 @@ export default function Login() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      router.replace("/home");
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          fullName: user.displayName || "",
+          email: user.email,
+          role: "patient",  // Default role, mund ta ndryshosh sipas nevojës
+          createdAt: serverTimestamp(),
+        });
+        router.replace("/(auth)/onboarding"); // P.sh. për pacientë të rinj me Google
+      } else {
+        const data = userDoc.data();
+        if (data.role === "patient") router.replace("/(patient)/home");
+        else if (data.role === "doctor") router.replace("/(doctor)/home");
+      }
     } catch (error) {
       Alert.alert("Google Login Error", error.message);
     }
