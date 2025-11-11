@@ -1,4 +1,4 @@
-import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -17,6 +17,8 @@ export default function DoctorDetails() {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [userRating, setUserRating] = useState(0); 
+const [hasRated, setHasRated] = useState(false);
   const LIKE_KEY = `doctor_${params.id}_liked`;
 
   const auth = getAuth();
@@ -68,6 +70,61 @@ export default function DoctorDetails() {
       console.error("Error toggling like:", error);
     }
   };
+  const checkUserRating = async () => {
+  if (!currentUserId) return;
+
+  const docRef = doc(db, "doctors", params.id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const ratings = data.ratings || {};
+    if (ratings[currentUserId]) {
+      setHasRated(true);
+      setUserRating(ratings[currentUserId]);
+    }
+  }
+};
+
+useEffect(() => {
+  setHasRated(false);
+  setUserRating(0);
+}, [params.id]);
+
+useEffect(() => {
+  checkUserRating();
+}, [params.id, currentUserId]);
+
+const submitRating = async (rating) => {
+  if (!currentUserId) return;
+
+  try {
+    const docRef = doc(db, "doctors", params.id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data();
+    const ratings = data.ratings || {};
+    const reviews = data.reviews || 0;
+    const currentRating = data.rating || 0;
+
+    ratings[currentUserId] = rating;
+
+    const allRatings = Object.values(ratings);
+    const newRating = allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
+
+    await updateDoc(docRef, {
+      ratings: ratings,
+      rating: newRating,
+      reviews: allRatings.length,
+    });
+
+    setDoctor((prev) => ({ ...prev, rating: newRating, reviews: allRatings.length }));
+    setUserRating(rating);
+    setHasRated(true);
+  } catch (error) {
+    console.error("Error submitting rating:", error);
+  }
+};
 
   if (loading) {
     return (
@@ -114,10 +171,28 @@ export default function DoctorDetails() {
           <View style={styles.infoContainer}>
             <Text style={styles.doctorName}>{doctor.name}</Text>
             <Text style={styles.specialty}>{doctor.specialty}</Text>
+
             <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={16} color="#FFD700" />
-              <Text style={styles.rating}>{doctor.rating}</Text>
-              <Text style={styles.reviews}>({doctor.reviews} reviews)</Text>
+              {hasRated ? (
+                <>
+                  <Ionicons name="star" size={16} color="#FFD700" />
+                  <Text style={styles.rating}>{doctor.rating.toFixed(1)}</Text>
+                  <Text style={styles.reviews}>({doctor.reviews} reviews)</Text>
+                </>
+              ) : (
+                <View style={{ flexDirection: "row" }}>
+                  {[1,2,3,4,5].map((star) => (
+                    <TouchableOpacity key={star} onPress={() => submitRating(star)}>
+                      <FontAwesome
+                        name={star <= userRating ? "star" : "star-o"}
+                        size={24}
+                        color="#FFD700"
+                        style={{ marginHorizontal: 2 }}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
             </View>
           </View>
 
