@@ -1,7 +1,7 @@
 import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
@@ -15,8 +15,12 @@ export default function DoctorDetails() {
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
   const LIKE_KEY = `doctor_${params.id}_liked`;
+
+  const auth = getAuth();
+  const currentUserId = auth.currentUser?.uid;
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -24,8 +28,17 @@ export default function DoctorDetails() {
         if (params.id) {
           const docRef = doc(db, "doctors", params.id);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) setDoctor({ id: docSnap.id, ...docSnap.data() });
-          else console.warn("Doctor not found in Firestore");
+          if (docSnap.exists()) {
+             const data = docSnap.data();
+            setDoctor({ id: docSnap.id, ...data });
+
+            const likedBy = data.likedBy || [];
+            setLikesCount(likedBy.length);
+            setIsLiked(currentUserId ? likedBy.includes(currentUserId) : false);
+          }
+          else {
+            console.warn("Doctor not found in Firestore");
+          }
         }
       } catch (error) {
         console.error("Error fetching doctor details:", error);
@@ -35,26 +48,24 @@ export default function DoctorDetails() {
     };
 
     fetchDoctor();
-    loadLikeStatus();
-  }, [params.id]);
+  }, [params.id, currentUserId]);
 
-  const loadLikeStatus = async () => {
+   const toggleLike = async () => {
+    if (!currentUserId) return; 
     try {
-      const saved = await AsyncStorage.getItem(LIKE_KEY);
-      if (saved !== null) setIsLiked(JSON.parse(saved));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const toggleLike = async () => {
-    try {
+      const docRef = doc(db, "doctors", params.id);
       const newStatus = !isLiked;
       setIsLiked(newStatus);
-      await AsyncStorage.setItem(LIKE_KEY, JSON.stringify(newStatus));
+
+      if (newStatus) {
+        await updateDoc(docRef, { likedBy: arrayUnion(currentUserId) });
+        setLikesCount(prev => prev + 1);
+      } else {
+        await updateDoc(docRef, { likedBy: arrayRemove(currentUserId) });
+        setLikesCount(prev => prev - 1);
+      }
     } catch (error) {
-      console.error(error);
-      setIsLiked(!isLiked);
+      console.error("Error toggling like:", error);
     }
   };
 
@@ -73,14 +84,6 @@ export default function DoctorDetails() {
       </View>
     );
   }
-  
-  const getAvailabilityArray = () => {
-    if (!availability) return [];
-    if (typeof availability === "string" && availability.includes("|"))
-      return availability.split("|");
-    if (Array.isArray(availability)) return availability;
-    return [availability];
-  };
 
   const isWeekend = () => {
     const day = new Date().getDay();
@@ -117,6 +120,8 @@ export default function DoctorDetails() {
               <Text style={styles.reviews}>({doctor.reviews} reviews)</Text>
             </View>
           </View>
+
+          <View style={{ alignItems: "center" }}>
           <TouchableOpacity onPress={toggleLike} style={styles.heartButton}>
             <Ionicons
               name={isLiked ? "heart" : "heart-outline"}
@@ -124,6 +129,8 @@ export default function DoctorDetails() {
               color={isLiked ? "#FF3B30" : "#007ea7"}
             />
           </TouchableOpacity>
+            <Text style={styles.likeCount}>{likesCount}</Text>
+        </View>
         </View>
 
         <Card style={styles.card}>
