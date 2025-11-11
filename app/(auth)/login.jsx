@@ -152,10 +152,7 @@ export default function Login() {
         <Text style={styles.buttonText}>Login with GitHub</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#1877F2" }]} onPress={handleFacebookLogin}>
-        <Text style={styles.buttonText}>Login with Facebook</Text>
-      </TouchableOpacity>
-
+     
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.link}>Don’t have an account? Sign Up</Text>
       </TouchableOpacity>
