@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -10,49 +11,79 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
+import { scheduleNotification } from "../../utils/notifications";
 
 export default function Reminder() {
-  const [medicines, setMedicines] = useState([
-    { id: "1", name: "Paracetamol", time: "08:00 AM" },
-    { id: "2", name: "Ibuprofen", time: "02:00 PM" },
-  ]);
-
+  const [medicines, setMedicines] = useState([]);
   const [newMedicineName, setNewMedicineName] = useState("");
   const [newMedicineTime, setNewMedicineTime] = useState("");
 
-  
+  // Kontrollon nëse koha është në formatin e duhur (HH:MM AM/PM)
   const isValidTime = (time) => {
     const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
     return regex.test(time);
   };
 
-  const addMedicine = () => {
+  // Ngarkon ilaçet e ruajtura nga AsyncStorage kur hapet faqja
+  useEffect(() => {
+    const loadMedicines = async () => {
+      const saved = await AsyncStorage.getItem("medicines");
+      if (saved) setMedicines(JSON.parse(saved));
+    };
+    loadMedicines();
+  }, []);
+
+  // Ruaj automatikisht çdo herë që ndryshon lista e ilaçeve
+  useEffect(() => {
+    AsyncStorage.setItem("medicines", JSON.stringify(medicines));
+  }, [medicines]);
+
+  // Shton një ilaç të ri dhe krijon njoftim për të
+  const addMedicine = async () => {
     if (!newMedicineName || !newMedicineTime) {
-      Alert.alert("Error", "Please enter both medicine name and time");
+      Alert.alert("⚠️ Error", "Please enter both medicine name and time");
       return;
     }
 
     if (!isValidTime(newMedicineTime)) {
-      Alert.alert("Error", "Time must be in HH:MM AM/PM format");
+      Alert.alert("⚠️ Error", "Time must be in HH:MM AM/PM format");
       return;
     }
 
-    setMedicines([
-      ...medicines,
-      {
-        id: (medicines.length + 1).toString(),
-        name: newMedicineName,
-        time: newMedicineTime,
-      },
-    ]);
+    const newMed = {
+      id: Date.now().toString(),
+      name: newMedicineName.trim(),
+      time: newMedicineTime.trim(),
+    };
+
+    setMedicines((prev) => [...prev, newMed]);
+
+    // Planifiko njoftimin lokal për këtë ilaç
+    await scheduleNotification(newMedicineName, newMedicineTime);
+
+    Alert.alert("✅ Success", "Medicine reminder added and notification scheduled!");
     setNewMedicineName("");
     setNewMedicineTime("");
   };
 
+  // Fshin një ilaç nga lista
+  const deleteMedicine = async (id) => {
+    const updated = medicines.filter((m) => m.id !== id);
+    setMedicines(updated);
+    await AsyncStorage.setItem("medicines", JSON.stringify(updated));
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.medicineName}>{item.name}</Text>
-      <Text style={styles.medicineTime}>{item.time}</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View>
+          <Text style={styles.medicineName}>{item.name}</Text>
+          <Text style={styles.medicineTime}>{item.time}</Text>
+        </View>
+        <TouchableOpacity onPress={() => deleteMedicine(item.id)}>
+          <Ionicons name="trash-outline" size={24} color="#d9534f" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -63,7 +94,6 @@ export default function Reminder() {
         icon={<Ionicons name="medkit-outline" size={28} color="#007ea7" />}
       />
 
-      
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -82,7 +112,6 @@ export default function Reminder() {
         </TouchableOpacity>
       </View>
 
-      
       <FlatList
         data={medicines}
         renderItem={renderItem}
