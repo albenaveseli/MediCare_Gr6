@@ -1,10 +1,9 @@
 import { router } from "expo-router";
 import {
-  FacebookAuthProvider,
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithPopup
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
@@ -119,34 +118,6 @@ export default function Login() {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    try {
-      const provider = new FacebookAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const userRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userRef);
-
-      const email = user.email || "";
-      const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
-
-      if (!userDoc.exists()) {
-        await setDoc(userRef, {
-          fullName: user.displayName || "",
-          email,
-          role,
-          createdAt: serverTimestamp(),
-        });
-        router.replace("/(auth)/onboarding");
-      } else {
-        const data = userDoc.data();
-        if (data.role === "doctor") router.replace("/(doctor)/home");
-        else router.replace("/(patient)/home");
-      }
-    } catch (error) {
-      Alert.alert("Facebook Login Error", error.message);
-    }
-  };
 
   return (
     <View style={styles.container}>
