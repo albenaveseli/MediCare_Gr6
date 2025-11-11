@@ -1,56 +1,87 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getAuth } from "firebase/auth";
+import { collection, doc, getDocs, query, updateDoc, where, } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { db } from "../../components/firebase";
 
 export default function MyAppointmentsScreen() {
-  const [appointments, setAppointments] = useState([
-    {
-      id: "1",
-      patientName: "John Doe",
-      patientAge: "35",
-      date: new Date("2024-02-15"),
-      time: "10:00",
-      reason: "Routine checkup",
-      status: "pending",
-    },
-    {
-      id: "2",
-      patientName: "Jane Smith",
-      patientAge: "28",
-      date: new Date("2024-02-15"),
-      time: "11:30",
-      reason: "Headache consultation",
-      status: "approved",
-    },
-    {
-      id: "3",
-      patientName: "Mike Johnson",
-      patientAge: "45",
-      date: new Date("2024-02-16"),
-      time: "09:15",
-      reason: "Blood test results",
-      status: "pending",
-    },
-    {
-      id: "4",
-      patientName: "Sarah Wilson",
-      patientAge: "32",
-      date: new Date("2024-02-16"),
-      time: "14:00",
-      reason: "Annual physical",
-      status: "approved",
-    },
-    {
-      id: "5",
-      patientName: "Robert Brown",
-      patientAge: "50",
-      date: new Date("2024-02-17"),
-      time: "16:30",
-      reason: "Back pain consultation",
-      status: "pending",
-    },
-  ]);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [doctor, setDoctor] = useState(null);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) return Alert.alert("Error", "You must be logged in.");
+
+        // 🔹 Merr doktorin sipas email-it
+        const doctorQuery = query(
+          collection(db, "doctors"),
+          where("email", "==", user.email)
+        );
+        const doctorSnapshot = await getDocs(doctorQuery);
+
+        if (doctorSnapshot.empty) {
+          Alert.alert("Error", "Doctor profile not found.");
+          setLoading(false);
+          return;
+        }
+
+        const doctorData = {
+          id: doctorSnapshot.docs[0].id,
+          ...doctorSnapshot.docs[0].data(),
+        };
+        setDoctor(doctorData);
+
+        // 🔹 Merr të gjitha rezervimet për këtë doktor
+        const appointmentsQuery = query(
+          collection(db, "appointments"),
+          where("doctorId", "==", doctorData.id)
+        );
+        const snapshot = await getDocs(appointmentsQuery);
+
+        const fetchedAppointments = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+        }));
+
+        setAppointments(fetchedAppointments);
+      } catch (error) {
+        console.error("Error loading appointments:", error);
+        Alert.alert("Error", "Could not load appointments.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+  // 🔹 Përditëson statusin e rezervimit
+  const handleStatusChange = async (appointmentId, newStatus) => {
+    try {
+      await updateDoc(doc(db, "appointments", appointmentId), {
+        status: newStatus,
+      });
+      setAppointments((prev) =>
+        prev.map((a) =>
+          a.id === appointmentId ? { ...a, status: newStatus } : a
+        )
+      );
+      Alert.alert(
+        "Success",
+        `Appointment ${newStatus === "approved" ? "confirmed" : "cancelled"
+        } successfully!`
+      );
+    } catch (error) {
+      console.error("Error updating status:", error);
+      Alert.alert("Error", "Failed to update status.");
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -78,32 +109,10 @@ export default function MyAppointmentsScreen() {
     }
   };
 
-  const handleApprove = (id) => {
-    setAppointments((prev) =>
-      prev.map((apt) => (apt.id === id ? { ...apt, status: "approved" } : apt))
-    );
-    Alert.alert("Success", "Appointment approved successfully");
-  };
-
-  const handleCancel = (id) => {
-    Alert.alert("Cancel Appointment", "Are you sure?", [
-      { text: "No", style: "cancel" },
-      {
-        text: "Yes",
-        onPress: () =>
-          setAppointments((prev) =>
-            prev.map((apt) =>
-              apt.id === id ? { ...apt, status: "cancelled" } : apt
-            )
-          ),
-      },
-    ]);
-  };
-
   const groupAppointmentsByDate = (list) => {
     const grouped = {};
     list.forEach((apt) => {
-      const key = apt.date.toDateString();
+      const key = apt.date instanceof Date ? apt.date.toDateString() : new Date(apt.date).toDateString();
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(apt);
     });
@@ -115,14 +124,38 @@ export default function MyAppointmentsScreen() {
   );
   const groupedAppointments = groupAppointmentsByDate(filteredAppointments);
 
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#007ea7" />
+        <Text style={{ marginTop: 10 }}>Loading appointments...</Text>
+      </View>
+    );
+  }
+
+  if (!doctor) {
+    return (
+      <View style={styles.center}>
+        <Ionicons name="alert-circle" size={40} color="gray" />
+        <Text style={{ marginTop: 10 }}>
+          No doctor profile found for this account.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.screenTitle}>My Appointments</Text>
 
       <ScrollView style={styles.content}>
         {Object.keys(groupedAppointments).length > 0 ? (
-          Object.entries(groupedAppointments).map(
-            ([dateKey, dayAppointments]) => (
+          Object.entries(groupedAppointments)
+            .sort(
+              ([dateA], [dateB]) =>
+                new Date(dateA) - new Date(dateB) // nga më e hershmja tek më e vona
+            )
+            .map(([dateKey, dayAppointments]) => (
               <View key={dateKey} style={styles.daySection}>
                 <Text style={styles.dayHeader}>
                   {new Date(dateKey).toLocaleDateString("en-US", {
@@ -146,9 +179,6 @@ export default function MyAppointmentsScreen() {
                         <Text style={styles.patientName}>
                           {appointment.patientName}
                         </Text>
-                        <Text style={styles.patientAge}>
-                          {appointment.patientAge} years
-                        </Text>
                         <Text style={styles.appointmentTime}>
                           <Ionicons
                             name="time-outline"
@@ -160,6 +190,18 @@ export default function MyAppointmentsScreen() {
                         <Text style={styles.reason} numberOfLines={1}>
                           {appointment.reason}
                         </Text>
+                        {appointment.notes && (
+                          <Text
+                            style={[styles.reason, { color: "#005f73", marginTop: 4 }]}
+                          >
+                            <Ionicons
+                              name="chatbubble-ellipses-outline"
+                              size={12}
+                              color="#007ea7"
+                            />{" "}
+                            {appointment.notes}
+                          </Text>
+                        )}
                       </View>
                     </View>
 
@@ -181,13 +223,13 @@ export default function MyAppointmentsScreen() {
                         <View style={styles.actionButtons}>
                           <TouchableOpacity
                             style={[styles.actionButton, styles.approveButton]}
-                            onPress={() => handleApprove(appointment.id)}
+                            onPress={() => handleStatusChange(appointment.id, "approved")}
                           >
                             <Ionicons name="checkmark" size={16} color="#fff" />
                           </TouchableOpacity>
                           <TouchableOpacity
                             style={[styles.actionButton, styles.cancelButton]}
-                            onPress={() => handleCancel(appointment.id)}
+                            onPress={() => handleStatusChange(appointment.id, "cancelled")}
                           >
                             <Ionicons name="close" size={16} color="#fff" />
                           </TouchableOpacity>
@@ -201,7 +243,7 @@ export default function MyAppointmentsScreen() {
                             styles.cancelButton,
                             styles.singleButton,
                           ]}
-                          onPress={() => handleCancel(appointment.id)}
+                          onPress={() => handleStatusChange(appointment.id, "cancelled")}
                         >
                           <Ionicons name="close" size={16} color="#fff" />
                         </TouchableOpacity>
@@ -211,7 +253,7 @@ export default function MyAppointmentsScreen() {
                 ))}
               </View>
             )
-          )
+            )
         ) : (
           <View style={styles.emptyState}>
             <Ionicons name="calendar-outline" size={48} color="#a0c4c7" />
@@ -227,7 +269,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#e8f6f8",
-    paddingTop:30
+    paddingTop: 30
   },
   content: {
     padding: 16,
@@ -272,10 +314,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: "#033d49",
-  },
-  patientAge: {
-    fontSize: 13,
-    color: "#4a6572",
   },
   appointmentTime: {
     fontSize: 13,
@@ -336,12 +374,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   screenTitle: {
-  fontSize: 24,
-  fontWeight: "700",
-  color: "#007ea7",
-  marginBottom: 16,
-  textAlign: "center",
-  paddingHorizontal: 8
-},
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#007ea7",
+    marginBottom: 16,
+    textAlign: "center",
+    paddingHorizontal: 8
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e8f6f8",
+  },
 
 });
