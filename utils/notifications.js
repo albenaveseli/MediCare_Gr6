@@ -61,7 +61,7 @@ export async function scheduleNotification(name, time) {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "💊 Medicine Reminder",
-      body: `Koha për të marrë medikamentin: ${name}`,
+      body: `Time to take the medicine: ${name}`,
       sound: true,
       priority: Notifications.AndroidNotificationPriority.HIGH,
     },
