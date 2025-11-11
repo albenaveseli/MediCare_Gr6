@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { auth, db } from "../../components/firebase";
@@ -21,14 +21,26 @@ export default function Login() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
       const user = userCredential.user;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+
+      const role = trimmedEmail.endsWith("@doctor.com") ? "doctor" : "patient";
 
       if (userDoc.exists()) {
         const data = userDoc.data();
-        if (data.role === "patient") router.replace("/(patient)/home");
-        else if (data.role === "doctor") router.replace("/(doctor)/home");
+        if (data.role !== role) {
+          await updateDoc(userRef, { role });
+        }
+        if (role === "doctor") router.replace("/(doctor)/home");
+        else router.replace("/(patient)/home");
       } else {
-        Alert.alert("Error", "User data not found!");
+        await setDoc(userRef, {
+          email: trimmedEmail,
+          role,
+          createdAt: serverTimestamp(),
+        });
+        if (role === "doctor") router.replace("/(doctor)/home");
+        else router.replace("/(patient)/home");
       }
     } catch (error) {
       Alert.alert("Login Error", error.message);
@@ -40,22 +52,28 @@ export default function Login() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const email = user.email || "";
+      const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
 
       if (!userDoc.exists()) {
-        await setDoc(doc(db, "users", user.uid), {
+        await setDoc(userRef, {
           fullName: user.displayName || "",
-          email: user.email,
-          role: "patient",  // Default role, mund ta ndryshosh sipas nevojës
+          email,
+          role,
           createdAt: serverTimestamp(),
         });
-        router.replace("/(auth)/onboarding"); // P.sh. për pacientë të rinj me Google
       } else {
         const data = userDoc.data();
-        if (data.role === "patient") router.replace("/(patient)/home");
-        else if (data.role === "doctor") router.replace("/(doctor)/home");
+        if (data.role !== role) {
+          await updateDoc(userRef, { role });
+        }
       }
+
+      if (role === "doctor") router.replace("/(doctor)/home");
+      else router.replace("/(patient)/home");
     } catch (error) {
       Alert.alert("Google Login Error", error.message);
     }
@@ -64,7 +82,6 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Image source={require("../../assets/images/logo.jpg")} style={styles.logo} />
-
       <Text style={styles.title}>Welcome Back!</Text>
 
       <TextInput
@@ -75,7 +92,6 @@ export default function Login() {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-
       <TextInput
         placeholder="Password"
         style={styles.input}
