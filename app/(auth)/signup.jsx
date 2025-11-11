@@ -27,11 +27,16 @@ export default function Signup() {
       return;
     }
 
+    if (email.toLowerCase().endsWith("@doctor.com")) {
+      Alert.alert("Registration Closed", "Doctor registration is currently closed.");
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const role = email.toLowerCase().endsWith("@doctor.com") ? "doctor" : "patient";
+      const role = "patient";
 
       await setDoc(doc(db, "users", user.uid), {
         fullName,
@@ -40,8 +45,7 @@ export default function Signup() {
         createdAt: serverTimestamp(),
       });
 
-      if (role === "doctor") router.replace("/(doctor)/home");
-      else router.replace("/(auth)/onboarding");
+      router.replace("/(auth)/onboarding");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
