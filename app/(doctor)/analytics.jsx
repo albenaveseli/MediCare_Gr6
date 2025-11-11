@@ -1,23 +1,66 @@
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
-
-const MONTH_DATA = [
-  { month: "Jan", visits: 23 },
-  { month: "Feb", visits: 41 },
-  { month: "Mar", visits: 32 },
-  { month: "Apr", visits: 46 },
-  { month: "May", visits: 35 },
-  { month: "Jun", visits: 27 },
-  { month: "Jul", visits: 43 },
-  { month: "Aug", visits: 35 },
-  { month: "Sep", visits: 29 },
-  { month: "Oct", visits: 48 },
-  { month: "Nov", visits: 22 },
-  { month: "Dec", visits: 40 },
-];
+import { auth, db } from "../../components/firebase";
 
 export default function Analytics() {
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        // Merr të gjitha takimet për këtë doktor
+        const q = query(collection(db, "appointments"), where("doctorId", "==", user.uid));
+        const snapshot = await getDocs(q);
+
+        // Inicizo numërimin për çdo muaj
+        const monthlyCounts = {
+          Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
+          Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0,
+        };
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.date) {
+            const date = new Date(data.date);
+            const monthName = date.toLocaleString("en-US", { month: "short" });
+            if (monthlyCounts[monthName] !== undefined) {
+              monthlyCounts[monthName] += 1;
+            }
+          }
+        });
+
+        // Kthe në formë liste për afishim
+        const formattedData = Object.entries(monthlyCounts).map(([month, visits]) => ({
+          month,
+          visits,
+        }));
+
+        setMonthlyData(formattedData);
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#007ea7" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Header
@@ -28,7 +71,7 @@ export default function Analytics() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.subtitle}>Monthly Patient Visits</Text>
 
-        {MONTH_DATA.map((item, idx) => (
+        {monthlyData.map((item, idx) => (
           <View key={idx} style={styles.card}>
             <Text style={styles.month}>{item.month}</Text>
             <Text style={styles.visits}>Visits: {item.visits}</Text>
@@ -38,17 +81,15 @@ export default function Analytics() {
         <View style={styles.insightCard}>
           <Text style={styles.title}>Insights & Observations</Text>
           <Text style={styles.text}>
-            Patient visits are higher in mid-year (Mar–Oct). November shows a
-            drop, possibly due to seasonal changes.
+            Data shows monthly distribution of patient visits based on real appointment records.
           </Text>
           <Text style={styles.highlight}>
-            💡 Suggestion: Schedule awareness campaigns early winter to maintain
-            engagement.
+            💡 Keep track of your busiest months to manage your schedule effectively!
           </Text>
         </View>
 
         <Text style={styles.footer}>
-          Data from MediCare system reports · Last updated: October 2025
+          Data from MediCare system · Last updated automatically
         </Text>
       </ScrollView>
     </View>
