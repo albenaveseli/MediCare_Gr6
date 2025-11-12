@@ -1,6 +1,17 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from "firebase/firestore";
+
+import { useEffect, useState } from "react";
+import {
+  Alert,
   Modal,
   ScrollView,
   StyleSheet,
@@ -10,10 +21,14 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
+import { auth, db } from "../../components/firebase";
 
 export default function ERecipeScreen() {
+  const [loggedDoctor, setLoggedDoctor] = useState({ name: "", specialty: "" });
 
-  const [patient, setPatient] = useState("");
+  const { appointmentId, patientName, patientId } = useLocalSearchParams();
+  const [patient, setPatient] = useState(patientName || "");
+
   const [diagnosis, setDiagnosis] = useState("");
   const [medications, setMedications] = useState("");
   const [steps, setSteps] = useState("");
@@ -28,9 +43,30 @@ export default function ERecipeScreen() {
   const [sendModal, setSendModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
-
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [missingFields, setMissingFields] = useState([]);
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const doctorQuery = query(
+        collection(db, "doctors"),
+        where("email", "==", user.email)
+      );
+      const doctorSnapshot = await getDocs(doctorQuery);
+
+      if (!doctorSnapshot.empty) {
+        const doctorData = doctorSnapshot.docs[0].data();
+        setLoggedDoctor({
+          name: doctorData.name,
+          specialty: doctorData.specialty,
+        });
+      }
+    };
+
+    fetchDoctor();
+  }, []);
 
   const handleGenerate = () => {
     const missing = [];
@@ -68,7 +104,56 @@ export default function ERecipeScreen() {
     setShowForm(true);
   };
 
-  const handleSend = () => setSendModal(true);
+  // ✅ Version i rregulluar – përdor vetëm `auth` nga importi
+  const handleSend = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert("Error", "You must be logged in.");
+        return;
+      }
+
+      // Gjej doktorin sipas email-it
+      const doctorQuery = query(
+        collection(db, "doctors"),
+        where("email", "==", user.email)
+      );
+      const doctorSnapshot = await getDocs(doctorQuery);
+
+      if (doctorSnapshot.empty) {
+        Alert.alert("Error", "Doctor profile not found.");
+        return;
+      }
+
+      const doctorData = {
+        id: doctorSnapshot.docs[0].id,
+        ...doctorSnapshot.docs[0].data(),
+      };
+
+      // 🔹 Krijo ID të re për dokumentin e ri
+      const prescriptionRef = doc(collection(db, "prescriptions"));
+
+      await setDoc(prescriptionRef, {
+        doctorId: doctorData.id,
+        patientId: patientId || "",
+        doctorName: doctorData.name,
+        profession: doctorData.specialty,
+        date: new Date().toLocaleDateString(),
+        medications: medications.split(",").map((m) => m.trim()),
+        diagnosis,
+        steps,
+        notes,
+        urgency,
+        createdAt: serverTimestamp(),
+      });
+
+      setSendModal(true); // shfaq modalin e suksesit
+    } catch (error) {
+      console.error("Error saving prescription:", error);
+      Alert.alert("Error", "Failed to save prescription.");
+    }
+  };
+
   const handleDelete = () => setDeleteModal(true);
 
   return (
@@ -86,20 +171,31 @@ export default function ERecipeScreen() {
       />
 
       <ScrollView style={styles.container}>
-        
         {showForm && (
           <View>
             <Text style={styles.title}>Prescription Details</Text>
 
             {[
-              { placeholder: "Patient Name", value: patient, setter: setPatient },
-              { placeholder: "Diagnosis", value: diagnosis, setter: setDiagnosis },
+              {
+                placeholder: "Patient Name",
+                value: patient,
+                setter: setPatient,
+              },
+              {
+                placeholder: "Diagnosis",
+                value: diagnosis,
+                setter: setDiagnosis,
+              },
               {
                 placeholder: "Medications (separate with commas)",
                 value: medications,
                 setter: setMedications,
               },
-              { placeholder: "Treatment Steps", value: steps, setter: setSteps },
+              {
+                placeholder: "Treatment Steps",
+                value: steps,
+                setter: setSteps,
+              },
             ].map((field, idx) => (
               <TextInput
                 key={idx}
@@ -155,7 +251,7 @@ export default function ERecipeScreen() {
                   onPress={handleViewRecipe}
                 >
                   <Text style={styles.buttonText}>View Prescription</Text>
-                </TouchableOpacity> 
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.halfButton, { backgroundColor: "#6c757d" }]}
                   onPress={handleClear}
@@ -167,15 +263,19 @@ export default function ERecipeScreen() {
           </View>
         )}
 
-        
         {viewRecipe && (
           <View style={styles.detailsContainer}>
             <ScrollView contentContainerStyle={styles.detailsContent}>
               <View style={styles.detailsHeaderRow}>
                 <View>
-                  <Text style={styles.detailsDoctor}>Dr. Ardit Hyseni</Text>
-                  <Text style={styles.detailsProfession}>Cardiologist</Text>
+                  <Text style={styles.detailsDoctor}>
+                    {loggedDoctor.name ? `${loggedDoctor.name}` : ""}
+                  </Text>
+                  <Text style={styles.detailsProfession}>
+                    {loggedDoctor.specialty || ""}
+                  </Text>
                 </View>
+
                 <Text style={styles.detailsDate}>
                   {new Date().toLocaleDateString()}
                 </Text>
@@ -235,43 +335,55 @@ export default function ERecipeScreen() {
           </View>
         )}
 
-        
+        {/* Modals */}
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.successText}>
                 Prescription generated successfully!
               </Text>
-              <View style={styles.modalButtonRow}>
-              
-                <TouchableOpacity
-                  style={[styles.modalButton, { backgroundColor: "#48c774" }]}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.modalButtonText}>OK</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#48c774" }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
 
-       
         <Modal visible={errorModalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={[styles.successText, { color: "#e74c3c" }]}>
                 Please fill out all required fields before generating.
               </Text>
-              <Text style={{ textAlign: "center", color: "#033d49", marginBottom: 15 }}>
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: "#033d49",
+                  marginBottom: 15,
+                }}
+              >
                 The following fields are missing:
               </Text>
               {missingFields.map((field, idx) => (
-                <Text key={idx} style={{ color: "#007ea7", fontWeight: "600", marginVertical: 2 }}>
+                <Text
+                  key={idx}
+                  style={{
+                    color: "#007ea7",
+                    fontWeight: "600",
+                    marginVertical: 2,
+                  }}
+                >
                   • {field}
                 </Text>
               ))}
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#e74c3c", marginTop: 15 }]}
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: "#e74c3c", marginTop: 15 },
+                ]}
                 onPress={() => setErrorModalVisible(false)}
               >
                 <Text style={styles.modalButtonText}>OK</Text>
@@ -280,7 +392,6 @@ export default function ERecipeScreen() {
           </View>
         </Modal>
 
-       
         {[
           {
             modal: sendModal,
@@ -343,11 +454,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     fontSize: 16,
     color: "#033d49",
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   label: {
     fontWeight: "700",
@@ -376,28 +482,13 @@ const styles = StyleSheet.create({
   },
   urgencyText: { fontWeight: "700", textAlign: "center", color: "#033d49" },
   dualButtonContainer: { flexDirection: "row", gap: 12, marginTop: 12 },
-  halfButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 14,
-    alignItems: "center",
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 3,
-  },
+  halfButton: { flex: 1, padding: 14, borderRadius: 14, alignItems: "center" },
   detailsContainer: {
     flex: 1,
     backgroundColor: "#e8f6f8",
     marginVertical: 10,
     borderRadius: 16,
     padding: 15,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
   },
   detailsContent: { padding: 10 },
   detailsHeaderRow: {
@@ -410,17 +501,12 @@ const styles = StyleSheet.create({
   detailsDate: { fontSize: 15, color: "#033d49" },
   separator: { height: 5, borderRadius: 3, marginVertical: 20 },
   cardSection: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 15,
     marginBottom: 15,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
-  value: { fontSize: 16, color: "#000000ff", marginTop: 4 },
+  value: { fontSize: 16, color: "#000", marginTop: 4 },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -432,11 +518,6 @@ const styles = StyleSheet.create({
     padding: 22,
     borderRadius: 16,
     alignItems: "center",
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
     width: "80%",
   },
   successText: {
@@ -445,10 +526,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: "center",
     color: "#033d49",
-  },
-  modalButtonRow: {
-    flexDirection: "row",
-    gap: 12,
   },
   modalButton: {
     paddingVertical: 12,
