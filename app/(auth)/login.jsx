@@ -14,23 +14,21 @@ import { auth, db } from "../../components/firebase";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [lastTwitterClick, setLastTwitterClick] = useState(0);
 
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-
     if (!trimmedEmail || !trimmedPassword) {
       Alert.alert("Error", "Please fill in both email and password!");
       return;
     }
-
     try {
       const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
       const user = userCredential.user;
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
       const role = trimmedEmail.endsWith("@doctor.com") ? "doctor" : "patient";
-
       if (userDoc.exists()) {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
@@ -59,7 +57,6 @@ export default function Login() {
       const userDoc = await getDoc(userRef);
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
-
       if (!userDoc.exists()) {
         await setDoc(userRef, {
           fullName: user.displayName || "",
@@ -71,7 +68,6 @@ export default function Login() {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
       }
-
       if (role === "doctor") router.replace("/(doctor)/home");
       else router.replace("/(patient)/home");
     } catch (error) {
@@ -88,7 +84,6 @@ export default function Login() {
       const userDoc = await getDoc(userRef);
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
-
       if (!userDoc.exists()) {
         await setDoc(userRef, {
           fullName: user.displayName || "",
@@ -109,6 +104,12 @@ export default function Login() {
   };
 
   const handleTwitterLogin = async () => {
+    const now = Date.now();
+    if (now - lastTwitterClick < 120000) {
+      Alert.alert("Wait", "You can’t click again yet!");
+      return;
+    }
+    setLastTwitterClick(now);
     try {
       const provider = new TwitterAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -117,7 +118,6 @@ export default function Login() {
       const userDoc = await getDoc(userRef);
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
-
       if (!userDoc.exists()) {
         await setDoc(userRef, {
           fullName: user.displayName || "",
@@ -129,7 +129,6 @@ export default function Login() {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
       }
-
       if (role === "doctor") router.replace("/(doctor)/home");
       else router.replace("/(patient)/home");
     } catch (error) {
@@ -141,7 +140,6 @@ export default function Login() {
     <View style={styles.container}>
       <Image source={require("../../assets/images/logo.jpg")} style={styles.logo} />
       <Text style={styles.title}>Welcome Back!</Text>
-
       <TextInput
         placeholder="Email"
         style={styles.input}
@@ -157,23 +155,18 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
-
       <TouchableOpacity style={[styles.button, { backgroundColor: "#007ea7" }]} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={[styles.button, { backgroundColor: "#DB4437" }]} onPress={handleGoogleLogin}>
         <Text style={styles.buttonText}>Login with Google</Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={[styles.button, { backgroundColor: "#333" }]} onPress={handleGitHubLogin}>
         <Text style={styles.buttonText}>Login with GitHub</Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={[styles.button, { backgroundColor: "#1DA1F2" }]} onPress={handleTwitterLogin}>
         <Text style={styles.buttonText}>Login with Twitter</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.link}>Don’t have an account? Sign Up</Text>
       </TouchableOpacity>
