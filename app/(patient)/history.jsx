@@ -1,35 +1,67 @@
-import { useState } from "react";
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getAuth } from "firebase/auth";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { db } from "../../components/firebase";
 import Header from "../../components/Header";
 
 export default function History() {
-  const [appointments] = useState([
-    { doctorName: "Dr. Arben Krasniqi", date: "2025-09-10", status: "Completed" },
-    { doctorName: "Dr. Elira Gashi", date: "2025-08-22", status: "Cancelled" },
-    { doctorName: "Dr. Besnik Hoxha", date: "2025-07-15", status: "Completed" },
-  ]);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const user = getAuth().currentUser;
 
-  const [documents] = useState([
-    { type: "Blood Test Report", date: "2025-09-11" },
-    { type: "X-Ray Result", date: "2025-08-25" },
-    { type: "Prescription File", date: "2025-07-20" },
-  ]);
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        if (!user) {
+          setLoading(false);
+          return;
+        }
+
+        const appointmentsRef = collection(db, "appointments");
+        const q = query(
+          appointmentsRef,
+          where("patientId", "==", user.uid),
+          orderBy("createdAt", "desc")
+        );
+
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setAppointments(data);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007ea7" />
+        <Text style={styles.loadingText}>Loading your appointments...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
-     
       <Header title="History" />
-
-      
       <ScrollView style={styles.scrollContainer}>
-        <Text style={styles.title}>Your Past Visits</Text>
-
+        <Text style={styles.title}>Your Past Appointments</Text>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Appointments</Text>
           {appointments.length > 0 ? (
             <FlatList
               data={appointments}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item) => item.id}
               scrollEnabled={false}
               renderItem={({ item }) => (
                 <View style={styles.card}>
@@ -42,41 +74,35 @@ export default function History() {
                     <Text style={styles.value}>{item.date}</Text>
                   </View>
                   <View style={styles.row}>
+                    <Text style={styles.label}>Time:</Text>
+                    <Text style={styles.value}>{item.time}</Text>
+                  </View>
+                  <View style={styles.row}>
                     <Text style={styles.label}>Status:</Text>
-                    <Text style={[styles.status, item.status === "Completed" ? styles.completed : styles.cancelled]}>
-                      {item.status}
+                    <Text
+                      style={[
+                        styles.status,
+                        item.status === "completed"
+                          ? styles.completed
+                          : item.status === "cancelled"
+                          ? styles.cancelled
+                          : styles.pending,
+                      ]}
+                    >
+                      {item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}
                     </Text>
                   </View>
+                  {item.notes ? (
+                    <View style={styles.row}>
+                      <Text style={styles.label}>Notes:</Text>
+                      <Text style={styles.value}>{item.notes}</Text>
+                    </View>
+                  ) : null}
                 </View>
               )}
             />
           ) : (
-            <Text style={styles.emptyText}>No past appointments yet.</Text>
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Uploaded Documents</Text>
-          {documents.length > 0 ? (
-            <FlatList
-              data={documents}
-              keyExtractor={(item, index) => index.toString()}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.card}>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Type:</Text>
-                    <Text style={styles.value}>{item.type}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>{item.date}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          ) : (
-            <Text style={styles.emptyText}>No uploaded documents yet.</Text>
+            <Text style={styles.emptyText}>You have no booked appointments yet.</Text>
           )}
         </View>
       </ScrollView>
@@ -119,9 +145,22 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   label: { fontSize: 15, color: "#4a6572", fontWeight: "500" },
-  value: { fontSize: 15, color: "#1f3c88", fontWeight: "500" },
+  value: { fontSize: 15, color: "#1f3c88", fontWeight: "500", maxWidth: "60%" },
   status: { fontWeight: "bold", fontSize: 15 },
   completed: { color: "#28a745" },
   cancelled: { color: "#dc3545" },
+  pending: { color: "#ffb300" },
   emptyText: { fontSize: 14, color: "#6b7280", textAlign: "center", marginTop: 10 },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e8f6f8",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#007ea7",
+    fontWeight: "500",
+  },
 });
