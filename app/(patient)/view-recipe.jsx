@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -7,71 +8,36 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { db } from "../../components/firebase";
 import Header from "../../components/Header";
 
 export default function ViewRecipeScreen() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const prescriptions = [
-    {
-      id: "1",
-      doctor: "Dr. Ardit Hyseni",
-      profession: "Cardiologist",
-      date: "13 Oct 2025",
-      medications: ["Amoxicillin 500mg", "Paracetamol 500mg"],
-      diagnosis: "Bacterial infection",
-      steps: "Take antibiotics for 7 days and get enough rest.",
-      notes: "Drink plenty of water. Avoid alcohol.",
-      urgency: "Normal",
-    },
-    {
-      id: "2",
-      doctor: "Dr. Dua Gashi",
-      profession: "Dermatologist",
-      date: "05 Oct 2025",
-      medications: ["Hydrocortisone Cream 1%"],
-      diagnosis: "Allergic dermatitis",
-      steps: "Apply the cream twice a day for 5 days.",
-      notes: "Avoid direct sun exposure.",
-      urgency: "Monitoring",
-    },
-    {
-      id: "3",
-      doctor: "Dr. Erzana Beqaj",
-      profession: "Neurologist",
-      date: "20 Sep 2025",
-      medications: ["Ibuprofen 200mg"],
-      diagnosis: "Migraine",
-      steps: "Use medication only during headache episodes.",
-      notes: "Reduce screen time and stay hydrated.",
-      urgency: "Urgent",
-    },
-    {
-      id: "4",
-      doctor: "Dr. Artan Krasniqi",
-      profession: "Cardiologist",
-      date: "01 Sep 2025",
-      medications: ["Aspirin 100mg", "Atorvastatin 10mg"],
-      diagnosis: "Hypertension",
-      steps: "Consult every 3 months for a check-up.",
-      notes: "Monitor blood pressure regularly.",
-      urgency: "Monitoring",
-    },
-    {
-      id: "5",
-      doctor: "Dr. Lirije Morina",
-      profession: "Pediatrician",
-      date: "10 Aug 2025",
-      medications: ["Vitamin C syrup 5ml"],
-      diagnosis: "Seasonal cold",
-      steps: "Give the recommended dosage for 5 days.",
-      notes: "Ensure rest and sufficient fluids.",
-      urgency: "Normal",
-    },
-  ];
+  useEffect(() => {
+    const fetchPrescriptions = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "prescriptions"));
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPrescriptions(data);
+      } catch (error) {
+        console.error("Error fetching prescriptions:", error);
+        Alert.alert("Error", "Failed to load prescriptions.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrescriptions();
+  }, []);
 
   const handleCopy = (prescription) => {
-    const message = `Prescription from ${prescription.doctor} copied successfully.`;
+    const message = `Prescription from ${prescription.doctorName} copied successfully.`;
     Alert.alert("Copied", message);
   };
 
@@ -82,53 +48,52 @@ export default function ViewRecipeScreen() {
         onBack={selectedRecipe ? () => setSelectedRecipe(null) : undefined}
       />
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
         {!selectedRecipe ? (
           <View style={styles.listWrapper}>
-            {prescriptions.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={[
-                  styles.listItem,
-                  item.urgency === "Urgent" && styles.urgentBorder,
-                  item.urgency === "Normal" && styles.normalBorder,
-                  item.urgency === "Monitoring" && styles.monitorBorder,
-                ]}
-                onPress={() => setSelectedRecipe(item)}
-              >
-                <View style={styles.listTextContainer}>
-                  <Text style={styles.doctorName}>{item.doctor}</Text>
-                  <Text style={styles.profession}>{item.profession}</Text>
-                  <Text style={styles.dateText}>{item.date}</Text>
-                </View>
-                <View
+            {loading ? (
+              <Text style={{ textAlign: "center", marginTop: 50 }}>Loading...</Text>
+            ) : prescriptions.length === 0 ? (
+              <Text style={{ textAlign: "center", marginTop: 50 }}>No prescriptions found.</Text>
+            ) : (
+              prescriptions.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
                   style={[
-                    styles.badge,
-                    item.urgency === "Urgent"
-                      ? styles.badgeUrgent
-                      : item.urgency === "Monitoring"
-                      ? styles.badgeMonitor
-                      : styles.badgeNormal,
+                    styles.listItem,
+                    item.urgency === "Emergency" && styles.urgentBorder,
+                    item.urgency === "Normal" && styles.normalBorder,
+                    item.urgency === "Medium" && styles.monitorBorder,
                   ]}
+                  onPress={() => setSelectedRecipe(item)}
                 >
-                  <Text style={styles.badgeText}>{item.urgency}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                  <View style={styles.listTextContainer}>
+                    <Text style={styles.doctorName}>{item.doctorName}</Text>
+                    <Text style={styles.profession}>{item.profession}</Text>
+                    <Text style={styles.dateText}>{item.date}</Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.badge,
+                      item.urgency === "Emergency"
+                        ? styles.badgeUrgent
+                        : item.urgency === "Medium"
+                        ? styles.badgeMonitor
+                        : styles.badgeNormal,
+                    ]}
+                  >
+                    <Text style={styles.badgeText}>{item.urgency}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            )}
           </View>
         ) : (
           <View style={styles.detailsWrapper}>
             <View style={styles.detailsHeaderRow}>
               <View>
-                <Text style={styles.detailsDoctor}>
-                  {selectedRecipe.doctor}
-                </Text>
-                <Text style={styles.detailsProfession}>
-                  {selectedRecipe.profession}
-                </Text>
+                <Text style={styles.detailsDoctor}>{selectedRecipe.doctorName}</Text>
+                <Text style={styles.detailsProfession}>{selectedRecipe.profession}</Text>
               </View>
               <Text style={styles.detailsDate}>{selectedRecipe.date}</Text>
             </View>
@@ -136,9 +101,9 @@ export default function ViewRecipeScreen() {
             <View
               style={[
                 styles.separator,
-                selectedRecipe.urgency === "Urgent"
+                selectedRecipe.urgency === "Emergency"
                   ? { backgroundColor: "#d9534f" }
-                  : selectedRecipe.urgency === "Monitoring"
+                  : selectedRecipe.urgency === "Medium"
                   ? { backgroundColor: "#f1c40f" }
                   : { backgroundColor: "#4CAF50" },
               ]}
@@ -151,7 +116,7 @@ export default function ViewRecipeScreen() {
 
             <View style={styles.cardSection}>
               <Text style={styles.label}>Medications</Text>
-              {selectedRecipe.medications.map((m, i) => (
+              {selectedRecipe.medications?.map((m, i) => (
                 <Text key={i} style={styles.value}>
                   • {m}
                 </Text>
@@ -170,12 +135,12 @@ export default function ViewRecipeScreen() {
               </View>
             )}
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.copyButton}
               onPress={() => handleCopy(selectedRecipe)}
             >
               <Text style={styles.copyButtonText}>Copy Prescription</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         )}
       </ScrollView>
