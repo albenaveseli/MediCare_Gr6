@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import {
   GithubAuthProvider,
   GoogleAuthProvider,
+  TwitterAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup
 } from "firebase/auth";
@@ -28,14 +29,11 @@ export default function Login() {
       const user = userCredential.user;
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
-
       const role = trimmedEmail.endsWith("@doctor.com") ? "doctor" : "patient";
 
       if (userDoc.exists()) {
         const data = userDoc.data();
-        if (data.role !== role) {
-          await updateDoc(userRef, { role });
-        }
+        if (data.role !== role) await updateDoc(userRef, { role });
         if (role === "doctor") router.replace("/(doctor)/home");
         else router.replace("/(patient)/home");
       } else {
@@ -59,7 +57,6 @@ export default function Login() {
       const user = result.user;
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
-
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
 
@@ -72,9 +69,7 @@ export default function Login() {
         });
       } else {
         const data = userDoc.data();
-        if (data.role !== role) {
-          await updateDoc(userRef, { role });
-        }
+        if (data.role !== role) await updateDoc(userRef, { role });
       }
 
       if (role === "doctor") router.replace("/(doctor)/home");
@@ -89,10 +84,8 @@ export default function Login() {
       const provider = new GithubAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
-
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
 
@@ -106,10 +99,7 @@ export default function Login() {
         router.replace("/(auth)/onboarding");
       } else {
         const data = userDoc.data();
-        if (data.role !== role) {
-          await updateDoc(userRef, { role });
-        }
-
+        if (data.role !== role) await updateDoc(userRef, { role });
         if (role === "doctor") router.replace("/(doctor)/home");
         else router.replace("/(patient)/home");
       }
@@ -118,6 +108,34 @@ export default function Login() {
     }
   };
 
+  const handleTwitterLogin = async () => {
+    try {
+      const provider = new TwitterAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      const email = user.email || "";
+      const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
+
+      if (!userDoc.exists()) {
+        await setDoc(userRef, {
+          fullName: user.displayName || "",
+          email,
+          role,
+          createdAt: serverTimestamp(),
+        });
+      } else {
+        const data = userDoc.data();
+        if (data.role !== role) await updateDoc(userRef, { role });
+      }
+
+      if (role === "doctor") router.replace("/(doctor)/home");
+      else router.replace("/(patient)/home");
+    } catch (error) {
+      Alert.alert("Twitter Login Error", error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -152,7 +170,10 @@ export default function Login() {
         <Text style={styles.buttonText}>Login with GitHub</Text>
       </TouchableOpacity>
 
-     
+      <TouchableOpacity style={[styles.button, { backgroundColor: "#1DA1F2" }]} onPress={handleTwitterLogin}>
+        <Text style={styles.buttonText}>Login with Twitter</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.link}>Don’t have an account? Sign Up</Text>
       </TouchableOpacity>
