@@ -1,12 +1,31 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { getAuth } from "firebase/auth";
-import { collection, doc, getDocs, query, updateDoc, where, } from "firebase/firestore";
+import { Alert } from "react-native";
+
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { db } from "../../components/firebase";
 
 export default function MyAppointmentsScreen() {
+  const router = useRouter();
+
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [doctor, setDoctor] = useState(null);
@@ -74,7 +93,8 @@ export default function MyAppointmentsScreen() {
       );
       Alert.alert(
         "Success",
-        `Appointment ${newStatus === "approved" ? "confirmed" : "cancelled"
+        `Appointment ${
+          newStatus === "approved" ? "confirmed" : "cancelled"
         } successfully!`
       );
     } catch (error) {
@@ -112,7 +132,10 @@ export default function MyAppointmentsScreen() {
   const groupAppointmentsByDate = (list) => {
     const grouped = {};
     list.forEach((apt) => {
-      const key = apt.date instanceof Date ? apt.date.toDateString() : new Date(apt.date).toDateString();
+      const key =
+        apt.date instanceof Date
+          ? apt.date.toDateString()
+          : new Date(apt.date).toDateString();
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(apt);
     });
@@ -152,8 +175,7 @@ export default function MyAppointmentsScreen() {
         {Object.keys(groupedAppointments).length > 0 ? (
           Object.entries(groupedAppointments)
             .sort(
-              ([dateA], [dateB]) =>
-                new Date(dateA) - new Date(dateB) // nga më e hershmja tek më e vona
+              ([dateA], [dateB]) => new Date(dateA) - new Date(dateB) // nga më e hershmja tek më e vona
             )
             .map(([dateKey, dayAppointments]) => (
               <View key={dateKey} style={styles.daySection}>
@@ -192,7 +214,10 @@ export default function MyAppointmentsScreen() {
                         </Text>
                         {appointment.notes && (
                           <Text
-                            style={[styles.reason, { color: "#005f73", marginTop: 4 }]}
+                            style={[
+                              styles.reason,
+                              { color: "#005f73", marginTop: 4 },
+                            ]}
                           >
                             <Ionicons
                               name="chatbubble-ellipses-outline"
@@ -202,6 +227,28 @@ export default function MyAppointmentsScreen() {
                             {appointment.notes}
                           </Text>
                         )}
+                        <TouchableOpacity
+                          style={styles.createRecipeButton}
+                          onPress={() =>
+                            router.push({
+                              pathname: "/erecipe",
+                              params: {
+                                appointmentId: appointment.id,
+                                patientName: appointment.patientName,
+                                 patientId: appointment.patientId, 
+                              },
+                            })
+                          }
+                        >
+                          <Ionicons
+                            name="add-circle-outline"
+                            size={16}
+                            color="#fff"
+                          />
+                          <Text style={styles.createRecipeText}>
+                            Create Recipe
+                          </Text>
+                        </TouchableOpacity>
                       </View>
                     </View>
 
@@ -223,13 +270,17 @@ export default function MyAppointmentsScreen() {
                         <View style={styles.actionButtons}>
                           <TouchableOpacity
                             style={[styles.actionButton, styles.approveButton]}
-                            onPress={() => handleStatusChange(appointment.id, "approved")}
+                            onPress={() =>
+                              handleStatusChange(appointment.id, "approved")
+                            }
                           >
                             <Ionicons name="checkmark" size={16} color="#fff" />
                           </TouchableOpacity>
                           <TouchableOpacity
                             style={[styles.actionButton, styles.cancelButton]}
-                            onPress={() => handleStatusChange(appointment.id, "cancelled")}
+                            onPress={() =>
+                              handleStatusChange(appointment.id, "cancelled")
+                            }
                           >
                             <Ionicons name="close" size={16} color="#fff" />
                           </TouchableOpacity>
@@ -243,7 +294,9 @@ export default function MyAppointmentsScreen() {
                             styles.cancelButton,
                             styles.singleButton,
                           ]}
-                          onPress={() => handleStatusChange(appointment.id, "cancelled")}
+                          onPress={() =>
+                            handleStatusChange(appointment.id, "cancelled")
+                          }
                         >
                           <Ionicons name="close" size={16} color="#fff" />
                         </TouchableOpacity>
@@ -252,8 +305,7 @@ export default function MyAppointmentsScreen() {
                   </View>
                 ))}
               </View>
-            )
-            )
+            ))
         ) : (
           <View style={styles.emptyState}>
             <Ionicons name="calendar-outline" size={48} color="#a0c4c7" />
@@ -269,7 +321,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#e8f6f8",
-    paddingTop: 30
+    paddingTop: 30,
   },
   content: {
     padding: 16,
@@ -379,7 +431,7 @@ const styles = StyleSheet.create({
     color: "#007ea7",
     marginBottom: 16,
     textAlign: "center",
-    paddingHorizontal: 8
+    paddingHorizontal: 8,
   },
   center: {
     flex: 1,
@@ -387,5 +439,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#e8f6f8",
   },
-
+  createRecipeButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#00b4d8",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    marginTop: 6,
+  },
+  createRecipeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+    marginLeft: 4,
+  },
 });
