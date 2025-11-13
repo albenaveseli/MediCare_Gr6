@@ -2,11 +2,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
-import { collection, doc, onSnapshot, query, setDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,37 +38,83 @@ export default function ProfileCard({ roleType = "Patient" }) {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [allergies, setAllergies] = useState("No");
+
+  // Doctor specific
+  const [doctorDetails, setDoctorDetails] = useState(null);
+
   const role = roleType;
 
   // 🔹 Merr të dhënat nga Firestore
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    const q = query(collection(db, "patients"), where("userId", "==", user.uid));
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-        const data = lastDoc.data();
-
-        setName(data.name || "");
-        setEmail(data.email || user.email || "");
-        setBirthdate(data.birthDate || "");
-        setGender(data.gender || "Female");
-        setHeight(data.height?.toString() || "");
-        setWeight(data.weight?.toString() || "");
-        setAllergies(data.hasAllergy ? "Yes" : "No");
-
-        setDocId(lastDoc.id);
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-    });
 
-    return () => unsubscribe();
+      try {
+        if (role === "doctor") {
+          // Merr të dhënat nga koleksioni "doctors" sipas emailit të përdoruesit
+          const doctorsRef = collection(db, "doctors");
+          const q = query(doctorsRef, where("email", "==", user.email));
+          const snapshot = await getDocs(q);
+
+          if (!snapshot.empty) {
+            const docData = snapshot.docs[0].data();
+            setName(docData.name || "");
+            setEmail(docData.email || "");
+            setBirthdate("");
+            setGender("");
+            setHeight("");
+            setWeight("");
+            setAllergies("");
+
+            setDoctorDetails({
+              description: docData.description,
+              education: docData.education,
+              experience: docData.experience,
+              image: docData.image,
+              languages: docData.languages,
+              rating: docData.rating,
+              price: docData.price,
+              speciality: docData.specialty,
+            });
+          }
+          setLoading(false);
+        } else {
+          // Merr të dhënat si pacient
+          const q = query(
+            collection(db, "patients"),
+            where("userId", "==", user.uid)
+          );
+          const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            if (!querySnapshot.empty) {
+              const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+              const data = lastDoc.data();
+
+              setName(data.name || "");
+              setEmail(data.email || user.email || "");
+              setBirthdate(data.birthDate || "");
+              setGender(data.gender || "Female");
+              setHeight(data.height?.toString() || "");
+              setWeight(data.weight?.toString() || "");
+              setAllergies(data.hasAllergy ? "Yes" : "No");
+
+              setDocId(lastDoc.id);
+            }
+            setLoading(false);
+          });
+
+          return () => unsubscribe();
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   if (loading) {
@@ -116,10 +171,48 @@ export default function ProfileCard({ roleType = "Patient" }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.infoCard}>
-        {isEditing ? (
+        {role === "doctor" && doctorDetails ? (
           <>
+            <Image
+              source={{ uri: doctorDetails.image }}
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 50,
+                alignSelf: "center",
+                marginBottom: 15,
+              }}
+            />
+            <Text style={styles.label}>Name: {name}</Text>
+            <Text style={styles.label}>Email: {email}</Text>
+            <Text style={styles.label}>
+              Speciality: {doctorDetails.speciality}
+            </Text>
+            <Text style={styles.label}>Price: {doctorDetails.price}</Text>
+            <Text style={styles.label}>Rating: {doctorDetails.rating}</Text>
+            <Text style={styles.label}>
+              Education: {doctorDetails.education}
+            </Text>
+            <Text style={styles.label}>
+              Experience: {doctorDetails.experience}
+            </Text>
+            <Text style={styles.label}>
+              Languages: {doctorDetails.languages.join(", ")}
+            </Text>
+            <Text style={styles.label}>
+              Description: {doctorDetails.description}
+            </Text>
+          </>
+        ) : isEditing ? (
+          <>
+            {/* Pjesa editable per pacient */}
             <View style={styles.inputRow}>
-              <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <TextInput
                 style={styles.input}
                 value={name}
@@ -127,9 +220,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
                 placeholder="Full Name"
               />
             </View>
-
             <View style={styles.inputRow}>
-              <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="mail-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <TextInput
                 style={styles.input}
                 value={email}
@@ -137,9 +234,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
                 placeholder="Email"
               />
             </View>
-
             <View style={styles.inputRow}>
-              <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <TextInput
                 style={styles.input}
                 value={birthdate}
@@ -147,9 +248,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
                 placeholder="Birthdate (YYYY-MM-DD)"
               />
             </View>
-
             <View style={styles.inputRow}>
-              <Ionicons name="male-female-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="male-female-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <View style={styles.pickerContainer}>
                 <Picker selectedValue={gender} onValueChange={setGender}>
                   <Picker.Item label="Female" value="Female" />
@@ -158,9 +263,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
                 </Picker>
               </View>
             </View>
-
             <View style={styles.inputRow}>
-              <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="resize-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <TextInput
                 style={styles.input}
                 value={height}
@@ -169,9 +278,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
                 keyboardType="numeric"
               />
             </View>
-
             <View style={styles.inputRow}>
-              <Ionicons name="barbell-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="barbell-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <TextInput
                 style={styles.input}
                 value={weight}
@@ -180,9 +293,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
                 keyboardType="numeric"
               />
             </View>
-
             <View style={styles.inputRow}>
-              <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
+              <Ionicons
+                name="medkit-outline"
+                size={20}
+                color="#007ea7"
+                style={styles.icon}
+              />
               <View style={styles.pickerContainer}>
                 <Picker selectedValue={allergies} onValueChange={setAllergies}>
                   <Picker.Item label="Yes" value="Yes" />
@@ -193,6 +310,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
           </>
         ) : (
           <>
+            {/* Pjesa view për pacient */}
             <Text style={styles.label}>Name: {name}</Text>
             <Text style={styles.label}>Email: {email}</Text>
             <Text style={styles.label}>Birth Date: {birthdate}</Text>
@@ -204,14 +322,24 @@ export default function ProfileCard({ roleType = "Patient" }) {
         )}
 
         <View style={styles.buttonsContainer}>
-          {isEditing ? (
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveText}>Save Changes</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-              <Text style={styles.editText}>Edit Profile</Text>
-            </TouchableOpacity>
+          {role !== "doctor" && (
+            <>
+              {isEditing ? (
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={handleSave}
+                >
+                  <Text style={styles.saveText}>Save Changes</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={handleEdit}
+                >
+                  <Text style={styles.editText}>Edit Profile</Text>
+                </TouchableOpacity>
+              )}
+            </>
           )}
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutText}>Log Out</Text>
