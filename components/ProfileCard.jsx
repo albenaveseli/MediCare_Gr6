@@ -43,6 +43,16 @@ export default function ProfileCard({ roleType = "Patient" }) {
   const [doctorDetails, setDoctorDetails] = useState(null);
 
   const role = roleType;
+  // 🔹 Pacienti: zgjedh foto bazuar në gender
+  const getPatientAvatar = () => {
+    if (gender === "F") {
+      return "https://www.w3schools.com/howto/img_avatar2.png"; // Foto femre
+    } else if (gender === "M") {
+      return "https://www.w3schools.com/howto/img_avatar.png"; // Foto mashkull
+    } else {
+      return "https://www.w3schools.com/howto/img_avatar.png"; // Foto default
+    }
+  };
 
   // 🔹 Merr të dhënat nga Firestore
   useEffect(() => {
@@ -55,7 +65,6 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
       try {
         if (role === "doctor") {
-          // Merr të dhënat nga koleksioni "doctors" sipas emailit të përdoruesit
           const doctorsRef = collection(db, "doctors");
           const q = query(doctorsRef, where("email", "==", user.email));
           const snapshot = await getDocs(q);
@@ -83,26 +92,34 @@ export default function ProfileCard({ roleType = "Patient" }) {
           }
           setLoading(false);
         } else {
-          // Merr të dhënat si pacient
-          const q = query(
+          // Pacienti: merr emrin nga users.fullName
+          const usersQuery = query(
+            collection(db, "users"),
+            where("email", "==", user.email)
+          );
+          const usersSnapshot = await getDocs(usersQuery);
+          let fullName = "";
+          if (!usersSnapshot.empty) {
+            fullName = usersSnapshot.docs[0].data().fullName || "";
+          }
+
+          const patientsQuery = query(
             collection(db, "patients"),
             where("userId", "==", user.uid)
           );
-          const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            if (!querySnapshot.empty) {
-              const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-              const data = lastDoc.data();
+          const unsubscribe = onSnapshot(patientsQuery, (querySnapshot) => {
+            const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+            const data = lastDoc?.data();
 
-              setName(data.name || "");
-              setEmail(data.email || user.email || "");
-              setBirthdate(data.birthDate || "");
-              setGender(data.gender || "Female");
-              setHeight(data.height?.toString() || "");
-              setWeight(data.weight?.toString() || "");
-              setAllergies(data.hasAllergy ? "Yes" : "No");
+            setName(fullName); // ✅ emri nga users.fullName
+            setEmail(data?.email || user.email || "");
+            setBirthdate(data?.birthDate || "");
+            setGender(data?.gender || "Female");
+            setHeight(data?.height?.toString() || "");
+            setWeight(data?.weight?.toString() || "");
+            setAllergies(data?.hasAllergy ? "Yes" : "No");
 
-              setDocId(lastDoc.id);
-            }
+            setDocId(lastDoc?.id || null);
             setLoading(false);
           });
 
@@ -175,13 +192,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
           <>
             <Image
               source={{ uri: doctorDetails.image }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-                alignSelf: "center",
-                marginBottom: 15,
-              }}
+              style={styles.profileImage}
             />
             <Text style={styles.label}>Name: {name}</Text>
             <Text style={styles.label}>Email: {email}</Text>
@@ -203,121 +214,136 @@ export default function ProfileCard({ roleType = "Patient" }) {
               Description: {doctorDetails.description}
             </Text>
           </>
-        ) : isEditing ? (
-          <>
-            {/* Pjesa editable per pacient */}
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="person-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                placeholder="Full Name"
-              />
-            </View>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Email"
-              />
-            </View>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="calendar-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <TextInput
-                style={styles.input}
-                value={birthdate}
-                onChangeText={setBirthdate}
-                placeholder="Birthdate (YYYY-MM-DD)"
-              />
-            </View>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="male-female-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <View style={styles.pickerContainer}>
-                <Picker selectedValue={gender} onValueChange={setGender}>
-                  <Picker.Item label="Female" value="Female" />
-                  <Picker.Item label="Male" value="Male" />
-                  <Picker.Item label="Other" value="Other" />
-                </Picker>
-              </View>
-            </View>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="resize-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <TextInput
-                style={styles.input}
-                value={height}
-                onChangeText={setHeight}
-                placeholder="Height (cm)"
-                keyboardType="numeric"
-              />
-            </View>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="barbell-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <TextInput
-                style={styles.input}
-                value={weight}
-                onChangeText={setWeight}
-                placeholder="Weight (kg)"
-                keyboardType="numeric"
-              />
-            </View>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="medkit-outline"
-                size={20}
-                color="#007ea7"
-                style={styles.icon}
-              />
-              <View style={styles.pickerContainer}>
-                <Picker selectedValue={allergies} onValueChange={setAllergies}>
-                  <Picker.Item label="Yes" value="Yes" />
-                  <Picker.Item label="No" value="No" />
-                </Picker>
-              </View>
-            </View>
-          </>
         ) : (
           <>
-            {/* Pjesa view për pacient */}
-            <Text style={styles.label}>Name: {name}</Text>
-            <Text style={styles.label}>Email: {email}</Text>
-            <Text style={styles.label}>Birth Date: {birthdate}</Text>
-            <Text style={styles.label}>Gender: {gender}</Text>
-            <Text style={styles.label}>Height: {height} cm</Text>
-            <Text style={styles.label}>Weight: {weight} kg</Text>
-            <Text style={styles.label}>Medication Allergy: {allergies}</Text>
+            {/* Pacienti: default profile image */}
+            <Image
+              source={{ uri: getPatientAvatar() }}
+              style={styles.profileImage}
+            />
+
+            {isEditing ? (
+              <>
+                {/* Editable inputs */}
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="person-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Full Name"
+                    editable={false} // 📌 Pacienti nuk mund ta ndryshojë emrin
+                  />
+                </View>
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="mail-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Email"
+                  />
+                </View>
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="calendar-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={birthdate}
+                    onChangeText={setBirthdate}
+                    placeholder="Birthdate (YYYY-MM-DD)"
+                  />
+                </View>
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="male-female-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <View style={styles.pickerContainer}>
+                    <Picker selectedValue={gender} onValueChange={setGender}>
+                      <Picker.Item label="Female" value="Female" />
+                      <Picker.Item label="Male" value="Male" />
+                      <Picker.Item label="Other" value="Other" />
+                    </Picker>
+                  </View>
+                </View>
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="resize-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={height}
+                    onChangeText={setHeight}
+                    placeholder="Height (cm)"
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="barbell-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={weight}
+                    onChangeText={setWeight}
+                    placeholder="Weight (kg)"
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={styles.inputRow}>
+                  <Ionicons
+                    name="medkit-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={allergies}
+                      onValueChange={setAllergies}
+                    >
+                      <Picker.Item label="Yes" value="Yes" />
+                      <Picker.Item label="No" value="No" />
+                    </Picker>
+                  </View>
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={styles.label}>Name: {name}</Text>
+                <Text style={styles.label}>Email: {email}</Text>
+                <Text style={styles.label}>Birth Date: {birthdate}</Text>
+                <Text style={styles.label}>Gender: {gender}</Text>
+                <Text style={styles.label}>Height: {height} cm</Text>
+                <Text style={styles.label}>Weight: {weight} kg</Text>
+                <Text style={styles.label}>
+                  Medication Allergy: {allergies}
+                </Text>
+              </>
+            )}
           </>
         )}
 
@@ -367,6 +393,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignSelf: "center",
+    marginBottom: 15,
   },
   inputRow: {
     flexDirection: "row",
