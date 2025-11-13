@@ -1,7 +1,14 @@
 import { getAuth } from "firebase/auth";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { db } from "../../components/firebase";
 import Header from "../../components/Header";
 
@@ -19,11 +26,7 @@ export default function History() {
         }
 
         const appointmentsRef = collection(db, "appointments");
-        const q = query(
-          appointmentsRef,
-          where("patientId", "==", user.uid),
-          orderBy("createdAt", "desc")
-        );
+        const q = query(appointmentsRef, where("patientId", "==", user.uid));
 
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map((doc) => ({
@@ -89,7 +92,8 @@ export default function History() {
                           : styles.pending,
                       ]}
                     >
-                      {item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}
+                      {item.status?.charAt(0).toUpperCase() +
+                        item.status?.slice(1)}
                     </Text>
                   </View>
                   {item.notes ? (
@@ -102,7 +106,9 @@ export default function History() {
               )}
             />
           ) : (
-            <Text style={styles.emptyText}>You have no booked appointments yet.</Text>
+            <Text style={styles.emptyText}>
+              You have no booked appointments yet.
+            </Text>
           )}
         </View>
       </ScrollView>
@@ -150,7 +156,12 @@ const styles = StyleSheet.create({
   completed: { color: "#28a745" },
   cancelled: { color: "#dc3545" },
   pending: { color: "#ffb300" },
-  emptyText: { fontSize: 14, color: "#6b7280", textAlign: "center", marginTop: 10 },
+  emptyText: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    marginTop: 10,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
