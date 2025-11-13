@@ -66,7 +66,7 @@ export default function DoctorList() {
 
         <View style={styles.ratingContainer}>
           <Ionicons name="star" size={16} color="#FFD700" />
-          <Text style={styles.rating}>{item.rating}</Text>
+          <Text style={styles.rating}>{item.rating.toFixed(1)}</Text>
           <Text style={styles.experience}>• {item.experience}</Text>
         </View>
       </View>
