@@ -21,14 +21,13 @@ export default function Analytics() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         const user = auth.currentUser;
         if (!user) return;
 
-
+        // Gjej doktorin sipas emailit të kyçur
         const doctorQuery = query(
           collection(db, "doctors"),
           where("email", "==", user.email)
@@ -41,28 +40,42 @@ export default function Analytics() {
           return;
         }
 
-        const doctorData = doctorSnapshot.docs[0].data();
-        const doctorId = doctorSnapshot.docs[0].id;
+        const doctorDoc = doctorSnapshot.docs[0];
+        const doctorId = doctorDoc.id;
 
-
+        // Query për të gjithë appointments të doktorit
         const appointmentsQuery = query(
           collection(db, "appointments"),
           where("doctorId", "==", doctorId)
         );
 
+        // Monitoro live me onSnapshot
         const unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => {
           const monthlyCounts = {
-            Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
-            Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0,
+            Jan: 0,
+            Feb: 0,
+            Mar: 0,
+            Apr: 0,
+            May: 0,
+            Jun: 0,
+            Jul: 0,
+            Aug: 0,
+            Sep: 0,
+            Oct: 0,
+            Nov: 0,
+            Dec: 0,
           };
 
           snapshot.forEach((docSnap) => {
             const data = docSnap.data();
 
+            // Numëro vetëm appointments me status approved
             if (data.status?.toLowerCase() === "approved" && data.date) {
               try {
                 const dateObj = new Date(data.date);
-                const monthName = dateObj.toLocaleString("en-US", { month: "short" });
+                const monthName = dateObj.toLocaleString("en-US", {
+                  month: "short",
+                });
                 if (monthlyCounts[monthName] !== undefined) {
                   monthlyCounts[monthName] += 1;
                 }
@@ -72,10 +85,13 @@ export default function Analytics() {
             }
           });
 
-          const formattedData = Object.entries(monthlyCounts).map(([month, visits]) => ({
-            month,
-            visits,
-          }));
+          // Transformo objektin në array për render
+          const formattedData = Object.entries(monthlyCounts).map(
+            ([month, visits]) => ({
+              month,
+              visits,
+            })
+          );
 
           setMonthlyData(formattedData);
           setLoading(false);
@@ -89,11 +105,16 @@ export default function Analytics() {
     };
 
     fetchAnalytics();
-  }, []); 
+  }, []);
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <ActivityIndicator size="large" color="#007ea7" />
       </View>
     );
@@ -119,15 +140,18 @@ export default function Analytics() {
         <View style={styles.insightCard}>
           <Text style={styles.title}>Insights & Observations</Text>
           <Text style={styles.text}>
-            Data shows monthly distribution of patient visits based on real appointment records.
+            Data shows monthly distribution of patient visits based on real
+            appointment records.
           </Text>
           <Text style={styles.highlight}>
-            💡 Keep track of your busiest months to manage your schedule effectively!
+            💡 Keep track of your busiest months to manage your schedule
+            effectively!
           </Text>
         </View>
 
         <Text style={styles.footer}>
-          Data from MediCare system · Updates automatically when appointments are approved ✅
+          Data from MediCare system · Updates automatically when appointments
+          are approved ✅
         </Text>
       </ScrollView>
     </View>
