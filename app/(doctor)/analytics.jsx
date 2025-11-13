@@ -1,7 +1,19 @@
 import { router } from "expo-router";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import Header from "../../components/Header";
 import { auth, db } from "../../components/firebase";
 
@@ -9,49 +21,75 @@ export default function Analytics() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         const user = auth.currentUser;
         if (!user) return;
 
-        // Merr të gjitha takimet për këtë doktor
-        const q = query(collection(db, "appointments"), where("doctorId", "==", user.uid));
-        const snapshot = await getDocs(q);
 
-        // Inicizo numërimin për çdo muaj
-        const monthlyCounts = {
-          Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
-          Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0,
-        };
+        const doctorQuery = query(
+          collection(db, "doctors"),
+          where("email", "==", user.email)
+        );
+        const doctorSnapshot = await getDocs(doctorQuery);
 
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.date) {
-            const date = new Date(data.date);
-            const monthName = date.toLocaleString("en-US", { month: "short" });
-            if (monthlyCounts[monthName] !== undefined) {
-              monthlyCounts[monthName] += 1;
+        if (doctorSnapshot.empty) {
+          console.warn("⚠️ Doctor profile not found for analytics.");
+          setLoading(false);
+          return;
+        }
+
+        const doctorData = doctorSnapshot.docs[0].data();
+        const doctorId = doctorSnapshot.docs[0].id;
+
+
+        const appointmentsQuery = query(
+          collection(db, "appointments"),
+          where("doctorId", "==", doctorId)
+        );
+
+        const unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => {
+          const monthlyCounts = {
+            Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
+            Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0,
+          };
+
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+
+            if (data.status?.toLowerCase() === "approved" && data.date) {
+              try {
+                const dateObj = new Date(data.date);
+                const monthName = dateObj.toLocaleString("en-US", { month: "short" });
+                if (monthlyCounts[monthName] !== undefined) {
+                  monthlyCounts[monthName] += 1;
+                }
+              } catch (err) {
+                console.log("Invalid date format:", data.date);
+              }
             }
-          }
+          });
+
+          const formattedData = Object.entries(monthlyCounts).map(([month, visits]) => ({
+            month,
+            visits,
+          }));
+
+          setMonthlyData(formattedData);
+          setLoading(false);
         });
 
-        // Kthe në formë liste për afishim
-        const formattedData = Object.entries(monthlyCounts).map(([month, visits]) => ({
-          month,
-          visits,
-        }));
-
-        setMonthlyData(formattedData);
+        return () => unsubscribe();
       } catch (error) {
         console.error("Error fetching analytics:", error);
-      } finally {
         setLoading(false);
       }
     };
 
     fetchAnalytics();
-  }, []);
+  }, []); 
 
   if (loading) {
     return (
@@ -89,7 +127,7 @@ export default function Analytics() {
         </View>
 
         <Text style={styles.footer}>
-          Data from MediCare system · Last updated automatically
+          Data from MediCare system · Updates automatically when appointments are approved ✅
         </Text>
       </ScrollView>
     </View>
