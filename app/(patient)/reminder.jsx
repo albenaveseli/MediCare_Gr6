@@ -18,13 +18,11 @@ export default function Reminder() {
   const [newMedicineName, setNewMedicineName] = useState("");
   const [newMedicineTime, setNewMedicineTime] = useState("");
 
-  // Kontrollon nëse koha është në formatin e duhur (HH:MM AM/PM)
   const isValidTime = (time) => {
     const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
     return regex.test(time);
   };
 
-  // Ngarkon ilaçet e ruajtura nga AsyncStorage kur hapet faqja
   useEffect(() => {
     const loadMedicines = async () => {
       const saved = await AsyncStorage.getItem("medicines");
@@ -33,12 +31,10 @@ export default function Reminder() {
     loadMedicines();
   }, []);
 
-  // Ruaj automatikisht çdo herë që ndryshon lista e ilaçeve
   useEffect(() => {
     AsyncStorage.setItem("medicines", JSON.stringify(medicines));
   }, [medicines]);
 
-  // Shton një ilaç të ri dhe krijon njoftim për të
   const addMedicine = async () => {
     if (!newMedicineName || !newMedicineTime) {
       Alert.alert("⚠️ Error", "Please enter both medicine name and time");
@@ -58,7 +54,6 @@ export default function Reminder() {
 
     setMedicines((prev) => [...prev, newMed]);
 
-    // Planifiko njoftimin lokal për këtë ilaç
     await scheduleNotification(newMedicineName, newMedicineTime);
 
     Alert.alert("✅ Success", "Medicine reminder added and notification scheduled!");
@@ -66,7 +61,6 @@ export default function Reminder() {
     setNewMedicineTime("");
   };
 
-  // Fshin një ilaç nga lista
   const deleteMedicine = async (id) => {
     const updated = medicines.filter((m) => m.id !== id);
     setMedicines(updated);

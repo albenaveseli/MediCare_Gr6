@@ -27,7 +27,6 @@ export default function Analytics() {
         const user = auth.currentUser;
         if (!user) return;
 
-        // Gjej doktorin sipas emailit të kyçur
         const doctorQuery = query(
           collection(db, "doctors"),
           where("email", "==", user.email)
@@ -43,13 +42,11 @@ export default function Analytics() {
         const doctorDoc = doctorSnapshot.docs[0];
         const doctorId = doctorDoc.id;
 
-        // Query për të gjithë appointments të doktorit
         const appointmentsQuery = query(
           collection(db, "appointments"),
           where("doctorId", "==", doctorId)
         );
 
-        // Monitoro live me onSnapshot
         const unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => {
           const monthlyCounts = {
             Jan: 0,
@@ -69,7 +66,6 @@ export default function Analytics() {
           snapshot.forEach((docSnap) => {
             const data = docSnap.data();
 
-            // Numëro vetëm appointments me status approved
             if (data.status?.toLowerCase() === "approved" && data.date) {
               try {
                 const dateObj = new Date(data.date);
@@ -85,7 +81,6 @@ export default function Analytics() {
             }
           });
 
-          // Transformo objektin në array për render
           const formattedData = Object.entries(monthlyCounts).map(
             ([month, visits]) => ({
               month,

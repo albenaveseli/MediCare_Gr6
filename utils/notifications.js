@@ -34,7 +34,6 @@ export async function scheduleNotification(name, time) {
   const isAllowed = await registerForPushNotificationsAsync();
   if (!isAllowed) return;
 
-  // 🎯 Merr orën nga input-i (p.sh. "08:30 PM")
   const match = time.match(/(\d+):(\d+)\s?(AM|PM)/i);
   if (!match) {
     console.warn("Invalid time format");
@@ -47,17 +46,14 @@ export async function scheduleNotification(name, time) {
   if (ampm === "PM" && hours !== 12) hours += 12;
   if (ampm === "AM" && hours === 12) hours = 0;
 
-  // 🕓 Llogarit datën e ardhshme për atë orë
   const now = new Date();
   const triggerDate = new Date();
   triggerDate.setHours(hours, minutes, 0, 0);
 
-  // nëse ora ka kaluar për sot, cakto për nesër
   if (triggerDate <= now) {
     triggerDate.setDate(triggerDate.getDate() + 1);
   }
 
-  // 🕒 Planifiko njoftimin vetëm për atë datë/orar
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "💊 Medicine Reminder",
@@ -65,7 +61,7 @@ export async function scheduleNotification(name, time) {
       sound: true,
       priority: Notifications.AndroidNotificationPriority.HIGH,
     },
-    trigger: triggerDate, // ⏰ kjo është thelbësore — përdorim direkt 'date', jo 'hour/minute'
+    trigger: triggerDate, 
   });
 
   console.log(`✅ Notification scheduled for ${name} at ${triggerDate}`);
