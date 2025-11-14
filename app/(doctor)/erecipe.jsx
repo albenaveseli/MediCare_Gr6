@@ -104,7 +104,6 @@ export default function ERecipeScreen() {
     setShowForm(true);
   };
 
-  // ✅ Version i rregulluar – përdor vetëm `auth` nga importi
   const handleSend = async () => {
     try {
       const user = auth.currentUser;
@@ -113,7 +112,6 @@ export default function ERecipeScreen() {
         return;
       }
 
-      // Gjej doktorin sipas email-it
       const doctorQuery = query(
         collection(db, "doctors"),
         where("email", "==", user.email)
@@ -130,7 +128,6 @@ export default function ERecipeScreen() {
         ...doctorSnapshot.docs[0].data(),
       };
 
-      // 🔹 Krijo ID të re për dokumentin e ri
       const prescriptionRef = doc(collection(db, "prescriptions"));
 
       await setDoc(prescriptionRef, {
@@ -147,7 +144,7 @@ export default function ERecipeScreen() {
         createdAt: serverTimestamp(),
       });
 
-      setSendModal(true); // shfaq modalin e suksesit
+      setSendModal(true);
     } catch (error) {
       console.error("Error saving prescription:", error);
       Alert.alert("Error", "Failed to save prescription.");
@@ -335,7 +332,6 @@ export default function ERecipeScreen() {
           </View>
         )}
 
-        {/* Modals */}
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>

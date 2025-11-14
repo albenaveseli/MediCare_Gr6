@@ -24,6 +24,7 @@ export default function ViewRecipeScreen() {
           id: doc.id,
           ...doc.data(),
         }));
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
         setPrescriptions(data);
       } catch (error) {
         console.error("Error fetching prescriptions:", error);
