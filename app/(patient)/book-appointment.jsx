@@ -137,6 +137,38 @@ useEffect(() => {
   if (!snapshot.empty) {
     return Alert.alert("Time slot taken", "Please select another time slot.");
   }
+  const q2 = query(
+    appointmentsRef,
+    where("patientId", "==", user.uid),
+    where("doctorId", "==", doctor.id),
+    where("date", "==", selectedDate.toDateString())
+  );
+
+  const patientAppointments = await getDocs(q2);
+
+  if (!patientAppointments.empty) {
+    return Alert.alert(
+      "Limit reached",
+      "You already booked an appointment with this doctor for this day."
+    );
+  }
+const q3 = query(
+    appointmentsRef,
+    where("patientId", "==", user.uid),
+    where("date", "==", selectedDate.toDateString()),
+    where("time", "==", selectedTime)
+);
+
+const patientAppointments1 = await getDocs(q3);
+
+if (!patientAppointments1.empty) {
+    return Alert.alert(
+      "Limit reached",
+      "You already have an appointment at this time with another doctor."
+    );
+}
+
+
     await addDoc(collection(db, "appointments"), {
       doctorId,
       patientId: user.uid,
