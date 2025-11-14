@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
@@ -26,6 +26,30 @@ export default function BookingScreen(){
   const [patientName, setPatientName] = useState("");
   const [notes, setNotes] = useState("");
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+
+  useEffect(() => {
+  const fetchPatientName = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setPatientName(data.fullName);
+      }
+    } catch (err) {
+      console.error("Error fetching user full name:", err);
+    }
+  };
+
+  fetchPatientName();
+}, []);
+
 
   const doctor = {
     id: doctorId,
@@ -96,14 +120,6 @@ useEffect(() => {
     });
 
   const handleBooking = async () => {
-    const trimmedName = patientName.trim();
-    if (!trimmedName) {
-    return Alert.alert("Error", "Please enter your full name.");
-  }
-    const nameRegex = /^[A-Za-z\s]+$/;
-    if (!nameRegex.test(trimmedName)) {
-      return Alert.alert("Error", "Name can only contain letters and spaces.");
-    }
     if (isWeekend(selectedDate))
       return Alert.alert("Weekend", "Appointments not available on weekends");
  try {
@@ -125,7 +141,7 @@ useEffect(() => {
       doctorId,
       patientId: user.uid,
       doctorName,
-      patientName: trimmedName,
+      patientName,
       date: selectedDate.toDateString(),
       time: selectedTime,
       reason: "General Consultation", 
@@ -261,10 +277,11 @@ useEffect(() => {
         <Card style={styles.card}>
           <Text style={styles.sectionTitle}>Patient Information</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Full Name *"
+            style={[styles.input, { backgroundColor: "#e0e0e0" }]}
             value={patientName}
-            onChangeText={setPatientName}
+            editable={false}
+            selectTextOnFocus={false}
+            placeholder="Full Name"
           />
           <TextInput
             style={[styles.input, styles.textArea]}
