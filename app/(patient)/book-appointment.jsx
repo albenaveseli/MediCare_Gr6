@@ -220,13 +220,20 @@ useEffect(() => {
               No available time slots on weekends. Please select a weekday.
             </Text>
           ) : selectedDate.toDateString() === new Date().toDateString() ? (
-            <View style={styles.timeGrid}>
-               <TimeSlots
-                slots={availableTimeSlots}
-                selected={selectedTime}
-                onSelect={setSelectedTime}
-              />
-            </View>
+             availableTimeSlots.length === 0 ? (
+              <Text
+                style={{textAlign: "center",color: "red",fontStyle: "italic",padding: 15,}}>
+                There are no available times for today.
+              </Text>
+            ) :(
+                <View style={styles.timeGrid}>
+                  <TimeSlots
+                    slots={availableTimeSlots}
+                    selected={selectedTime}
+                    onSelect={setSelectedTime}
+                  />
+                </View>
+              )
           ) : (
             <>
               <TouchableOpacity

@@ -270,6 +270,11 @@ export default function DoctorDetails() {
 
           {isWeekend() ? (
             <Text style={styles.unavailableText}>Unavailable</Text>
+          ) : availableSlots.length === 0 ? (
+            <Text
+              style={{textAlign: "center",color: "red",fontStyle: "italic",marginVertical: 10,}}>
+                There are no available times for today.
+            </Text>
           ) : (
             <TimeSlots
               slots={availableSlots}
