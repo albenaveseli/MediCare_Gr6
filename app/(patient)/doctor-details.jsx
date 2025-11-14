@@ -1,7 +1,7 @@
 import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
-import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
@@ -17,9 +17,9 @@ export default function DoctorDetails() {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [userRating, setUserRating] = useState(0); 
-const [hasRated, setHasRated] = useState(false);
-  const LIKE_KEY = `doctor_${params.id}_liked`;
+  const [userRating, setUserRating] = useState(0);
+  const [hasRated, setHasRated] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   const auth = getAuth();
   const currentUserId = auth.currentUser?.uid;
@@ -31,7 +31,7 @@ const [hasRated, setHasRated] = useState(false);
           const docRef = doc(db, "doctors", params.id);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-             const data = docSnap.data();
+            const data = docSnap.data();
             setDoctor({ id: docSnap.id, ...data });
 
             const likedBy = data.likedBy || [];
@@ -52,8 +52,51 @@ const [hasRated, setHasRated] = useState(false);
     fetchDoctor();
   }, [params.id, currentUserId]);
 
-   const toggleLike = async () => {
-    if (!currentUserId) return; 
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 8; hour <= 15; hour++) {
+      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      slots.push(`${hour.toString().padStart(2, "0")}:30`);
+    }
+    slots.push("16:00");
+    return slots;
+  };
+
+  const loadAvailableSlots = async () => {
+    const today = new Date().toDateString();
+    const now = new Date();
+
+    const allSlots = generateTimeSlots();
+
+    const q = query(
+      collection(db, "appointments"),
+      where("doctorId", "==", params.id),
+      where("date", "==", today)
+    );
+
+    const snap = await getDocs(q);
+    const booked = snap.docs.map(d => d.data().time);
+
+    let free = allSlots.filter(slot => !booked.includes(slot));
+
+    free = free.filter(slot => {
+      const [hour, minute] = slot.split(":").map(Number);
+      const slotDate = new Date();
+      slotDate.setHours(hour, minute, 0, 0);
+
+      return slotDate >= now;
+    });
+    setAvailableSlots(free);
+  };
+  useEffect(() => {
+    if (params.id) {
+      loadAvailableSlots();
+    }
+  }, [params.id]);
+
+
+  const toggleLike = async () => {
+    if (!currentUserId) return;
     try {
       const docRef = doc(db, "doctors", params.id);
       const newStatus = !isLiked;
@@ -71,60 +114,60 @@ const [hasRated, setHasRated] = useState(false);
     }
   };
   const checkUserRating = async () => {
-  if (!currentUserId) return;
+    if (!currentUserId) return;
 
-  const docRef = doc(db, "doctors", params.id);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    const ratings = data.ratings || {};
-    if (ratings[currentUserId]) {
-      setHasRated(true);
-      setUserRating(ratings[currentUserId]);
-    }
-  }
-};
-
-useEffect(() => {
-  setHasRated(false);
-  setUserRating(0);
-}, [params.id]);
-
-useEffect(() => {
-  checkUserRating();
-}, [params.id, currentUserId]);
-
-const submitRating = async (rating) => {
-  if (!currentUserId) return;
-
-  try {
     const docRef = doc(db, "doctors", params.id);
     const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) return;
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const ratings = data.ratings || {};
+      if (ratings[currentUserId]) {
+        setHasRated(true);
+        setUserRating(ratings[currentUserId]);
+      }
+    }
+  };
 
-    const data = docSnap.data();
-    const ratings = data.ratings || {};
-    const reviews = data.reviews || 0;
-    const currentRating = data.rating || 0;
+  useEffect(() => {
+    setHasRated(false);
+    setUserRating(0);
+  }, [params.id]);
 
-    ratings[currentUserId] = rating;
+  useEffect(() => {
+    checkUserRating();
+  }, [params.id, currentUserId]);
 
-    const allRatings = Object.values(ratings);
-    const newRating = allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
+  const submitRating = async (rating) => {
+    if (!currentUserId) return;
 
-    await updateDoc(docRef, {
-      ratings: ratings,
-      rating: newRating,
-      reviews: allRatings.length,
-    });
+    try {
+      const docRef = doc(db, "doctors", params.id);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) return;
 
-    setDoctor((prev) => ({ ...prev, rating: newRating, reviews: allRatings.length }));
-    setUserRating(rating);
-    setHasRated(true);
-  } catch (error) {
-    console.error("Error submitting rating:", error);
-  }
-};
+      const data = docSnap.data();
+      const ratings = data.ratings || {};
+      const reviews = data.reviews || 0;
+      const currentRating = data.rating || 0;
+
+      ratings[currentUserId] = rating;
+
+      const allRatings = Object.values(ratings);
+      const newRating = allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
+
+      await updateDoc(docRef, {
+        ratings: ratings,
+        rating: newRating,
+        reviews: allRatings.length,
+      });
+
+      setDoctor((prev) => ({ ...prev, rating: newRating, reviews: allRatings.length }));
+      setUserRating(rating);
+      setHasRated(true);
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -181,7 +224,7 @@ const submitRating = async (rating) => {
                 </>
               ) : (
                 <View style={{ flexDirection: "row" }}>
-                  {[1,2,3,4,5].map((star) => (
+                  {[1, 2, 3, 4, 5].map((star) => (
                     <TouchableOpacity key={star} onPress={() => submitRating(star)}>
                       <FontAwesome
                         name={star <= userRating ? "star" : "star-o"}
@@ -197,15 +240,15 @@ const submitRating = async (rating) => {
           </View>
 
           <View style={{ alignItems: "center" }}>
-          <TouchableOpacity onPress={toggleLike} style={styles.heartButton}>
-            <Ionicons
-              name={isLiked ? "heart" : "heart-outline"}
-              size={24}
-              color={isLiked ? "#FF3B30" : "#007ea7"}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={toggleLike} style={styles.heartButton}>
+              <Ionicons
+                name={isLiked ? "heart" : "heart-outline"}
+                size={24}
+                color={isLiked ? "#FF3B30" : "#007ea7"}
+              />
+            </TouchableOpacity>
             <Text style={styles.likeCount}>{likesCount}</Text>
-        </View>
+          </View>
         </View>
 
         <Card style={styles.card}>
@@ -229,7 +272,7 @@ const submitRating = async (rating) => {
             <Text style={styles.unavailableText}>Unavailable</Text>
           ) : (
             <TimeSlots
-              slots={doctor.availability || []}
+              slots={availableSlots}
               selected={selectedTime}
               onSelect={setSelectedTime}
             />
@@ -353,10 +396,10 @@ const styles = StyleSheet.create({
   },
   heartButton: { padding: 4 },
   unavailableText: {
-  fontSize: 16,
-  color: "#FF3B30",
-  textAlign: "center",
-  fontWeight: "600",
-  marginVertical: 10,
-},
+    fontSize: 16,
+    color: "#FF3B30",
+    textAlign: "center",
+    fontWeight: "600",
+    marginVertical: 10,
+  },
 });
