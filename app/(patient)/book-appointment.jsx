@@ -253,23 +253,27 @@ useEffect(() => {
                   onChange={(e, date) => {
                     setShowTimePicker(false);
                     if (date) {
-                      const hours = date.getHours();
-                      const minutes = date.getMinutes();
-                      if ((hours > 8 || (hours === 8 && minutes >= 0)) && 
-                         (hours < 16 || (hours === 16 && minutes === 0))){
-                        setSelectedTime(
-                          `${hours.toString().padStart(2, "0")}:${minutes
-                            .toString()
-                            .padStart(2, "0")}`
-                        );
+                      let hours = date.getHours();
+                      let minutes = date.getMinutes();
+                      minutes = minutes < 15 ? 0 : minutes < 45 ? 30 : 0;
+                      if (minutes === 0 && date.getMinutes() >= 45) {
+                        hours += 1;
                       }
-                      else
+                      if (hours < 8 || (hours === 16 && minutes > 0) || hours > 16) {
                         Alert.alert(
                           "Invalid time",
                           "Please select a time between 08:00 and 16:00."
                         );
+                        return;
+                      }
+                      const finalTime =
+                        `${hours.toString().padStart(2, "0")}:` +
+                        `${minutes.toString().padStart(2, "0")}`;
+
+                      setSelectedTime(finalTime);
                     }
                   }}
+
                 />
               )}
             </>
