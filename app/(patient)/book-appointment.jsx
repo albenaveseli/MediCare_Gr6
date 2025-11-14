@@ -191,7 +191,6 @@ if (!patientAppointments1.empty) {
           onPress: () => {
             setSelectedDate(new Date());
             setSelectedTime(null);
-            setPatientName("");
             setNotes("");
             router.back();
           },
