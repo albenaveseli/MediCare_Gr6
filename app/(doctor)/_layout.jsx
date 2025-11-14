@@ -52,6 +52,7 @@ export default function DoctorLayout() {
 
       <Tabs.Screen name="analytics" options={{ href: null }} />
       <Tabs.Screen name="erecipe" options={{ href: null }} />
+      <Tabs.Screen name="hippocratic_oath" options={{href:null}}/>
     </Tabs>
   );
 }
