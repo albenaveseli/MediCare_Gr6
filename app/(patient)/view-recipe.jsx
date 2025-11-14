@@ -24,7 +24,14 @@ export default function ViewRecipeScreen() {
           id: doc.id,
           ...doc.data(),
         }));
-        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        function parseEUDDate(d) {
+          if (!d) return new Date(0);
+          const [day, month, year] = d.split("/").map(Number);
+          return new Date(year, month - 1, day);
+        }
+
+        data.sort((a, b) => parseEUDDate(b.date) - parseEUDDate(a.date));
+
         setPrescriptions(data);
       } catch (error) {
         console.error("Error fetching prescriptions:", error);
