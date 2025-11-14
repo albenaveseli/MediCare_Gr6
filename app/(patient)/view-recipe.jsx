@@ -1,3 +1,4 @@
+import { getAuth } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
@@ -19,11 +20,30 @@ export default function ViewRecipeScreen() {
   useEffect(() => {
     const fetchPrescriptions = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "prescriptions"));
-        const data = snapshot.docs.map((doc) => ({
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user || !user.email)
+          return Alert.alert("Error", "You must be logged in.");
+
+        
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        const users = usersSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+        const currentUserDoc = users.find((u) => u.email === user.email);
+        if (!currentUserDoc)
+          return Alert.alert("Error", "User not found in database.");
+
+        const prescriptionsSnapshot = await getDocs(
+          collection(db, "prescriptions")
+        );
+        const data = prescriptionsSnapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .filter(
+            (prescription) => prescription.patientId === currentUserDoc.id
+          );
+
         function parseEUDDate(d) {
           if (!d) return new Date(0);
           const [day, month, year] = d.split("/").map(Number);
@@ -56,13 +76,20 @@ export default function ViewRecipeScreen() {
         onBack={selectedRecipe ? () => setSelectedRecipe(null) : undefined}
       />
 
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {!selectedRecipe ? (
           <View style={styles.listWrapper}>
             {loading ? (
-              <Text style={{ textAlign: "center", marginTop: 50 }}>Loading...</Text>
+              <Text style={{ textAlign: "center", marginTop: 50 }}>
+                Loading...
+              </Text>
             ) : prescriptions.length === 0 ? (
-              <Text style={{ textAlign: "center", marginTop: 50 }}>No prescriptions found.</Text>
+              <Text style={{ textAlign: "center", marginTop: 50 }}>
+                No prescriptions found.
+              </Text>
             ) : (
               prescriptions.map((item) => (
                 <TouchableOpacity
@@ -100,8 +127,12 @@ export default function ViewRecipeScreen() {
           <View style={styles.detailsWrapper}>
             <View style={styles.detailsHeaderRow}>
               <View>
-                <Text style={styles.detailsDoctor}>{selectedRecipe.doctorName}</Text>
-                <Text style={styles.detailsProfession}>{selectedRecipe.profession}</Text>
+                <Text style={styles.detailsDoctor}>
+                  {selectedRecipe.doctorName}
+                </Text>
+                <Text style={styles.detailsProfession}>
+                  {selectedRecipe.profession}
+                </Text>
               </View>
               <Text style={styles.detailsDate}>{selectedRecipe.date}</Text>
             </View>
