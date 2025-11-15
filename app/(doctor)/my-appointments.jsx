@@ -172,7 +172,7 @@ export default function MyAppointmentsScreen() {
         {Object.keys(groupedAppointments).length > 0 ? (
           Object.entries(groupedAppointments)
             .sort(
-              ([dateA], [dateB]) => new Date(dateA) - new Date(dateB) // nga më e hershmja tek më e vona
+              ([dateA], [dateB]) => new Date(dateA) - new Date(dateB) 
             )
             .map(([dateKey, dayAppointments]) => (
               <View key={dateKey} style={styles.daySection}>

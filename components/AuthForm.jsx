@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     marginBottom: 20,
-    backgroundColor: "#b9ecf0", // fallback background
+    backgroundColor: "#b9ecf0", 
   },
   title: {
     fontSize: 28,
