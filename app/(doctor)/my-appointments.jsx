@@ -37,7 +37,6 @@ export default function MyAppointmentsScreen() {
         const user = auth.currentUser;
         if (!user) return Alert.alert("Error", "You must be logged in.");
 
-        // 🔹 Merr doktorin sipas email-it
         const doctorQuery = query(
           collection(db, "doctors"),
           where("email", "==", user.email)
@@ -56,7 +55,6 @@ export default function MyAppointmentsScreen() {
         };
         setDoctor(doctorData);
 
-        // 🔹 Merr të gjitha rezervimet për këtë doktor
         const appointmentsQuery = query(
           collection(db, "appointments"),
           where("doctorId", "==", doctorData.id)
@@ -80,7 +78,6 @@ export default function MyAppointmentsScreen() {
     fetchAppointments();
   }, []);
 
-  // 🔹 Përditëson statusin e rezervimit
   const handleStatusChange = async (appointmentId, newStatus) => {
     try {
       await updateDoc(doc(db, "appointments", appointmentId), {
