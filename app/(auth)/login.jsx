@@ -3,11 +3,25 @@ import {
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
-  signInWithPopup
+  signInWithPopup,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { useState } from "react";
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { auth, db } from "../../firebase";
 
 export default function Login() {
@@ -22,7 +36,11 @@ export default function Login() {
       return;
     }
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        trimmedEmail,
+        trimmedPassword
+      );
       const user = userCredential.user;
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
@@ -42,7 +60,10 @@ export default function Login() {
         else router.replace("/(patient)/home");
       }
     } catch (error) {
-      Alert.alert("Login Error", error.message);
+      Alert.alert(
+        "Login Failed",
+        "Something went wrong. Please make sure your email or password is correct and try again."
+      );
     }
   };
 
@@ -69,7 +90,10 @@ export default function Login() {
       if (role === "doctor") router.replace("/(doctor)/home");
       else router.replace("/(patient)/home");
     } catch (error) {
-      Alert.alert("Google Login Error", error.message);
+      Alert.alert(
+        "Google Sign-In Unavailable",
+        "This service is currently not available. Please try again later."
+      );
     }
   };
 
@@ -97,13 +121,19 @@ export default function Login() {
         else router.replace("/(patient)/home");
       }
     } catch (error) {
-      Alert.alert("Github Login Error", error.message);
+      Alert.alert(
+        "GitHub Sign-In Unavailable",
+        "This service is currently not available. Please try again later."
+      );
     }
   };
 
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/images/logo.jpg")} style={styles.logo} />
+      <Image
+        source={require("../../assets/images/logo.jpg")}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Welcome Back!</Text>
       <TextInput
         placeholder="Email"
@@ -120,13 +150,22 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#007ea7" }]} onPress={handleLogin}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#007ea7" }]}
+        onPress={handleLogin}
+      >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#DB4437" }]} onPress={handleGoogleLogin}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#DB4437" }]}
+        onPress={handleGoogleLogin}
+      >
         <Text style={styles.buttonText}>Login with Google</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#333" }]} onPress={handleGitHubLogin}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#333" }]}
+        onPress={handleGitHubLogin}
+      >
         <Text style={styles.buttonText}>Login with GitHub</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
@@ -191,4 +230,3 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
 });
-

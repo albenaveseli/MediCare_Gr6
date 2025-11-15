@@ -18,22 +18,42 @@ export default function Signup() {
       Alert.alert("Error", "Please fill in all fields!");
       return;
     }
-    if (password.length < 8) {
-      Alert.alert("Error", "Password must be at least 8 characters long!");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
       return;
     }
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      Alert.alert(
+        "Weak Password",
+        "Password must be at least 8 characters long and include:\n- 1 uppercase letter\n- 1 lowercase letter\n- 1 number\n- 1 special character (@$!%*?&)"
+      );
+      return;
+    }
+
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match!");
       return;
     }
 
     if (email.toLowerCase().endsWith("@doctor.com")) {
-      Alert.alert("Registration Closed", "Doctor registration is currently closed.");
+      Alert.alert(
+        "Registration Closed",
+        "Doctor registration is currently closed."
+      );
       return;
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       const role = "patient";
@@ -47,7 +67,14 @@ export default function Signup() {
 
       router.replace("/(auth)/onboarding");
     } catch (error) {
-      Alert.alert("Error", error.message);
+      if (error.code === "auth/email-already-in-use") {
+        Alert.alert(
+          "Email Already Exists",
+          "This email is already registered. Please login or use a different email."
+        );
+      } else {
+        Alert.alert("Error", error.message);
+      }
     }
   };
 
@@ -60,9 +87,18 @@ export default function Signup() {
       linkText="Already have an account? Login"
       onLinkPress={() => router.push("/(auth)/login")}
     >
-      <AuthInput placeholder="Full Name" value={fullName} onChangeText={setFullName} />
+      <AuthInput
+        placeholder="Full Name"
+        value={fullName}
+        onChangeText={setFullName}
+      />
       <AuthInput placeholder="Email" value={email} onChangeText={setEmail} />
-      <AuthInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
+      <AuthInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
       <AuthInput
         placeholder="Confirm Password"
         value={confirmPassword}
