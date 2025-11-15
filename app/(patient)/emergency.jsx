@@ -43,7 +43,16 @@ const EmergencyCard = ({ label, number, color, callNumber }) => (
 
 export default function Emergency() {
   const handleSOS = () => {
-    Alert.alert("SOS Activated!", "Emergency services will be contacted.");
+    Alert.alert("SOS Activated!", "Calling emergency services...", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Call",
+        onPress: () => callNumber("192")
+      },
+    ]);
   };
 
   const callNumber = (num) => Linking.openURL(`tel:${num}`);
@@ -51,7 +60,10 @@ export default function Emergency() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <TouchableOpacity style={[styles.sosButton, cardShadow]} onPress={handleSOS}>
+        <TouchableOpacity
+          style={[styles.sosButton, cardShadow]}
+          onPress={handleSOS}
+        >
           <Text style={styles.sosText}>SOS</Text>
         </TouchableOpacity>
         <Text style={styles.description}>Press in case of emergency</Text>
@@ -66,7 +78,9 @@ export default function Emergency() {
           <Text style={styles.stepsTitle}>Quick Steps in Emergency</Text>
           {quickSteps.map((step, idx) => (
             <View key={idx} style={styles.stepItem}>
-              <View style={[styles.stepBullet, { backgroundColor: "#007ea7" }]} />
+              <View
+                style={[styles.stepBullet, { backgroundColor: "#007ea7" }]}
+              />
               <Text style={styles.stepText}>{step}</Text>
             </View>
           ))}
