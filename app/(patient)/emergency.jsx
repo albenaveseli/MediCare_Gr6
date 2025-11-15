@@ -50,7 +50,7 @@ export default function Emergency() {
       },
       {
         text: "Call",
-        onPress: () => callNumber("192")
+        onPress: () => callNumber("194")
       },
     ]);
   };
