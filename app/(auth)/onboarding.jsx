@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { auth, db } from "../../firebase";
- // siguro rrugën relative
 
 export default function OnBoarding() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -25,23 +24,47 @@ export default function OnBoarding() {
   const [hasAllergy, setHasAllergy] = useState(false);
 
   const handleNext = async () => {
+    const trimmedBirthDate = birthDate.trim();
+
     const birthDatePattern = /^\d{2}\/\d{2}\/\d{4}$/;
-    if (!birthDatePattern.test(birthDate)) {
-      Alert.alert("Invalid format", "Please enter your birth date in DD/MM/YYYY format.");
+    if (!birthDatePattern.test(trimmedBirthDate)) {
+      Alert.alert(
+        "Invalid format",
+        "Please enter your birth date in DD/MM/YYYY format."
+      );
       return;
     }
 
+    const [day, month, year] = trimmedBirthDate.split("/").map(Number);
+    const dateObj = new Date(year, month - 1, day);
+    if (
+      dateObj.getDate() !== day ||
+      dateObj.getMonth() !== month - 1 ||
+      dateObj.getFullYear() !== year
+    ) {
+      Alert.alert("Invalid Date", "Please enter a real birth date.");
+      return;
+    }
+
+    const currentYear = new Date().getFullYear();
+    const age = currentYear - year;
+    if (age < 0 || age > 120) {
+      Alert.alert("Invalid Age", "Please enter a valid birth date.");
+      return;
+    }
+
+    
+
     try {
-      const user = auth.currentUser; // përdoruesi i loguar
+      const user = auth.currentUser;
       if (!user) {
         Alert.alert("Error", "User not logged in.");
         return;
       }
 
-      // Ruaj të dhënat në Firestore
       await addDoc(collection(db, "patients"), {
         userId: user.uid,
-        birthDate,
+        birthDate: trimmedBirthDate,
         gender,
         weight,
         height,
@@ -82,7 +105,10 @@ export default function OnBoarding() {
 
   return (
     <SafeAreaView style={styles.safecontainer}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.card}>
           <Text style={styles.label}>Birth Date (DD/MM/YYYY):</Text>
           <TextInput
@@ -146,7 +172,9 @@ export default function OnBoarding() {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.label}>Do you have any medication allergies?</Text>
+          <Text style={styles.label}>
+            Do you have any medication allergies?
+          </Text>
           <Switch
             value={hasAllergy}
             onValueChange={setHasAllergy}
@@ -164,11 +192,11 @@ export default function OnBoarding() {
 }
 
 const styles = StyleSheet.create({
-  safecontainer:{
-    flex:1,
-     backgroundColor: "#e8f6f8"
+  safecontainer: {
+    flex: 1,
+    backgroundColor: "#e8f6f8",
   },
-  container: {  backgroundColor: "#e8f6f8", padding: 20 },
+  container: { backgroundColor: "#e8f6f8", padding: 20 },
   scrollContent: { paddingBottom: 40 },
 
   card: {
@@ -264,6 +292,3 @@ const styles = StyleSheet.create({
   },
   nextButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 });
-
-
-
