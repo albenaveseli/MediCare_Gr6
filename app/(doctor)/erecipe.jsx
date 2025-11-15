@@ -21,7 +21,7 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
-import { auth, db } from "../firebase";
+import { auth, db } from "../../firebase";
 
 export default function ERecipeScreen() {
   const [loggedDoctor, setLoggedDoctor] = useState({ name: "", specialty: "" });

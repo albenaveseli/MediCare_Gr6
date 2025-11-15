@@ -2,7 +2,7 @@ import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 
 const db = getFirestore(app);
 

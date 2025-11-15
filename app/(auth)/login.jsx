@@ -8,7 +8,7 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { auth, db } from "../firebase";
+import { auth, db } from "../../firebase";
 
 export default function Login() {
   const [email, setEmail] = useState("");

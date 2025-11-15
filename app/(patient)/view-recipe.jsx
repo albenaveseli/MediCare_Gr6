@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 
 export default function ViewRecipeScreen() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);

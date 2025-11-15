@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth, db } from "../firebase";
+import { auth, db } from "../../firebase";
  // siguro rrugën relative
 
 export default function OnBoarding() {
