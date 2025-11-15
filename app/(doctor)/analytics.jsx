@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
-import { auth, db } from "../../components/firebase";
+import { auth, db } from "../firebase";
 
 export default function Analytics() {
   const [monthlyData, setMonthlyData] = useState([]);

@@ -23,7 +23,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth, db } from "./firebase";
+import { auth, db } from "../app/firebase";
 
 export default function ProfileCard({ roleType = "Patient" }) {
   const router = useRouter();

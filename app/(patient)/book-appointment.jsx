@@ -6,10 +6,10 @@ import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
-import { db } from "../../components/firebase";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
+import { db } from "../firebase";
 
 export default function BookingScreen(){
   const {

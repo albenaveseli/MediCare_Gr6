@@ -8,7 +8,7 @@ import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
-import { db } from "../../components/firebase";
+import { db } from "../firebase";
 
 export default function DoctorDetails() {
   const params = useLocalSearchParams();

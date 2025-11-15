@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { db } from "../../components/firebase";
 import Header from "../../components/Header";
+import { db } from "../firebase";
 
 export default function DoctorList() {
   const [doctors, setDoctors] = useState([]);

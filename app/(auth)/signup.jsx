@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import AuthForm from "../../components/AuthForm";
 import AuthInput from "../../components/AuthInput";
-import { auth, db } from "../../components/firebase";
+import { auth, db } from "../firebase";
 
 export default function Signup() {
   const [fullName, setFullName] = useState("");

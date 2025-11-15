@@ -9,8 +9,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { db } from "../../components/firebase";
 import Header from "../../components/Header";
+import { db } from "../firebase";
 
 export default function History() {
   const [appointments, setAppointments] = useState([]);

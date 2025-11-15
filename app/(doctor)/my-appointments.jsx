@@ -21,7 +21,7 @@ import {
   View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { db } from "../../components/firebase";
+import { db } from "../firebase";
 
 export default function MyAppointmentsScreen() {
   const router = useRouter();
