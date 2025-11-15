@@ -1,8 +1,9 @@
 import { router } from "expo-router";
 import {
   GithubAuthProvider,
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
-  signInWithPopup
+  signInWithPopup,
 } from "firebase/auth";
 import {
   doc,
@@ -30,29 +31,23 @@ export default function Login() {
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-
     if (!trimmedEmail || !trimmedPassword) {
       Alert.alert("Error", "Please fill in both email and password!");
       return;
     }
-
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         trimmedEmail,
         trimmedPassword
       );
-
       const user = userCredential.user;
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
-
       const role = trimmedEmail.endsWith("@doctor.com") ? "doctor" : "patient";
-
       if (userDoc.exists()) {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
-
         if (role === "doctor") router.replace("/(doctor)/home");
         else router.replace("/(patient)/home");
       } else {
@@ -61,30 +56,45 @@ export default function Login() {
           role,
           createdAt: serverTimestamp(),
         });
-
         if (role === "doctor") router.replace("/(doctor)/home");
         else router.replace("/(patient)/home");
       }
     } catch (error) {
-      if (error.code === "auth/user-not-found") {
-        Alert.alert("Login Failed", "This account does not exist.");
-      } else if (error.code === "auth/wrong-password") {
-        Alert.alert("Login Failed", "Incorrect password. Please try again.");
-      } else if (error.code === "auth/invalid-email") {
-        Alert.alert("Login Failed", "Invalid email format.");
-      } else {
-        Alert.alert("Login Failed", "Something went wrong. Please try again.");
-      }
+      Alert.alert(
+        "Login Failed",
+        "Something went wrong. Please make sure your email or password is correct and try again."
+      );
     }
   };
 
-
   const handleGoogleLogin = async () => {
-    Alert.alert(
-      "Google Sign-In Unavailable",
-      "Google Sign-In is currently unavailable. Please log in using your email and password."
-    );
-    return; 
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      const email = user.email || "";
+      const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
+      if (!userDoc.exists()) {
+        await setDoc(userRef, {
+          fullName: user.displayName || "",
+          email,
+          role,
+          createdAt: serverTimestamp(),
+        });
+      } else {
+        const data = userDoc.data();
+        if (data.role !== role) await updateDoc(userRef, { role });
+      }
+      if (role === "doctor") router.replace("/(doctor)/home");
+      else router.replace("/(patient)/home");
+    } catch (error) {
+      Alert.alert(
+        "Google Sign-In Unavailable",
+        "This service is currently not available. Please try again later."
+      );
+    }
   };
 
   const handleGitHubLogin = async () => {
@@ -96,7 +106,6 @@ export default function Login() {
       const userDoc = await getDoc(userRef);
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
-
       if (!userDoc.exists()) {
         await setDoc(userRef, {
           fullName: user.displayName || "",
@@ -147,21 +156,18 @@ export default function Login() {
       >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#DB4437" }]}
         onPress={handleGoogleLogin}
       >
         <Text style={styles.buttonText}>Login with Google</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#333" }]}
         onPress={handleGitHubLogin}
       >
         <Text style={styles.buttonText}>Login with GitHub</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.link}>Don’t have an account? Sign Up</Text>
       </TouchableOpacity>

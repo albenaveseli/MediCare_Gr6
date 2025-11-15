@@ -18,13 +18,9 @@ export default function Signup() {
       Alert.alert("Error", "Please fill in all fields!");
       return;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert(
-        "Invalid Email",
-        "Please enter a valid email address."
-      );
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
       return;
     }
 
@@ -76,13 +72,8 @@ export default function Signup() {
           "Email Already Exists",
           "This email is already registered. Please login or use a different email."
         );
-      } else if (error.code === "auth/invalid-email") {
-        Alert.alert(
-          "Invalid Email Format",
-          "Please enter a valid email address."
-        );
       } else {
-        Alert.alert("Error", "Something went wrong. Please try again.");
+        Alert.alert("Error", error.message);
       }
     }
   };
@@ -101,11 +92,7 @@ export default function Signup() {
         value={fullName}
         onChangeText={setFullName}
       />
-      <AuthInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
+      <AuthInput placeholder="Email" value={email} onChangeText={setEmail} />
       <AuthInput
         placeholder="Password"
         value={password}
