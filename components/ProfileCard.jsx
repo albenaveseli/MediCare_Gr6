@@ -39,22 +39,22 @@ export default function ProfileCard({ roleType = "Patient" }) {
   const [weight, setWeight] = useState("");
   const [allergies, setAllergies] = useState("No");
 
-  // Doctor specific
+  
   const [doctorDetails, setDoctorDetails] = useState(null);
 
   const role = roleType;
-  // 🔹 Pacienti: zgjedh foto bazuar në gender
+  
   const getPatientAvatar = () => {
     if (gender === "F") {
-      return "https://www.w3schools.com/howto/img_avatar2.png"; // Foto femre
+      return "https://www.w3schools.com/howto/img_avatar2.png"; 
     } else if (gender === "M") {
-      return "https://www.w3schools.com/howto/img_avatar.png"; // Foto mashkull
+      return "https://www.w3schools.com/howto/img_avatar.png"; 
     } else {
-      return "https://www.w3schools.com/howto/img_avatar.png"; // Foto default
+      return "https://www.w3schools.com/howto/img_avatar.png"; 
     }
   };
 
-  // 🔹 Merr të dhënat nga Firestore
+  
   useEffect(() => {
     const fetchUserData = async () => {
       const user = auth.currentUser;
@@ -92,7 +92,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
           }
           setLoading(false);
         } else {
-          // Pacienti: merr emrin nga users.fullName
+          
           const usersQuery = query(
             collection(db, "users"),
             where("email", "==", user.email)
@@ -111,7 +111,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
             const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
             const data = lastDoc?.data();
 
-            setName(fullName); // ✅ emri nga users.fullName
+            setName(fullName); 
             setEmail(data?.email || user.email || "");
             setBirthdate(data?.birthDate || "");
             setGender(data?.gender || "Female");
@@ -194,29 +194,19 @@ export default function ProfileCard({ roleType = "Patient" }) {
               source={{ uri: doctorDetails.image }}
               style={styles.profileImage}
             />
-            <Text style={styles.label}>Name: {name}</Text>
-            <Text style={styles.label}>Email: {email}</Text>
-            <Text style={styles.label}>
-              Speciality: {doctorDetails.speciality}
-            </Text>
-            <Text style={styles.label}>Price: {doctorDetails.price}</Text>
-            <Text style={styles.label}>Rating: {doctorDetails.rating}</Text>
-            <Text style={styles.label}>
-              Education: {doctorDetails.education}
-            </Text>
-            <Text style={styles.label}>
-              Experience: {doctorDetails.experience}
-            </Text>
-            <Text style={styles.label}>
-              Languages: {doctorDetails.languages.join(", ")}
-            </Text>
-            <Text style={styles.label}>
-              Description: {doctorDetails.description}
-            </Text>
+            <Text style={styles.label}>👨‍⚕️ Name: {name}</Text>
+            <Text style={styles.label}>📧 Email: {email}</Text>
+            <Text style={styles.label}>🏥 Speciality: {doctorDetails.speciality}</Text>
+            <Text style={styles.label}>💰 Price: {doctorDetails.price}</Text>
+            <Text style={styles.label}>⭐ Rating: {doctorDetails.rating}</Text>
+            <Text style={styles.label}>🎓 Education: {doctorDetails.education}</Text>
+            <Text style={styles.label}>🩺 Experience: {doctorDetails.experience}</Text>
+            <Text style={styles.label}>🌍 Languages: {doctorDetails.languages.join(", ")}</Text>
+            <Text style={styles.label}>📝 Description: {doctorDetails.description}</Text>
           </>
         ) : (
           <>
-            {/* Pacienti: default profile image */}
+            
             <Image
               source={{ uri: getPatientAvatar() }}
               style={styles.profileImage}
@@ -224,7 +214,6 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
             {isEditing ? (
               <>
-                {/* Editable inputs */}
                 <View style={styles.inputRow}>
                   <Ionicons
                     name="person-outline"
@@ -237,7 +226,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
                     value={name}
                     onChangeText={setName}
                     placeholder="Full Name"
-                    editable={false} // 📌 Pacienti nuk mund ta ndryshojë emrin
+                    editable={false} 
                   />
                 </View>
                 <View style={styles.inputRow}>
@@ -248,10 +237,11 @@ export default function ProfileCard({ roleType = "Patient" }) {
                     style={styles.icon}
                   />
                   <TextInput
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="Email"
+                   style={[styles.input, { backgroundColor: "#e6ecee" }]} 
+                   value={email}
+                   editable={false}       
+                   selectTextOnFocus={false} 
+                   placeholder="Email"
                   />
                 </View>
                 <View style={styles.inputRow}>
@@ -333,15 +323,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
               </>
             ) : (
               <>
-                <Text style={styles.label}>Name: {name}</Text>
-                <Text style={styles.label}>Email: {email}</Text>
-                <Text style={styles.label}>Birth Date: {birthdate}</Text>
-                <Text style={styles.label}>Gender: {gender}</Text>
-                <Text style={styles.label}>Height: {height} cm</Text>
-                <Text style={styles.label}>Weight: {weight} kg</Text>
-                <Text style={styles.label}>
-                  Medication Allergy: {allergies}
-                </Text>
+                <Text style={styles.label}>👤 Name: {name}</Text>
+                <Text style={styles.label}>📧 Email: {email}</Text>
+                <Text style={styles.label}>🎂 Birth Date: {birthdate}</Text>
+                <Text style={styles.label}>⚧ Gender: {gender}</Text>
+                <Text style={styles.label}>📏 Height: {height} cm</Text>
+                <Text style={styles.label}>⚖️ Weight: {weight} kg</Text>
+                <Text style={styles.label}>🤧 Medication Allergy: {allergies}</Text>
               </>
             )}
           </>
@@ -378,97 +366,140 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "#E9F8F9",
     alignItems: "center",
-    paddingVertical: 40,
+    paddingVertical: 50,
   },
+
   infoCard: {
-    width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    paddingVertical: 25,
-    paddingHorizontal: 20,
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    width: "92%",
+    backgroundColor: "#ffffff",
+    borderRadius: 28,
+    paddingVertical: 30,
+    paddingHorizontal: 25,
+
+    
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 8,
+
+    borderWidth: 1,
+    borderColor: "#dff6ff",
   },
+
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     alignSelf: "center",
-    marginBottom: 15,
+    marginBottom: 20,
+
+   
+    borderWidth: 3,
+    borderColor: "#c8f1ff",
+    shadowColor: "#5cd6ff",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
+
+  label: {
+    fontSize: 17,
+    fontWeight: "600",
+    marginBottom: 14,
+    color: "#033d49",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#f6fdff",
+    borderRadius: 10,
+  },
+
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 6,
+    marginVertical: 10,
   },
+
   icon: {
-    marginRight: 10,
+    marginRight: 12,
   },
+
   pickerContainer: {
     flex: 1,
-    borderRadius: 10,
+    borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "#f2f9fb",
     borderWidth: 1,
     borderColor: "#d4f1f4",
   },
+
   input: {
     flex: 1,
     backgroundColor: "#f2f9fb",
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 12,
+    padding: 14,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#d4f1f4",
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 10,
-    color: "#033d49",
-  },
+
   buttonsContainer: {
-    marginTop: 20,
-    gap: 12,
+    marginTop: 25,
+    gap: 14,
   },
+
   editButton: {
     backgroundColor: "#4DB8FF",
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 14,
+    borderRadius: 14,
     alignItems: "center",
+
+    shadowColor: "#4DB8FF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
   },
+
   editText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
+
   saveButton: {
     backgroundColor: "#007ea7",
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 14,
+    borderRadius: 14,
     alignItems: "center",
+
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
   },
+
   saveText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
+
   logoutButton: {
-    backgroundColor: "#B9ECF0",
+    backgroundColor: "#d9f6ff",
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
   },
+
   logoutText: {
     color: "#007ea7",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
+
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
