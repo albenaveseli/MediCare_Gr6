@@ -1,9 +1,8 @@
 import { router } from "expo-router";
 import {
   GithubAuthProvider,
-  GoogleAuthProvider,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithPopup
 } from "firebase/auth";
 import {
   doc,
@@ -79,36 +78,13 @@ export default function Login() {
     }
   };
 
+
   const handleGoogleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const userRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userRef);
-      const email = user.email || "";
-      const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
-
-      if (!userDoc.exists()) {
-        await setDoc(userRef, {
-          fullName: user.displayName || "",
-          email,
-          role,
-          createdAt: serverTimestamp(),
-        });
-      } else {
-        const data = userDoc.data();
-        if (data.role !== role) await updateDoc(userRef, { role });
-      }
-
-      if (role === "doctor") router.replace("/(doctor)/home");
-      else router.replace("/(patient)/home");
-    } catch (error) {
-      Alert.alert(
-        "Google Sign-In Unavailable",
-        "This service is currently not available. Please try again later."
-      );
-    }
+    Alert.alert(
+      "Google Sign-In Unavailable",
+      "Google Sign-In is currently unavailable. Please log in using your email and password."
+    );
+    return; 
   };
 
   const handleGitHubLogin = async () => {
@@ -171,18 +147,21 @@ export default function Login() {
       >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#DB4437" }]}
         onPress={handleGoogleLogin}
       >
         <Text style={styles.buttonText}>Login with Google</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#333" }]}
         onPress={handleGitHubLogin}
       >
         <Text style={styles.buttonText}>Login with GitHub</Text>
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.link}>Don’t have an account? Sign Up</Text>
       </TouchableOpacity>
