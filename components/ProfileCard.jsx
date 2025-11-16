@@ -186,7 +186,10 @@ export default function ProfileCard({ roleType = "Patient" }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView   style={{ flex: 1, backgroundColor: "#E9F8F9" }}
+    contentContainerStyle={styles.container}
+    showsVerticalScrollIndicator={false}
+    >
       <View style={styles.infoCard}>
         {role === "doctor" && doctorDetails ? (
           <>
@@ -366,10 +369,9 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#E9F8F9",
-    alignItems: "center",
-    paddingVertical: 50,
+   paddingVertical: 20,
+   paddingHorizontal: 10,
+   backgroundColor: "#E9F8F9",
   },
 
   infoCard: {
@@ -388,6 +390,7 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
     borderColor: "#dff6ff",
+    alignSelf: "center",
   },
 
   profileImage: {
