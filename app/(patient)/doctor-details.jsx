@@ -147,8 +147,6 @@ export default function DoctorDetails() {
 
       const data = docSnap.data();
       const ratings = data.ratings || {};
-      const reviews = data.reviews || 0;
-      const currentRating = data.rating || 0;
 
       ratings[currentUserId] = rating;
 
