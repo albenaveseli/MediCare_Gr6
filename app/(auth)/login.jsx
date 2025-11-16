@@ -31,23 +31,29 @@ export default function Login() {
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
+
     if (!trimmedEmail || !trimmedPassword) {
       Alert.alert("Error", "Please fill in both email and password!");
       return;
     }
+
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         trimmedEmail,
         trimmedPassword
       );
+
       const user = userCredential.user;
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
+
       const role = trimmedEmail.endsWith("@doctor.com") ? "doctor" : "patient";
+
       if (userDoc.exists()) {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
+
         if (role === "doctor") router.replace("/(doctor)/home");
         else router.replace("/(patient)/home");
       } else {
@@ -56,14 +62,20 @@ export default function Login() {
           role,
           createdAt: serverTimestamp(),
         });
+
         if (role === "doctor") router.replace("/(doctor)/home");
         else router.replace("/(patient)/home");
       }
     } catch (error) {
-      Alert.alert(
-        "Login Failed",
-        "Something went wrong. Please make sure your email or password is correct and try again."
-      );
+      if (error.code === "auth/user-not-found") {
+        Alert.alert("Login Failed", "This account does not exist.");
+      } else if (error.code === "auth/wrong-password") {
+        Alert.alert("Login Failed", "Incorrect password. Please try again.");
+      } else if (error.code === "auth/invalid-email") {
+        Alert.alert("Login Failed", "Invalid email format.");
+      } else {
+        Alert.alert("Login Failed", "Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -76,6 +88,7 @@ export default function Login() {
       const userDoc = await getDoc(userRef);
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
+
       if (!userDoc.exists()) {
         await setDoc(userRef, {
           fullName: user.displayName || "",
@@ -87,6 +100,7 @@ export default function Login() {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
       }
+
       if (role === "doctor") router.replace("/(doctor)/home");
       else router.replace("/(patient)/home");
     } catch (error) {
@@ -106,6 +120,7 @@ export default function Login() {
       const userDoc = await getDoc(userRef);
       const email = user.email || "";
       const role = email.endsWith("@doctor.com") ? "doctor" : "patient";
+
       if (!userDoc.exists()) {
         await setDoc(userRef, {
           fullName: user.displayName || "",
