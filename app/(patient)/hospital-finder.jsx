@@ -1,3 +1,4 @@
+import * as Location from "expo-location"; // ✅ import i expo-location
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -5,7 +6,6 @@ import Header from "../../components/Header";
 import { app } from "../../firebase";
 
 const db = getFirestore(app);
-
 
 const STATIC_HOSPITALS = [
   {
@@ -37,7 +37,12 @@ const STATIC_HOSPITALS = [
 export default function HospitalFinder() {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
 
+  // -------------------------------------------------------
+  // 1️⃣ FETCH HOSPITALS
+  // -------------------------------------------------------
   useEffect(() => {
     const fetchHospitals = async () => {
       if (Platform.OS === "web") {
@@ -50,13 +55,32 @@ export default function HospitalFinder() {
           setHospitals(STATIC_HOSPITALS);
         }
       } else {
-       
         setHospitals(STATIC_HOSPITALS);
       }
       setLoading(false);
     };
 
     fetchHospitals();
+  }, []);
+
+  // -------------------------------------------------------
+  // 2️⃣ GET USER LOCATION USING expo-location
+  // -------------------------------------------------------
+  useEffect(() => {
+    const getLocation = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setLocationError("Permission to access location was denied.");
+          return;
+        }
+        const loc = await Location.getCurrentPositionAsync({});
+        setUserLocation(loc.coords);
+      } catch (err) {
+        setLocationError("Unable to retrieve location.");
+      }
+    };
+    getLocation();
   }, []);
 
   if (loading) {
@@ -70,10 +94,23 @@ export default function HospitalFinder() {
   return (
     <View style={styles.wrapper}>
       <Header title="Hospital Finder" />
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-      >
+
+      {/* 🌍 USER LOCATION */}
+      <View style={{ padding: 20 }}>
+        <Text style={{ fontSize: 16, fontWeight: "700", color: "#006d8c" }}>
+          Your Location:
+        </Text>
+        {locationError && <Text style={{ color: "red" }}>{locationError}</Text>}
+        {userLocation && (
+          <Text>
+            Latitude: {userLocation.latitude.toFixed(4)} Longitude:{" "}
+            {userLocation.longitude.toFixed(4)}
+          </Text>
+        )}
+        {!userLocation && !locationError && <Text>Getting location...</Text>}
+      </View>
+
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {hospitals.map((h) => (
           <View key={h.id} style={styles.card}>
             <View style={styles.cardHeader}>
@@ -102,9 +139,7 @@ export default function HospitalFinder() {
                 <Text
                   style={[
                     styles.detailValue,
-                    h.type === "Public"
-                      ? styles.publicText
-                      : styles.privateText,
+                    h.type === "Public" ? styles.publicText : styles.privateText,
                   ]}
                 >
                   {h.type}
