@@ -1,4 +1,3 @@
-import * as Location from "expo-location"; // ✅ import i expo-location
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -39,9 +38,10 @@ export default function HospitalFinder() {
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
+  const [MapComponents, setMapComponents] = useState(null);
 
   // -------------------------------------------------------
-  // 1️⃣ FETCH HOSPITALS
+  // FETCH HOSPITALS
   // -------------------------------------------------------
   useEffect(() => {
     const fetchHospitals = async () => {
@@ -64,11 +64,15 @@ export default function HospitalFinder() {
   }, []);
 
   // -------------------------------------------------------
-  // 2️⃣ GET USER LOCATION USING expo-location
+  // GET USER LOCATION AND DYNAMIC IMPORT OF MAP
   // -------------------------------------------------------
   useEffect(() => {
-    const getLocation = async () => {
+    if (Platform.OS === "web") return;
+
+    const loadLocationAndMap = async () => {
       try {
+        // Dynamic import expo-location
+        const Location = await import("expo-location");
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
           setLocationError("Permission to access location was denied.");
@@ -76,11 +80,20 @@ export default function HospitalFinder() {
         }
         const loc = await Location.getCurrentPositionAsync({});
         setUserLocation(loc.coords);
+
+        // Dynamic import react-native-maps
+        const RNMaps = await import("react-native-maps");
+        setMapComponents({
+          MapView: RNMaps.default,
+          Marker: RNMaps.Marker,
+        });
       } catch (err) {
-        setLocationError("Unable to retrieve location.");
+        console.log(err);
+        setLocationError("Unable to retrieve location or load map.");
       }
     };
-    getLocation();
+
+    loadLocationAndMap();
   }, []);
 
   if (loading) {
@@ -91,25 +104,67 @@ export default function HospitalFinder() {
     );
   }
 
+  const MapView = MapComponents?.MapView;
+  const Marker = MapComponents?.Marker;
+
   return (
     <View style={styles.wrapper}>
       <Header title="Hospital Finder" />
 
-      {/* 🌍 USER LOCATION */}
-      <View style={{ padding: 20 }}>
-        <Text style={{ fontSize: 16, fontWeight: "700", color: "#006d8c" }}>
-          Your Location:
-        </Text>
-        {locationError && <Text style={{ color: "red" }}>{locationError}</Text>}
-        {userLocation && (
-          <Text>
-            Latitude: {userLocation.latitude.toFixed(4)} Longitude:{" "}
-            {userLocation.longitude.toFixed(4)}
-          </Text>
-        )}
-        {!userLocation && !locationError && <Text>Getting location...</Text>}
-      </View>
+      {/* 🌍 Show Map Only on Mobile */}
+      {Platform.OS !== "web" && MapView && Marker && userLocation && (
+        <View style={{ height: 250, margin: 20, borderRadius: 20, overflow: "hidden" }}>
+          <MapView
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude,
+              latitudeDelta: 0.1,
+              longitudeDelta: 0.1,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+              }}
+              title="You are here"
+              pinColor="blue"
+            />
 
+            {hospitals.map((h) => (
+              <Marker
+                key={h.id}
+                coordinate={{
+                  latitude: parseFloat(h.latitude),
+                  longitude: parseFloat(h.longitude),
+                }}
+                title={h.name}
+                description={h.description}
+              />
+            ))}
+          </MapView>
+        </View>
+      )}
+
+      {/* 🌍 USER COORDINATES */}
+      {Platform.OS !== "web" && (
+        <View style={{ paddingHorizontal: 20 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700", color: "#006d8c" }}>
+            Your Location:
+          </Text>
+          {locationError && <Text style={{ color: "red" }}>{locationError}</Text>}
+          {userLocation && (
+            <Text>
+              Latitude: {userLocation.latitude.toFixed(4)} Longitude:{" "}
+              {userLocation.longitude.toFixed(4)}
+            </Text>
+          )}
+          {!userLocation && !locationError && <Text>Getting location...</Text>}
+        </View>
+      )}
+
+      {/* Scroll hospitals */}
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {hospitals.map((h) => (
           <View key={h.id} style={styles.card}>
