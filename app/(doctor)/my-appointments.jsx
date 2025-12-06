@@ -7,14 +7,17 @@ import {
   collection,
   doc,
   getDocs,
+  limit,
+  orderBy,
   query,
+  startAfter,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,60 +26,100 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { db } from "../../firebase";
 
+const PAGE_SIZE = 7;
+
 export default function MyAppointmentsScreen() {
   const router = useRouter();
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [lastDoc, setLastDoc] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
   const [doctor, setDoctor] = useState(null);
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) return Alert.alert("Error", "You must be logged in.");
-
-        const doctorQuery = query(
-          collection(db, "doctors"),
-          where("email", "==", user.email)
-        );
-        const doctorSnapshot = await getDocs(doctorQuery);
-
-        if (doctorSnapshot.empty) {
-          Alert.alert("Error", "Doctor profile not found.");
-          setLoading(false);
-          return;
-        }
-
-        const doctorData = {
-          id: doctorSnapshot.docs[0].id,
-          ...doctorSnapshot.docs[0].data(),
-        };
-        setDoctor(doctorData);
-
-        const appointmentsQuery = query(
-          collection(db, "appointments"),
-          where("doctorId", "==", doctorData.id)
-        );
-        const snapshot = await getDocs(appointmentsQuery);
-
-        const fetchedAppointments = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...docSnap.data(),
-        }));
-
-        setAppointments(fetchedAppointments);
-      } catch (error) {
-        console.error("Error loading appointments:", error);
-        Alert.alert("Error", "Could not load appointments.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointments();
   }, []);
+
+  const fetchAppointments = async () => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) return Alert.alert("Error", "You must be logged in.");
+
+      const doctorQuery = query(
+        collection(db, "doctors"),
+        where("email", "==", user.email)
+      );
+      const doctorSnapshot = await getDocs(doctorQuery);
+
+      if (doctorSnapshot.empty) {
+        Alert.alert("Error", "Doctor profile not found.");
+        setLoading(false);
+        return;
+      }
+
+      const doctorData = {
+        id: doctorSnapshot.docs[0].id,
+        ...doctorSnapshot.docs[0].data(),
+      };
+      setDoctor(doctorData);
+
+      const appointmentsQuery = query(
+        collection(db, "appointments"),
+        where("doctorId", "==", doctorData.id),
+        orderBy("date", "asc"),
+        limit(PAGE_SIZE)
+      );
+      const snapshot = await getDocs(appointmentsQuery);
+
+      const fetchedAppointments = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+      }));
+
+      setAppointments(fetchedAppointments);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      setHasMore(snapshot.docs.length === PAGE_SIZE);
+    } catch (error) {
+      console.error("Error loading appointments:", error);
+      Alert.alert("Error", "Could not load appointments.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMoreAppointments = async () => {
+    if (!hasMore || loadingMore || !lastDoc) return;
+
+    try {
+      setLoadingMore(true);
+
+      const appointmentsQuery = query(
+        collection(db, "appointments"),
+        where("doctorId", "==", doctor.id),
+        orderBy("date", "asc"),
+        startAfter(lastDoc),
+        limit(PAGE_SIZE)
+      );
+
+      const snapshot = await getDocs(appointmentsQuery);
+
+      const moreAppointments = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+      }));
+
+      setAppointments((prev) => [...prev, ...moreAppointments]);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      setHasMore(snapshot.docs.length === PAGE_SIZE);
+    } catch (error) {
+      console.error("Error loading more:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleStatusChange = async (appointmentId, newStatus) => {
     try {
@@ -144,6 +187,10 @@ export default function MyAppointmentsScreen() {
   );
   const groupedAppointments = groupAppointmentsByDate(filteredAppointments);
 
+  const groupedArray = Object.entries(groupedAppointments).sort(
+    ([dateA], [dateB]) => new Date(dateA) - new Date(dateB)
+  );
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -168,148 +215,155 @@ export default function MyAppointmentsScreen() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.screenTitle}>My Appointments</Text>
 
-      <ScrollView style={styles.content}>
-        {Object.keys(groupedAppointments).length > 0 ? (
-          Object.entries(groupedAppointments)
-            .sort(
-              ([dateA], [dateB]) => new Date(dateA) - new Date(dateB) 
-            )
-            .map(([dateKey, dayAppointments]) => (
-              <View key={dateKey} style={styles.daySection}>
-                <Text style={styles.dayHeader}>
-                  {new Date(dateKey).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
+      <FlatList
+        data={groupedArray}
+        keyExtractor={([dateKey]) => dateKey}
+        contentContainerStyle={styles.content}
+        onEndReached={fetchMoreAppointments}
+        onEndReachedThreshold={0.4}
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator style={{ marginVertical: 20 }} color="#007ea7" />
+          ) : null
+        }
+        renderItem={({ item: [dateKey, dayAppointments] }) => (
+          <View style={styles.daySection}>
+            <Text style={styles.dayHeader}>
+              {new Date(dateKey).toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </Text>
 
-                {dayAppointments.map((appointment) => (
-                  <View key={appointment.id} style={styles.appointmentCard}>
-                    <View style={styles.leftSection}>
-                      <View style={styles.iconCircle}>
-                        <Ionicons
-                          name="person-circle-outline"
-                          size={28}
-                          color="#007ea7"
-                        />
-                      </View>
-                      <View>
-                        <Text style={styles.patientName}>
-                          {appointment.patientName}
-                        </Text>
-                        <Text style={styles.appointmentTime}>
-                          <Ionicons
-                            name="time-outline"
-                            size={12}
-                            color="#007ea7"
-                          />{" "}
-                          {appointment.time}
-                        </Text>
-                        <Text style={styles.reason} numberOfLines={1}>
-                          {appointment.reason}
-                        </Text>
-                        {appointment.notes && (
-                          <Text
-                            style={[
-                              styles.reason,
-                              { color: "#005f73", marginTop: 4 },
-                            ]}
-                          >
-                            <Ionicons
-                              name="chatbubble-ellipses-outline"
-                              size={12}
-                              color="#007ea7"
-                            />{" "}
-                            {appointment.notes}
-                          </Text>
-                        )}
-                        <TouchableOpacity
-                          style={styles.createRecipeButton}
-                          onPress={() =>
-                            router.push({
-                              pathname: "/erecipe",
-                              params: {
-                                appointmentId: appointment.id,
-                                patientName: appointment.patientName,
-                                 patientId: appointment.patientId, 
-                              },
-                            })
-                          }
-                        >
-                          <Ionicons
-                            name="add-circle-outline"
-                            size={16}
-                            color="#fff"
-                          />
-                          <Text style={styles.createRecipeText}>
-                            Create Recipe
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
+            {dayAppointments.map((appointment) => (
+              <View key={appointment.id} style={styles.appointmentCard}>
+                <View style={styles.leftSection}>
+                  <View style={styles.iconCircle}>
+                    <Ionicons
+                      name="person-circle-outline"
+                      size={28}
+                      color="#007ea7"
+                    />
+                  </View>
+                  <View>
+                    <Text style={styles.patientName}>
+                      {appointment.patientName}
+                    </Text>
+                    <Text style={styles.appointmentTime}>
+                      <Ionicons
+                        name="time-outline"
+                        size={12}
+                        color="#007ea7"
+                      />{" "}
+                      {appointment.time}
+                    </Text>
+                    <Text style={styles.reason} numberOfLines={1}>
+                      {appointment.reason}
+                    </Text>
 
-                    <View style={styles.rightSection}>
-                      <View
+                    {appointment.notes && (
+                      <Text
                         style={[
-                          styles.statusBadge,
-                          {
-                            backgroundColor: getStatusColor(appointment.status),
-                          },
+                          styles.reason,
+                          { color: "#005f73", marginTop: 4 },
                         ]}
                       >
-                        <Text style={styles.statusText}>
-                          {getStatusText(appointment.status)}
-                        </Text>
-                      </View>
+                        <Ionicons
+                          name="chatbubble-ellipses-outline"
+                          size={12}
+                          color="#007ea7"
+                        />{" "}
+                        {appointment.notes}
+                      </Text>
+                    )}
 
-                      {appointment.status === "pending" && (
-                        <View style={styles.actionButtons}>
-                          <TouchableOpacity
-                            style={[styles.actionButton, styles.approveButton]}
-                            onPress={() =>
-                              handleStatusChange(appointment.id, "approved")
-                            }
-                          >
-                            <Ionicons name="checkmark" size={16} color="#fff" />
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            style={[styles.actionButton, styles.cancelButton]}
-                            onPress={() =>
-                              handleStatusChange(appointment.id, "cancelled")
-                            }
-                          >
-                            <Ionicons name="close" size={16} color="#fff" />
-                          </TouchableOpacity>
-                        </View>
-                      )}
-
-                      {appointment.status === "approved" && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            styles.cancelButton,
-                            styles.singleButton,
-                          ]}
-                          onPress={() =>
-                            handleStatusChange(appointment.id, "cancelled")
-                          }
-                        >
-                          <Ionicons name="close" size={16} color="#fff" />
-                        </TouchableOpacity>
-                      )}
-                    </View>
+                    <TouchableOpacity
+                      style={styles.createRecipeButton}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/erecipe",
+                          params: {
+                            appointmentId: appointment.id,
+                            patientName: appointment.patientName,
+                            patientId: appointment.patientId,
+                          },
+                        })
+                      }
+                    >
+                      <Ionicons
+                        name="add-circle-outline"
+                        size={16}
+                        color="#fff"
+                      />
+                      <Text style={styles.createRecipeText}>
+                        Create Recipe
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                ))}
+                </View>
+
+                <View style={styles.rightSection}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: getStatusColor(appointment.status),
+                      },
+                    ]}
+                  >
+                    <Text style={styles.statusText}>
+                      {getStatusText(appointment.status)}
+                    </Text>
+                  </View>
+
+                  {appointment.status === "pending" && (
+                    <View style={styles.actionButtons}>
+                      <TouchableOpacity
+                        style={[styles.actionButton, styles.approveButton]}
+                        onPress={() =>
+                          handleStatusChange(appointment.id, "approved")
+                        }
+                      >
+                        <Ionicons name="checkmark" size={16} color="#fff" />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.actionButton, styles.cancelButton]}
+                        onPress={() =>
+                          handleStatusChange(appointment.id, "cancelled")
+                        }
+                      >
+                        <Ionicons name="close" size={16} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                  {appointment.status === "approved" && (
+                    <TouchableOpacity
+                      style={[
+                        styles.actionButton,
+                        styles.cancelButton,
+                        styles.singleButton,
+                      ]}
+                      onPress={() =>
+                        handleStatusChange(appointment.id, "cancelled")
+                      }
+                    >
+                      <Ionicons name="close" size={16} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
-            ))
-        ) : (
+            ))}
+          </View>
+        )}
+        ListEmptyComponent={
           <View style={styles.emptyState}>
             <Ionicons name="calendar-outline" size={48} color="#a0c4c7" />
             <Text style={styles.emptyStateText}>No appointments scheduled</Text>
           </View>
-        )}
-      </ScrollView>
+        }
+      />
     </SafeAreaView>
   );
 }

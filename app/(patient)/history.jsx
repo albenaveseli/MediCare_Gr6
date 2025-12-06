@@ -1,10 +1,17 @@
 import { getAuth } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  startAfter,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -12,38 +19,82 @@ import {
 import Header from "../../components/Header";
 import { db } from "../../firebase";
 
+const PAGE_SIZE = 8;
+
 export default function History() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [lastDoc, setLastDoc] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+
   const user = getAuth().currentUser;
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        if (!user) {
-          setLoading(false);
-          return;
-        }
-
-        const appointmentsRef = collection(db, "appointments");
-        const q = query(appointmentsRef, where("patientId", "==", user.uid));
-
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setAppointments(data);
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointments();
   }, [user]);
+
+  const fetchAppointments = async () => {
+    try {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const appointmentsRef = collection(db, "appointments");
+      const q = query(
+        appointmentsRef,
+        where("patientId", "==", user.uid),
+        orderBy("date", "desc"),
+        limit(PAGE_SIZE)
+      );
+
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setAppointments(data);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      setHasMore(snapshot.docs.length === PAGE_SIZE);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMoreAppointments = async () => {
+    if (!hasMore || loadingMore || !lastDoc) return;
+
+    try {
+      setLoadingMore(true);
+
+      const appointmentsRef = collection(db, "appointments");
+      const q = query(
+        appointmentsRef,
+        where("patientId", "==", user.uid),
+        orderBy("date", "desc"),
+        startAfter(lastDoc),
+        limit(PAGE_SIZE)
+      );
+
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setAppointments((prev) => [...prev, ...data]);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      setHasMore(snapshot.docs.length === PAGE_SIZE);
+    } catch (error) {
+      console.error("Error loading more appointments:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -57,69 +108,79 @@ export default function History() {
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
       <Header title="History" />
-      <ScrollView style={styles.scrollContainer}>
-        <Text style={styles.title}>Your Past Appointments</Text>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appointments</Text>
-          {appointments.length > 0 ? (
-            <FlatList
-              data={appointments}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <View style={styles.card}>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Doctor:</Text>
-                    <Text style={styles.value}>{item.doctorName}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>{item.date}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Time:</Text>
-                    <Text style={styles.value}>{item.time}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Status:</Text>
-                    <Text
-                      style={[
-                        styles.status,
-                        item.status === "completed"
-                          ? styles.completed
-                          : item.status === "cancelled"
-                          ? styles.cancelled
-                          : styles.pending,
-                      ]}
-                    >
-                      {item.status?.charAt(0).toUpperCase() +
-                        item.status?.slice(1)}
-                    </Text>
-                  </View>
-                  {item.notes ? (
-                    <View style={styles.row}>
-                      <Text style={styles.label}>Notes:</Text>
-                      <Text style={styles.value}>{item.notes}</Text>
-                    </View>
-                  ) : null}
-                </View>
-              )}
+
+      <FlatList
+        data={appointments}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.scrollContainer}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>Your Past Appointments</Text>
+            <Text style={styles.sectionTitle}>Appointments</Text>
+          </>
+        }
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <View style={styles.row}>
+              <Text style={styles.label}>Doctor:</Text>
+              <Text style={styles.value}>{item.doctorName}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Date:</Text>
+              <Text style={styles.value}>{item.date}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Time:</Text>
+              <Text style={styles.value}>{item.time}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Status:</Text>
+              <Text
+                style={[
+                  styles.status,
+                  item.status === "completed"
+                    ? styles.completed
+                    : item.status === "cancelled"
+                    ? styles.cancelled
+                    : styles.pending,
+                ]}
+              >
+                {item.status?.charAt(0).toUpperCase() +
+                  item.status?.slice(1)}
+              </Text>
+            </View>
+            {item.notes ? (
+              <View style={styles.row}>
+                <Text style={styles.label}>Notes:</Text>
+                <Text style={styles.value}>{item.notes}</Text>
+              </View>
+            ) : null}
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>
+            You have no booked appointments yet.
+          </Text>
+        }
+        onEndReached={fetchMoreAppointments}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator
+              style={{ marginVertical: 20 }}
+              color="#007ea7"
             />
-          ) : (
-            <Text style={styles.emptyText}>
-              You have no booked appointments yet.
-            </Text>
-          )}
-        </View>
-      </ScrollView>
+          ) : null
+        }
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flex: 1,
     paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   title: {
     marginTop: 20,
@@ -128,9 +189,6 @@ const styles = StyleSheet.create({
     color: "#007ea7",
     marginBottom: 20,
     textAlign: "center",
-  },
-  section: {
-    marginBottom: 25,
   },
   sectionTitle: {
     fontSize: 18,

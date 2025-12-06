@@ -1,6 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  limit,
+  query,
+  startAfter,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -16,30 +22,62 @@ import { db } from "../../firebase";
 export default function DoctorList() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lastDoc, setLastDoc] = useState(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "doctors"));
-        const doctorList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setDoctors(doctorList);
-      } catch (error) {
-        console.error("Error fetching doctors:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDoctors();
   }, []);
 
+  const fetchDoctors = async () => {
+    try {
+      const q = query(collection(db, "doctors"), limit(6));
+      const snapshot = await getDocs(q);
 
+      const doctorList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setDoctors(doctorList);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMoreDoctors = async () => {
+    if (!lastDoc || loadingMore) return;
+
+    try {
+      setLoadingMore(true);
+
+      const q = query(
+        collection(db, "doctors"),
+        startAfter(lastDoc),
+        limit(6)
+      );
+
+      const snapshot = await getDocs(q);
+
+      const moreDoctors = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setDoctors((prev) => [...prev, ...moreDoctors]);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+    } catch (error) {
+      console.error("Error loading more doctors:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const renderDoctorCard = ({ item }) => (
-<TouchableOpacity
+    <TouchableOpacity
       style={styles.card}
       onPress={() =>
         router.push({
@@ -76,7 +114,8 @@ export default function DoctorList() {
       </View>
     </TouchableOpacity>
   );
-    if (loading) {
+
+  if (loading) {
     return (
       <View style={[styles.container, { justifyContent: "center" }]}>
         <ActivityIndicator size="large" color="#007ea7" />
@@ -93,6 +132,13 @@ export default function DoctorList() {
         renderItem={renderDoctorCard}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
+        onEndReached={loadMoreDoctors}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator size="small" color="#007ea7" />
+          ) : null
+        }
       />
     </View>
   );
@@ -101,7 +147,7 @@ export default function DoctorList() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#e8f6f8" },
   card: {
-    marginTop:15,
+    marginTop: 15,
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
