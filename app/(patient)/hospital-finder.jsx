@@ -1,6 +1,6 @@
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FlatList, Platform, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
 import { app } from "../../firebase";
 
@@ -33,8 +33,13 @@ const STATIC_HOSPITALS = [
   },
 ];
 
+const PAGE_SIZE = 5;
+
 export default function HospitalFinder() {
   const [hospitals, setHospitals] = useState([]);
+  const [visibleHospitals, setVisibleHospitals] = useState([]);
+  const [page, setPage] = useState(1);
+
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
@@ -45,18 +50,22 @@ export default function HospitalFinder() {
   // -------------------------------------------------------
   useEffect(() => {
     const fetchHospitals = async () => {
+      let data = [];
+
       if (Platform.OS === "web") {
         try {
           const snapshot = await getDocs(collection(db, "hospitals"));
-          const data = snapshot.docs.map((doc) => doc.data());
-          setHospitals(data);
+          data = snapshot.docs.map((doc) => doc.data());
         } catch (error) {
           console.log("Firestore fetch failed, using static data:", error);
-          setHospitals(STATIC_HOSPITALS);
+          data = STATIC_HOSPITALS;
         }
       } else {
-        setHospitals(STATIC_HOSPITALS);
+        data = STATIC_HOSPITALS;
       }
+
+      setHospitals(data);
+      setVisibleHospitals(data.slice(0, PAGE_SIZE));
       setLoading(false);
     };
 
@@ -71,17 +80,16 @@ export default function HospitalFinder() {
 
     const loadLocationAndMap = async () => {
       try {
-        // Dynamic import expo-location
         const Location = await import("expo-location");
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
           setLocationError("Permission to access location was denied.");
           return;
         }
+
         const loc = await Location.getCurrentPositionAsync({});
         setUserLocation(loc.coords);
 
-        // Dynamic import react-native-maps
         const RNMaps = await import("react-native-maps");
         setMapComponents({
           MapView: RNMaps.default,
@@ -96,6 +104,17 @@ export default function HospitalFinder() {
     loadLocationAndMap();
   }, []);
 
+  const loadMoreHospitals = () => {
+    const start = page * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+
+    if (start >= hospitals.length) return;
+
+    const more = hospitals.slice(start, end);
+    setVisibleHospitals((prev) => [...prev, ...more]);
+    setPage((prev) => prev + 1);
+  };
+
   if (loading) {
     return (
       <View style={[styles.wrapper, styles.center]}>
@@ -107,11 +126,71 @@ export default function HospitalFinder() {
   const MapView = MapComponents?.MapView;
   const Marker = MapComponents?.Marker;
 
+  const renderHospital = ({ item: h }) => (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.name}>{h.name}</Text>
+        <View
+          style={[
+            styles.statusBadge,
+            h.status === "Closed" ? styles.closedBadge : styles.openBadge,
+          ]}
+        >
+          <Text style={styles.statusText}>{h.status}</Text>
+        </View>
+      </View>
+
+      <View style={styles.divider} />
+
+      <View style={styles.detailsGrid}>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>State</Text>
+          <Text style={styles.detailValue}>{h.state}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Region</Text>
+          <Text style={styles.detailValue}>{h.region}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Type</Text>
+          <Text
+            style={[
+              styles.detailValue,
+              h.type === "Public" ? styles.publicText : styles.privateText,
+            ]}
+          >
+            {h.type}
+          </Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Coordinates</Text>
+          <Text style={styles.detailValue}>
+            {h.latitude}, {h.longitude}
+          </Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Code</Text>
+          <Text style={styles.detailValue}>{h.code}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>ID</Text>
+          <Text style={styles.detailValue}>{h.id}</Text>
+        </View>
+      </View>
+
+      {h.description && (
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.descriptionLabel}>Description</Text>
+          <Text style={styles.descriptionText}>{h.description}</Text>
+        </View>
+      )}
+    </View>
+  );
+
   return (
     <View style={styles.wrapper}>
       <Header title="Hospital Finder" />
 
-      {/* 🌍 Show Map Only on Mobile */}
       {Platform.OS !== "web" && MapView && Marker && userLocation && (
         <View style={{ height: 250, margin: 20, borderRadius: 20, overflow: "hidden" }}>
           <MapView
@@ -147,83 +226,21 @@ export default function HospitalFinder() {
         </View>
       )}
 
-      {/* 🌍 USER COORDINATES */}
-      {Platform.OS !== "web" && (
-        <View style={{ paddingHorizontal: 20 }}>
-          <Text style={{ fontSize: 16, fontWeight: "700", color: "#006d8c" }}>
-            Your Location:
-          </Text>
-          {locationError && <Text style={{ color: "red" }}>{locationError}</Text>}
-          {userLocation && (
-            <Text>
-              Latitude: {userLocation.latitude.toFixed(4)} Longitude:{" "}
-              {userLocation.longitude.toFixed(4)}
+      <FlatList
+        data={visibleHospitals}
+        renderItem={renderHospital}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.scrollContent}
+        onEndReached={loadMoreHospitals}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={
+          visibleHospitals.length < hospitals.length ? (
+            <Text style={{ textAlign: "center", padding: 16, color: "#007ea7" }}>
+              Loading more hospitals...
             </Text>
-          )}
-          {!userLocation && !locationError && <Text>Getting location...</Text>}
-        </View>
-      )}
-
-      {/* Scroll hospitals */}
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-        {hospitals.map((h) => (
-          <View key={h.id} style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.name}>{h.name}</Text>
-              <View
-                style={[
-                  styles.statusBadge,
-                  h.status === "Closed" ? styles.closedBadge : styles.openBadge,
-                ]}
-              >
-                <Text style={styles.statusText}>{h.status}</Text>
-              </View>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.detailsGrid}>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>State</Text>
-                <Text style={styles.detailValue}>{h.state}</Text>
-              </View>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Region</Text>
-                <Text style={styles.detailValue}>{h.region}</Text>
-              </View>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Type</Text>
-                <Text
-                  style={[
-                    styles.detailValue,
-                    h.type === "Public" ? styles.publicText : styles.privateText,
-                  ]}
-                >
-                  {h.type}
-                </Text>
-              </View>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Coordinates</Text>
-                <Text style={styles.detailValue}>
-                  {h.latitude}, {h.longitude}
-                </Text>
-              </View>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Code</Text>
-                <Text style={styles.detailValue}>{h.code}</Text>
-              </View>
-              <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>ID</Text>
-                <Text style={styles.detailValue}>{h.id}</Text>
-              </View>
-            </View>
-            {h.description && (
-              <View style={styles.descriptionContainer}>
-                <Text style={styles.descriptionLabel}>Description</Text>
-                <Text style={styles.descriptionText}>{h.description}</Text>
-              </View>
-            )}
-          </View>
-        ))}
-      </ScrollView>
+          ) : null
+        }
+      />
     </View>
   );
 }
@@ -232,7 +249,6 @@ const styles = StyleSheet.create({
   wrapper: { flex: 1, backgroundColor: "#f8fdff" },
   center: { justifyContent: "center", alignItems: "center", flex: 1 },
   loadingText: { fontSize: 16, fontStyle: "italic", color: "#007ea7" },
-  scroll: { flex: 1 },
   scrollContent: { padding: 20 },
   card: {
     backgroundColor: "#fff",
