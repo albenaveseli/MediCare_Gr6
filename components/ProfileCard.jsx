@@ -197,15 +197,15 @@ export default function ProfileCard({ roleType = "Patient" }) {
               source={{ uri: doctorDetails.image }}
               style={styles.profileImage}
             />
-            <Text style={styles.label}>👨‍⚕️ Name: {name}</Text>
-            <Text style={styles.label}>📧 Email: {email}</Text>
-            <Text style={styles.label}>🏥 Speciality: {doctorDetails.speciality}</Text>
-            <Text style={styles.label}>💰 Price: {doctorDetails.price}</Text>
-            <Text style={styles.label}>⭐ Rating: {doctorDetails.rating}</Text>
-            <Text style={styles.label}>🎓 Education: {doctorDetails.education}</Text>
-            <Text style={styles.label}>🩺 Experience: {doctorDetails.experience}</Text>
-            <Text style={styles.label}>🌍 Languages: {doctorDetails.languages.join(", ")}</Text>
-            <Text style={styles.label}>📝 Description: {doctorDetails.description}</Text>
+            <Text style={styles.label}>Name: {name}</Text>
+            <Text style={styles.label}> Email: {email}</Text>
+            <Text style={styles.label}> Speciality: {doctorDetails.speciality}</Text>
+            <Text style={styles.label}> Price: {doctorDetails.price}</Text>
+            <Text style={styles.label}> Rating: {doctorDetails.rating}</Text>
+            <Text style={styles.label}> Education: {doctorDetails.education}</Text>
+            <Text style={styles.label}> Experience: {doctorDetails.experience}</Text>
+            <Text style={styles.label}> Languages: {doctorDetails.languages.join(", ")}</Text>
+            <Text style={styles.label}> Description: {doctorDetails.description}</Text>
           </>
         ) : (
           <>
@@ -326,13 +326,13 @@ export default function ProfileCard({ roleType = "Patient" }) {
               </>
             ) : (
               <>
-                <Text style={styles.label}>👤 Name: {name}</Text>
-                <Text style={styles.label}>📧 Email: {email}</Text>
-                <Text style={styles.label}>🎂 Birth Date: {birthdate}</Text>
-                <Text style={styles.label}>⚧ Gender: {gender}</Text>
-                <Text style={styles.label}>📏 Height: {height} cm</Text>
-                <Text style={styles.label}>⚖️ Weight: {weight} kg</Text>
-                <Text style={styles.label}>🤧 Medication Allergy: {allergies}</Text>
+                <Text style={styles.label}> Name: {name}</Text>
+                <Text style={styles.label}> Email: {email}</Text>
+                <Text style={styles.label}> Birth Date: {birthdate}</Text>
+                <Text style={styles.label}> Gender: {gender}</Text>
+                <Text style={styles.label}> Height: {height} cm</Text>
+                <Text style={styles.label}> Weight: {weight} kg</Text>
+                <Text style={styles.label}> Medication Allergy: {allergies}</Text>
               </>
             )}
           </>
