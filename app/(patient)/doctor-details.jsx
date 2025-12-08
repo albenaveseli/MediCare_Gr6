@@ -2,7 +2,7 @@ import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector
 import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
@@ -95,7 +95,7 @@ export default function DoctorDetails() {
   }, [params.id]);
 
 
-  const toggleLike = useCallback(async () => {
+  const toggleLike = async () => {
     if (!currentUserId) return;
     try {
       const docRef = doc(db, "doctors", params.id);
@@ -112,7 +112,7 @@ export default function DoctorDetails() {
     } catch (error) {
       console.error("Error toggling like:", error);
     }
-  }, [currentUserId, params.id, isLiked]);
+  };
   const checkUserRating = async () => {
     if (!currentUserId) return;
 
@@ -188,12 +188,12 @@ export default function DoctorDetails() {
     return day === 0 || day === 6;
   };
 
-  const features =useMemo(() => [
+  const features = [
     { icon: "school", text: doctor.education },
     { icon: "location-on", text: doctor.location },
     { icon: "language", text: doctor.languages.join(", ") },
     { icon: "attach-money", text: `Consultation: ${doctor.price}` },
-  ], [doctor]);
+  ];
 
   return (
     <View style={styles.container}>

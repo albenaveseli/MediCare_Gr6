@@ -7,7 +7,7 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -48,7 +48,7 @@ export default function DoctorList() {
     }
   };
 
-  const loadMoreDoctors = useCallback(async () => {
+  const loadMoreDoctors = async () => {
     if (!lastDoc || loadingMore) return;
 
     try {
@@ -74,9 +74,9 @@ export default function DoctorList() {
     } finally {
       setLoadingMore(false);
     }
-  }, [lastDoc, loadingMore]);
+  };
 
-  const renderDoctorCard = useCallback(({ item }) => (
+  const renderDoctorCard = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() =>
@@ -113,7 +113,7 @@ export default function DoctorList() {
         <Ionicons name="chevron-forward" size={20} color="#666" />
       </View>
     </TouchableOpacity>
-  ),[]);
+  );
 
   if (loading) {
     return (
