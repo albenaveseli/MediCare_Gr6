@@ -2,7 +2,7 @@ import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector
 import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
@@ -23,6 +23,22 @@ export default function DoctorDetails() {
 
   const auth = getAuth();
   const currentUserId = auth.currentUser?.uid;
+
+    const isWeekend = () => {
+    const day = new Date().getDay();
+    return day === 0 || day === 6;
+  };
+  
+const features = useMemo(() => {
+  if (!doctor) return [];   
+
+  return [
+    { icon: "school", text: doctor.education || "N/A" },
+    { icon: "location-on", text: doctor.location || "N/A" },
+    { icon: "language", text: doctor.languages?.join(", ") || "N/A" },
+    { icon: "attach-money", text: `Consultation: ${doctor.price || "N/A"}` },
+  ];
+}, [doctor]);
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -95,7 +111,7 @@ export default function DoctorDetails() {
   }, [params.id]);
 
 
-  const toggleLike = async () => {
+  const toggleLike = useCallback(async () => {
     if (!currentUserId) return;
     try {
       const docRef = doc(db, "doctors", params.id);
@@ -112,7 +128,7 @@ export default function DoctorDetails() {
     } catch (error) {
       console.error("Error toggling like:", error);
     }
-  };
+  }, [currentUserId, params.id, isLiked]);
   const checkUserRating = async () => {
     if (!currentUserId) return;
 
@@ -183,17 +199,6 @@ export default function DoctorDetails() {
     );
   }
 
-  const isWeekend = () => {
-    const day = new Date().getDay();
-    return day === 0 || day === 6;
-  };
-
-  const features = [
-    { icon: "school", text: doctor.education },
-    { icon: "location-on", text: doctor.location },
-    { icon: "language", text: doctor.languages.join(", ") },
-    { icon: "attach-money", text: `Consultation: ${doctor.price}` },
-  ];
 
   return (
     <View style={styles.container}>
