@@ -223,7 +223,7 @@ const features = useMemo(() => {
                 <>
                   <Ionicons name="star" size={16} color="#FFD700" />
                   <Text style={styles.rating}>{doctor.rating.toFixed(1)}</Text>
-                  <Text style={styles.reviews}>({doctor.reviews} reviews)</Text>
+                  <Text style={styles.reviews}>({doctor.reviews || 0} reviews)</Text>
                 </>
               ) : (
                 <View style={{ flexDirection: "row" }}>
@@ -255,7 +255,7 @@ const features = useMemo(() => {
         </View>
 
         <Card style={styles.card}>
-          <Text style={styles.descriptionText}>{doctor.description}</Text>
+          <Text style={styles.descriptionText}>{doctor.description || "No description available."}</Text>
         </Card>
 
         <Card style={styles.card}>
