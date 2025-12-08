@@ -11,10 +11,11 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Header from "../../components/Header";
 import { db } from "../../firebase";
@@ -88,14 +89,18 @@ export default function DoctorList() {
       activeOpacity={0.8}
     >
       <View style={styles.avatarContainer}>
+       {item.image ? (
+        <Image
+          source={{ uri: item.image }}
+          style={styles.avatarImage}
+        />
+      ) : (
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>
-            {item.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
+            {item.name.split(" ").map((n) => n[0]).join("")}
           </Text>
         </View>
+      )}
       </View>
 
       <View style={styles.cardContent}>
@@ -171,6 +176,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  avatarImage: {
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  resizeMode: "cover",
+},
   avatarText: { color: "#fff", fontSize: 16, fontWeight: "600" },
   cardContent: { flex: 1 },
   name: { fontSize: 18, fontWeight: "600", color: "#1e293b", marginBottom: 2 },
