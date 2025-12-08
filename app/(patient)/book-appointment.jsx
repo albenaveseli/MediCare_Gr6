@@ -3,7 +3,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
@@ -51,15 +51,15 @@ export default function BookingScreen(){
 }, []);
 
 
-  const doctor ={
+  const doctor = useMemo(() => ({
     id: doctorId,
     name: doctorName,
     specialty: doctorSpecialty,
     price: doctorPrice,
     availability: doctorAvailability ? doctorAvailability.split("|") : [],
-  };
+  }), [doctorId, doctorName, doctorSpecialty, doctorPrice, doctorAvailability]);
 
-const generateTimeSlots = async (date) => {
+const generateTimeSlots = useCallback(() => {
   const slots = [];
   for (let hour = 8; hour <= 15; hour++) {
     slots.push(`${hour.toString().padStart(2, "0")}:00`);
@@ -67,8 +67,8 @@ const generateTimeSlots = async (date) => {
   }
   slots.push("16:00");
   return slots;
-};
-const filterAvailableSlots = async (date) => {
+}, []);
+const filterAvailableSlots = useCallback(async (date) => {
   let allSlots = await generateTimeSlots(date);
   if (date.toDateString() === new Date().toDateString()) {
     const now = new Date();
@@ -92,9 +92,9 @@ const filterAvailableSlots = async (date) => {
     (slot) => !bookedSlots.includes(slot)
   );
   setAvailableTimeSlots(availableSlots);
-};
+}, [doctor]);
 
-  const isWeekend =(date) => [0, 6].includes(date.getDay());
+  const isWeekend =useCallback((date) => [0, 6].includes(date.getDay()), []);
 
 useEffect(() => {
   if (isWeekend(selectedDate)) {
