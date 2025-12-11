@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -67,7 +67,7 @@ export default function Reminder() {
     await AsyncStorage.setItem("medicines", JSON.stringify(updated));
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem =  useCallback(({ item }) => (
     <View style={styles.card}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View>
@@ -79,7 +79,9 @@ export default function Reminder() {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  ),
+  [medicines]
+);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>

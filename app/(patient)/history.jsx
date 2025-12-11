@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -16,7 +16,45 @@ export default function History() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const user = getAuth().currentUser;
-
+  const renderAppointment= useCallback(({ item }) => (
+                <View style={styles.card}>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Doctor:</Text>
+                    <Text style={styles.value}>{item.doctorName}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Date:</Text>
+                    <Text style={styles.value}>{item.date}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Time:</Text>
+                    <Text style={styles.value}>{item.time}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Status:</Text>
+                    <Text
+                      style={[
+                        styles.status,
+                        item.status === "completed"
+                          ? styles.completed
+                          : item.status === "cancelled"
+                          ? styles.cancelled
+                          : styles.pending,
+                      ]}
+                    >
+                      {item.status?.charAt(0).toUpperCase() +
+                        item.status?.slice(1)}
+                    </Text>
+                  </View>
+                  {item.notes ? (
+                    <View style={styles.row}>
+                      <Text style={styles.label}>Notes:</Text>
+                      <Text style={styles.value}>{item.notes}</Text>
+                    </View>
+                  ) : null}
+                </View>
+              ),[]
+  );
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -66,44 +104,7 @@ export default function History() {
               data={appointments}
               keyExtractor={(item) => item.id}
               scrollEnabled={false}
-              renderItem={({ item }) => (
-                <View style={styles.card}>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Doctor:</Text>
-                    <Text style={styles.value}>{item.doctorName}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>{item.date}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Time:</Text>
-                    <Text style={styles.value}>{item.time}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Status:</Text>
-                    <Text
-                      style={[
-                        styles.status,
-                        item.status === "completed"
-                          ? styles.completed
-                          : item.status === "cancelled"
-                          ? styles.cancelled
-                          : styles.pending,
-                      ]}
-                    >
-                      {item.status?.charAt(0).toUpperCase() +
-                        item.status?.slice(1)}
-                    </Text>
-                  </View>
-                  {item.notes ? (
-                    <View style={styles.row}>
-                      <Text style={styles.label}>Notes:</Text>
-                      <Text style={styles.value}>{item.notes}</Text>
-                    </View>
-                  ) : null}
-                </View>
-              )}
+              renderItem={renderAppointment}
             />
           ) : (
             <Text style={styles.emptyText}>
