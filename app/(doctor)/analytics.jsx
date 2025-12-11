@@ -6,7 +6,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -20,6 +20,17 @@ import { auth, db } from "../../firebase";
 export default function Analytics() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const renderedCards=useMemo(() => monthlyData.map((item, idx) => (
+          <View key={idx} style={styles.card}>
+            <Text style={styles.month}>{item.month}</Text>
+            <Text style={styles.visits}>Visits: {item.visits}</Text>
+          </View>
+        )), [monthlyData]);
+
+  const onBack = useCallback(() => {
+    router.push("/(doctor)/home");
+  }, []);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -119,18 +130,13 @@ export default function Analytics() {
     <View style={styles.container}>
       <Header
         title="Patient Analytics"
-        onBack={() => router.push("/(doctor)/home")}
+        onBack={onBack}
       />
 
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.subtitle}>Monthly Patient Visits</Text>
 
-        {monthlyData.map((item, idx) => (
-          <View key={idx} style={styles.card}>
-            <Text style={styles.month}>{item.month}</Text>
-            <Text style={styles.visits}>Visits: {item.visits}</Text>
-          </View>
-        ))}
+        {renderedCards}
 
         <View style={styles.insightCard}>
           <Text style={styles.title}>Insights & Observations</Text>
