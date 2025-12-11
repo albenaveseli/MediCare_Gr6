@@ -1,7 +1,7 @@
 import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -97,11 +97,11 @@ export default function OnBoarding() {
     );
   }
 
-  const genders = [
+  const genders =useMemo(() =>  [
     { label: "Female", value: "F" },
     { label: "Male", value: "M" },
     { label: "Other", value: "T" },
-  ];
+  ], []);
 
   return (
     <SafeAreaView style={styles.safecontainer}>
