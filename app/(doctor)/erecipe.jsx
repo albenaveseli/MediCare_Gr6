@@ -9,7 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Modal,
@@ -45,6 +45,21 @@ export default function ERecipeScreen() {
 
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [missingFields, setMissingFields] = useState([]);
+  const formattedMedications = useMemo(() => (
+    medications
+      .split(",")
+      .map((m) => `• ${m.trim()}`)
+      .join("\n")
+  ), [medications]);
+
+  const fields = useMemo(() => [
+  { placeholder: "Patient Name", value: patient, setter: setPatient },
+  { placeholder: "Diagnosis", value: diagnosis, setter: setDiagnosis },
+  { placeholder: "Medications (separate with commas)", value: medications, setter: setMedications },
+  { placeholder: "Treatment Steps", value: steps, setter: setSteps },
+], [patient, diagnosis, medications, steps]);
+
+
   useEffect(() => {
     const fetchDoctor = async () => {
       const user = auth.currentUser;
@@ -92,7 +107,7 @@ export default function ERecipeScreen() {
     setViewRecipe(true);
   };
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setPatient("");
     setDiagnosis("");
     setMedications("");
@@ -102,7 +117,7 @@ export default function ERecipeScreen() {
     setGenerated(false);
     setViewRecipe(false);
     setShowForm(true);
-  };
+  }, []);
 
   const handleSend = async () => {
     try {
@@ -172,28 +187,7 @@ export default function ERecipeScreen() {
           <View>
             <Text style={styles.title}>Prescription Details</Text>
 
-            {[
-              {
-                placeholder: "Patient Name",
-                value: patient,
-                setter: setPatient,
-              },
-              {
-                placeholder: "Diagnosis",
-                value: diagnosis,
-                setter: setDiagnosis,
-              },
-              {
-                placeholder: "Medications (separate with commas)",
-                value: medications,
-                setter: setMedications,
-              },
-              {
-                placeholder: "Treatment Steps",
-                value: steps,
-                setter: setSteps,
-              },
-            ].map((field, idx) => (
+            {fields.map((field, idx) => (
               <TextInput
                 key={idx}
                 placeholder={field.placeholder}
@@ -294,10 +288,7 @@ export default function ERecipeScreen() {
                 { label: "Diagnosis", value: diagnosis },
                 {
                   label: "Medications",
-                  value: medications
-                    .split(",")
-                    .map((m, i) => `• ${m.trim()}`)
-                    .join("\n"),
+                  value: formattedMedications
                 },
                 { label: "Treatment Steps", value: steps },
                 notes && { label: "Additional Notes", value: notes },
