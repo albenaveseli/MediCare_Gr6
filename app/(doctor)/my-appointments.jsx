@@ -11,7 +11,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -139,10 +139,14 @@ export default function MyAppointmentsScreen() {
     return grouped;
   };
 
-  const filteredAppointments = appointments.filter(
-    (apt) => apt.status !== "cancelled"
-  );
-  const groupedAppointments = groupAppointmentsByDate(filteredAppointments);
+  const filteredAppointments =  useMemo(
+  () => appointments.filter((apt) => apt.status !== "cancelled"), 
+  [appointments]
+);
+  const groupedAppointments = useMemo(
+  () =>groupAppointmentsByDate(filteredAppointments), 
+  [filteredAppointments]
+);
 
   if (loading) {
     return (
