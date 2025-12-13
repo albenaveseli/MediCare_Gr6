@@ -6,7 +6,7 @@ export default function Home() {
     { title: "View E-Recipe", icon: "medkit-outline", path: "/(patient)/view-recipe" },
     { title: "Reminder", icon: "alarm-outline", path: "/(patient)/reminder" },
     { title: "History", icon: "person-circle-outline", path: "/(patient)/history" },
-    { title: "Hospital Finder", icon: "location-outline", path: "/(patient)/hospital-finder" },
+    { title: "Map", icon: "location-outline", path: "/(patient)/hospital-finder" },
   ];
 
   return (

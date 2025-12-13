@@ -28,10 +28,10 @@ export default function HospitalFinder() {
 
   return (
     <View style={styles.wrapper}>
-      <Header title="Hospital Finder" />
+      <Header title="Map" />
 
       <MapView
-        style={{ height: 250, margin: 20 }}
+        style={{ height: 600, margin: 20 }}
         initialRegion={{
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
