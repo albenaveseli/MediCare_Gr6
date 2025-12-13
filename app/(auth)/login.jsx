@@ -133,7 +133,10 @@ export default function Login() {
       <Image
         source={require("../../assets/images/logo.jpg")}
         style={styles.logo}
+        progressiveRenderingEnabled={true} // lazy load (ngarkim gradual)
+        fadeDuration={300} //  efekt i butë kur ngarkohet
       />
+
       <Text style={styles.title}>Welcome Back!</Text>
       <TextInput
         placeholder="Email"

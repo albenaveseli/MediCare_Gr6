@@ -45,20 +45,29 @@ export default function ERecipeScreen() {
 
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [missingFields, setMissingFields] = useState([]);
-  const formattedMedications = useMemo(() => (
-    medications
-      .split(",")
-      .map((m) => `• ${m.trim()}`)
-      .join("\n")
-  ), [medications]);
 
-  const fields = useMemo(() => [
-  { placeholder: "Patient Name", value: patient, setter: setPatient },
-  { placeholder: "Diagnosis", value: diagnosis, setter: setDiagnosis },
-  { placeholder: "Medications (separate with commas)", value: medications, setter: setMedications },
-  { placeholder: "Treatment Steps", value: steps, setter: setSteps },
-], [patient, diagnosis, medications, steps]);
+  const formattedMedications = useMemo(
+    () =>
+      medications
+        .split(",")
+        .map((m) => `• ${m.trim()}`)
+        .join("\n"),
+    [medications]
+  );
 
+  const fields = useMemo(
+    () => [
+      { placeholder: "Patient Name", value: patient, setter: setPatient },
+      { placeholder: "Diagnosis", value: diagnosis, setter: setDiagnosis },
+      {
+        placeholder: "Medications (separate with commas)",
+        value: medications,
+        setter: setMedications,
+      },
+      { placeholder: "Treatment Steps", value: steps, setter: setSteps },
+    ],
+    [patient, diagnosis, medications, steps]
+  );
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -256,7 +265,7 @@ export default function ERecipeScreen() {
 
         {viewRecipe && (
           <View style={styles.detailsContainer}>
-            <ScrollView contentContainerStyle={styles.detailsContent}>
+            <View style={styles.detailsContent}>
               <View style={styles.detailsHeaderRow}>
                 <View>
                   <Text style={styles.detailsDoctor}>
@@ -288,7 +297,7 @@ export default function ERecipeScreen() {
                 { label: "Diagnosis", value: diagnosis },
                 {
                   label: "Medications",
-                  value: formattedMedications
+                  value: formattedMedications,
                 },
                 { label: "Treatment Steps", value: steps },
                 notes && { label: "Additional Notes", value: notes },
@@ -319,7 +328,7 @@ export default function ERecipeScreen() {
                   <Text style={styles.buttonText}>Delete</Text>
                 </TouchableOpacity>
               </View>
-            </ScrollView>
+            </View>
           </View>
         )}
 
@@ -383,9 +392,7 @@ export default function ERecipeScreen() {
           {
             modal: sendModal,
             set: setSendModal,
-            text: `Prescription successfully sent to ${
-              patient || "the patient"
-            }!`,
+            text: `Prescription successfully sent to ${patient || "the patient"}!`,
             color: "#28a745",
             action: handleClear,
           },

@@ -21,18 +21,24 @@ export default function Analytics() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const renderedCards=useMemo(() => monthlyData.map((item, idx) => (
-          <View key={idx} style={styles.card}>
-            <Text style={styles.month}>{item.month}</Text>
-            <Text style={styles.visits}>Visits: {item.visits}</Text>
-          </View>
-        )), [monthlyData]);
+  const renderedCards = useMemo(
+    () =>
+      monthlyData.map((item, idx) => (
+        <View key={idx} style={styles.card}>
+          <Text style={styles.month}>{item.month}</Text>
+          <Text style={styles.visits}>Visits: {item.visits}</Text>
+        </View>
+      )),
+    [monthlyData]
+  );
 
   const onBack = useCallback(() => {
     router.push("/(doctor)/home");
   }, []);
 
   useEffect(() => {
+    let unsubscribe = null; // ✅ MIN CHANGE (needed for proper cleanup)
+
     const fetchAnalytics = async () => {
       try {
         const user = auth.currentUser;
@@ -58,7 +64,7 @@ export default function Analytics() {
           where("doctorId", "==", doctorId)
         );
 
-        const unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => {
+        unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => { // ✅ MIN CHANGE
           const monthlyCounts = {
             Jan: 0,
             Feb: 0,
@@ -103,7 +109,6 @@ export default function Analytics() {
           setLoading(false);
         });
 
-        return () => unsubscribe();
       } catch (error) {
         console.error("Error fetching analytics:", error);
         setLoading(false);
@@ -111,6 +116,10 @@ export default function Analytics() {
     };
 
     fetchAnalytics();
+
+    return () => {                 // ✅ MIN CHANGE (real cleanup)
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   if (loading) {
@@ -128,12 +137,13 @@ export default function Analytics() {
 
   return (
     <View style={styles.container}>
-      <Header
-        title="Patient Analytics"
-        onBack={onBack}
-      />
+      <Header title="Patient Analytics" onBack={onBack} />
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        removeClippedSubviews // ✅ MIN CHANGE (small perf / "lazy-ish" for offscreen on Android)
+        keyboardShouldPersistTaps="handled" // ✅ MIN CHANGE (avoids extra touch handling work)
+      >
         <Text style={styles.subtitle}>Monthly Patient Visits</Text>
 
         {renderedCards}

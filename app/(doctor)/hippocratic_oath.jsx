@@ -1,6 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+// NDYSHIMI 1: Zëvendësojmë ScrollView me FlatList nga react-native
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
 
 export default function DoctorOath() {
@@ -39,33 +40,45 @@ export default function DoctorOath() {
     },
   ];
 
+  // NDYSHIMI 2: Krijojmë një funksion RenderItem për FlatList
+  const renderItem = ({ item, index }) => (
+    <View key={index} style={styles.sectionCard}>
+      <View style={styles.iconContainer}>
+        <MaterialIcons name={item.icon} size={24} color="#00A3B5" />
+      </View>
+      <Text style={styles.sectionText}>{item.text}</Text>
+    </View>
+  );
+
+  // NDYSHIMI 3: Krijojmë një Header Component për FlatList
+  const ListHeader = () => (
+    <View style={styles.headerCard}>
+      <MaterialIcons name="medical-services" size={32} color="#00A3B5" />
+      <Text style={styles.title}>Hippocratic Oath</Text>
+      <Text style={styles.subtitle}>The Physician's Pledge</Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Header
         title="Doctor's Oath"
         onBack={() => router.push("/(doctor)/home")}
       />
-      <ScrollView
+      
+      {/* NDYSHIMI 4: Zëvendësojmë ScrollView me FlatList */}
+      <FlatList
+        data={oathSections}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        ListHeaderComponent={ListHeader} // Përdorim header-in si komponent
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.headerCard}>
-          <MaterialIcons name="medical-services" size={32} color="#00A3B5" />
-          <Text style={styles.title}>Hippocratic Oath</Text>
-          <Text style={styles.subtitle}>The Physician's Pledge</Text>
-        </View>
-
-        {oathSections.map((section, index) => (
-          <View key={index} style={styles.sectionCard}>
-            <View style={styles.iconContainer}>
-              <MaterialIcons name={section.icon} size={24} color="#00A3B5" />
-            </View>
-            <Text style={styles.sectionText}>{section.text}</Text>
-          </View>
-        ))}
-
-        
-      </ScrollView>
+      />
+      {/* Pjesa e brendshme e ScrollView (HeaderCard dhe map)
+        është zhvendosur në ListHeaderComponent dhe renderItem
+      */}
+      
     </View>
   );
 }
@@ -75,6 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F9FA",
   },
+  // Kjo stilizimi tani aplikohet direkt në FlatList, duke shërbyer si padding
   content: {
     padding: 16,
     paddingBottom: 40,
@@ -84,7 +98,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 24,
     alignItems: "center",
-    marginBottom: 20,
+    // NDYSHIMI 5: Heqim marginBottom nga headerCard, sepse FlatList vendos elementet
+    // Kemi nevojë të kemi vetëm një margin poshtë sectionCard.
+    marginBottom: 20, 
     shadowColor: "#00A3B5",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
@@ -110,7 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     padding: 20,
-    marginBottom: 16,
+    marginBottom: 16, // Kjo bën hapësirën mes elementeve të FlatList
     flexDirection: "row",
     alignItems: "flex-start",
     shadowColor: "#000",

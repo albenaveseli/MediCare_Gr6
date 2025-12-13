@@ -29,7 +29,7 @@ export default function HospitalFinder() {
   const { latitude, longitude } = userLocation;
   const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
- // 👉 Fallback për WEB (WebView nuk përkrahet fare në web)
+
 if (Platform.OS === 'web') {
   return (
     <View style={styles.wrapper}>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    flex: 1, // 🔥 harta e merr krejt lartësinë
+    flex: 1, 
   },
   center: {
     flex: 1,

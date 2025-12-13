@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -16,45 +15,48 @@ export default function History() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const user = getAuth().currentUser;
-  const renderAppointment= useCallback(({ item }) => (
-                <View style={styles.card}>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Doctor:</Text>
-                    <Text style={styles.value}>{item.doctorName}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>{item.date}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Time:</Text>
-                    <Text style={styles.value}>{item.time}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.label}>Status:</Text>
-                    <Text
-                      style={[
-                        styles.status,
-                        item.status === "completed"
-                          ? styles.completed
-                          : item.status === "cancelled"
-                          ? styles.cancelled
-                          : styles.pending,
-                      ]}
-                    >
-                      {item.status?.charAt(0).toUpperCase() +
-                        item.status?.slice(1)}
-                    </Text>
-                  </View>
-                  {item.notes ? (
-                    <View style={styles.row}>
-                      <Text style={styles.label}>Notes:</Text>
-                      <Text style={styles.value}>{item.notes}</Text>
-                    </View>
-                  ) : null}
-                </View>
-              ),[]
+
+  const renderAppointment = useCallback(
+    ({ item }) => (
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Text style={styles.label}>Doctor:</Text>
+          <Text style={styles.value}>{item.doctorName}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Date:</Text>
+          <Text style={styles.value}>{item.date}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Time:</Text>
+          <Text style={styles.value}>{item.time}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Status:</Text>
+          <Text
+            style={[
+              styles.status,
+              item.status === "completed"
+                ? styles.completed
+                : item.status === "cancelled"
+                ? styles.cancelled
+                : styles.pending,
+            ]}
+          >
+            {item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}
+          </Text>
+        </View>
+        {item.notes ? (
+          <View style={styles.row}>
+            <Text style={styles.label}>Notes:</Text>
+            <Text style={styles.value}>{item.notes}</Text>
+          </View>
+        ) : null}
+      </View>
+    ),
+    []
   );
+
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -95,32 +97,36 @@ export default function History() {
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
       <Header title="History" />
-      <ScrollView style={styles.scrollContainer}>
-        <Text style={styles.title}>Your Past Appointments</Text>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appointments</Text>
-          {appointments.length > 0 ? (
-            <FlatList
-              data={appointments}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              renderItem={renderAppointment}
-            />
-          ) : (
-            <Text style={styles.emptyText}>
-              You have no booked appointments yet.
-            </Text>
-          )}
-        </View>
-      </ScrollView>
+
+      <FlatList
+        data={appointments}
+        keyExtractor={(item) => item.id}
+        renderItem={renderAppointment}
+        contentContainerStyle={styles.scrollContainer}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>Your Past Appointments</Text>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Appointments</Text>
+            </View>
+          </>
+        }
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>You have no booked appointments yet.</Text>
+        }
+        removeClippedSubviews
+        initialNumToRender={8}
+        windowSize={7}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   title: {
     marginTop: 20,

@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
@@ -24,21 +24,21 @@ export default function DoctorDetails() {
   const auth = getAuth();
   const currentUserId = auth.currentUser?.uid;
 
-    const isWeekend = () => {
+  const isWeekend = () => {
     const day = new Date().getDay();
     return day === 0 || day === 6;
   };
-  
-const features = useMemo(() => {
-  if (!doctor) return [];   
 
-  return [
-    { icon: "school", text: doctor.education || "N/A" },
-    { icon: "location-on", text: doctor.location || "N/A" },
-    { icon: "language", text: doctor.languages?.join(", ") || "N/A" },
-    { icon: "attach-money", text: `Consultation: ${doctor.price || "N/A"}` },
-  ];
-}, [doctor]);
+  const features = useMemo(() => {
+    if (!doctor) return [];
+
+    return [
+      { icon: "school", text: doctor.education || "N/A" },
+      { icon: "location-on", text: doctor.location || "N/A" },
+      { icon: "language", text: doctor.languages?.join(", ") || "N/A" },
+      { icon: "attach-money", text: `Consultation: ${doctor.price || "N/A"}` },
+    ];
+  }, [doctor]);
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -53,8 +53,7 @@ const features = useMemo(() => {
             const likedBy = data.likedBy || [];
             setLikesCount(likedBy.length);
             setIsLiked(currentUserId ? likedBy.includes(currentUserId) : false);
-          }
-          else {
+          } else {
             console.warn("Doctor not found in Firestore");
           }
         }
@@ -91,11 +90,11 @@ const features = useMemo(() => {
     );
 
     const snap = await getDocs(q);
-    const booked = snap.docs.map(d => d.data().time);
+    const booked = snap.docs.map((d) => d.data().time);
 
-    let free = allSlots.filter(slot => !booked.includes(slot));
+    let free = allSlots.filter((slot) => !booked.includes(slot));
 
-    free = free.filter(slot => {
+    free = free.filter((slot) => {
       const [hour, minute] = slot.split(":").map(Number);
       const slotDate = new Date();
       slotDate.setHours(hour, minute, 0, 0);
@@ -104,12 +103,12 @@ const features = useMemo(() => {
     });
     setAvailableSlots(free);
   };
+
   useEffect(() => {
     if (params.id) {
       loadAvailableSlots();
     }
   }, [params.id]);
-
 
   const toggleLike = useCallback(async () => {
     if (!currentUserId) return;
@@ -120,15 +119,16 @@ const features = useMemo(() => {
 
       if (newStatus) {
         await updateDoc(docRef, { likedBy: arrayUnion(currentUserId) });
-        setLikesCount(prev => prev + 1);
+        setLikesCount((prev) => prev + 1);
       } else {
         await updateDoc(docRef, { likedBy: arrayRemove(currentUserId) });
-        setLikesCount(prev => prev - 1);
+        setLikesCount((prev) => prev - 1);
       }
     } catch (error) {
       console.error("Error toggling like:", error);
     }
   }, [currentUserId, params.id, isLiked]);
+
   const checkUserRating = async () => {
     if (!currentUserId) return;
 
@@ -167,7 +167,8 @@ const features = useMemo(() => {
       ratings[currentUserId] = rating;
 
       const allRatings = Object.values(ratings);
-      const newRating = allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
+      const newRating =
+        allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length;
 
       await updateDoc(docRef, {
         ratings: ratings,
@@ -199,99 +200,116 @@ const features = useMemo(() => {
     );
   }
 
-
   return (
     <View style={styles.container}>
-      <Header
-        title="Doctor Profile"
-        onBack={() => router.push("/doctor-list")}
-      />
+      <Header title="Doctor Profile" onBack={() => router.push("/doctor-list")} />
 
-      <ScrollView
+      <FlatList
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: 120 }}
-      >
-        <View style={styles.profileSection}>
-          <Image source={{ uri: doctor.image }} style={styles.doctorImage} />
-          <View style={styles.infoContainer}>
-            <Text style={styles.doctorName}>{doctor.name}</Text>
-            <Text style={styles.specialty}>{doctor.specialty}</Text>
-
-            <View style={styles.ratingContainer}>
-              {hasRated ? (
-                <>
-                  <Ionicons name="star" size={16} color="#FFD700" />
-                  <Text style={styles.rating}>{doctor.rating.toFixed(1)}</Text>
-                  <Text style={styles.reviews}>({doctor.reviews || 0} reviews)</Text>
-                </>
-              ) : (
-                <View style={{ flexDirection: "row" }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <TouchableOpacity key={star} onPress={() => submitRating(star)}>
-                      <FontAwesome
-                        name={star <= userRating ? "star" : "star-o"}
-                        size={24}
-                        color="#FFD700"
-                        style={{ marginHorizontal: 2 }}
-                      />
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
-          </View>
-
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity onPress={toggleLike} style={styles.heartButton}>
-              <Ionicons
-                name={isLiked ? "heart" : "heart-outline"}
-                size={24}
-                color={isLiked ? "#FF3B30" : "#007ea7"}
+        data={[{ key: "content" }]}
+        keyExtractor={(item) => item.key}
+        renderItem={() => (
+          <>
+            <View style={styles.profileSection}>
+              <Image
+                source={{ uri: doctor.image }}
+                style={styles.doctorImage}
+                resizeMode="cover"
+                fadeDuration={150}
               />
-            </TouchableOpacity>
-            <Text style={styles.likeCount}>{likesCount}</Text>
-          </View>
-        </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.doctorName}>{doctor.name}</Text>
+                <Text style={styles.specialty}>{doctor.specialty}</Text>
 
-        <Card style={styles.card}>
-          <Text style={styles.descriptionText}>{doctor.description || "No description available."}</Text>
-        </Card>
+                <View style={styles.ratingContainer}>
+                  {hasRated ? (
+                    <>
+                      <Ionicons name="star" size={16} color="#FFD700" />
+                      <Text style={styles.rating}>{doctor.rating.toFixed(1)}</Text>
+                      <Text style={styles.reviews}>({doctor.reviews || 0} reviews)</Text>
+                    </>
+                  ) : (
+                    <View style={{ flexDirection: "row" }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <TouchableOpacity key={star} onPress={() => submitRating(star)}>
+                          <FontAwesome
+                            name={star <= userRating ? "star" : "star-o"}
+                            size={24}
+                            color="#FFD700"
+                            style={{ marginHorizontal: 2 }}
+                          />
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              </View>
 
-        <Card style={styles.card}>
-          <Text style={styles.sectionTitle}>Details</Text>
-          {features.map((f, i) => (
-            <View key={i} style={styles.featureItem}>
-              <MaterialIcons name={f.icon} size={20} color="#007ea7" />
-              <Text style={styles.featureText}>{f.text}</Text>
+              <View style={{ alignItems: "center" }}>
+                <TouchableOpacity onPress={toggleLike} style={styles.heartButton}>
+                  <Ionicons
+                    name={isLiked ? "heart" : "heart-outline"}
+                    size={24}
+                    color={isLiked ? "#FF3B30" : "#007ea7"}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.likeCount}>{likesCount}</Text>
+              </View>
             </View>
-          ))}
-        </Card>
 
-        <Card style={styles.card}>
-          <Text style={styles.sectionTitle}>Available Hours</Text>
+            <Card style={styles.card}>
+              <Text style={styles.descriptionText}>
+                {doctor.description || "No description available."}
+              </Text>
+            </Card>
 
-          {isWeekend() ? (
-            <Text style={styles.unavailableText}>Unavailable</Text>
-          ) : availableSlots.length === 0 ? (
-            <Text
-              style={{textAlign: "center",color: "red",fontStyle: "italic",marginVertical: 10,}}>
-                There are no available times for today.
-            </Text>
-          ) : (
-            <TimeSlots
-              slots={availableSlots}
-              selected={selectedTime}
-              onSelect={setSelectedTime}
-            />
-          )}
-          <Text style={styles.availabilityNote}>
-            {isWeekend()
-              ? "Today is weekend — the doctor is unavailable. On workdays: 08:00-16:00"
-              : "For today: doctor's specific availability. For other days: 08:00-16:00"}
-          </Text>
-        </Card>
-      </ScrollView>
+            <Card style={styles.card}>
+              <Text style={styles.sectionTitle}>Details</Text>
+              {features.map((f, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <MaterialIcons name={f.icon} size={20} color="#007ea7" />
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>
+              ))}
+            </Card>
+
+            <Card style={styles.card}>
+              <Text style={styles.sectionTitle}>Available Hours</Text>
+
+              {isWeekend() ? (
+                <Text style={styles.unavailableText}>Unavailable</Text>
+              ) : availableSlots.length === 0 ? (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "red",
+                    fontStyle: "italic",
+                    marginVertical: 10,
+                  }}
+                >
+                  There are no available times for today.
+                </Text>
+              ) : (
+                <TimeSlots
+                  slots={availableSlots}
+                  selected={selectedTime}
+                  onSelect={setSelectedTime}
+                />
+              )}
+              <Text style={styles.availabilityNote}>
+                {isWeekend()
+                  ? "Today is weekend — the doctor is unavailable. On workdays: 08:00-16:00"
+                  : "For today: doctor's specific availability. For other days: 08:00-16:00"}
+              </Text>
+            </Card>
+          </>
+        )}
+        removeClippedSubviews
+        initialNumToRender={1}
+        windowSize={5}
+      />
 
       <View style={styles.buttonContainer}>
         <PrimaryButton
@@ -309,9 +327,7 @@ const features = useMemo(() => {
               },
             })
           }
-          icon={() => (
-            <FontAwesome5 name="calendar-check" size={20} color="#fff" />
-          )}
+          icon={() => <FontAwesome5 name="calendar-check" size={20} color="#fff" />}
         />
       </View>
     </View>
