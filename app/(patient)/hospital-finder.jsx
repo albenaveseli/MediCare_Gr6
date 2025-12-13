@@ -1,327 +1,55 @@
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import * as Location from "expo-location";
 import { useEffect, useState } from "react";
-import { FlatList, Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import Header from "../../components/Header";
-import { app } from "../../firebase";
-
-const db = getFirestore(app);
-
-const STATIC_HOSPITALS = [
-  {
-    id: 1,
-    code: "H001",
-    name: "Central Hospital",
-    state: "NSW",
-    region: "Sydney",
-    type: "Public",
-    latitude: "-33.8688",
-    longitude: "151.2093",
-    status: "Open",
-    description: "A major hospital located in the city center.",
-  },
-  {
-    id: 2,
-    code: "H002",
-    name: "Westside Clinic",
-    state: "VIC",
-    region: "Melbourne",
-    type: "Private",
-    latitude: "-37.8136",
-    longitude: "144.9631",
-    status: "Closed",
-    description: "Private clinic with specialist services.",
-  },
-];
-
-const PAGE_SIZE = 5;
 
 export default function HospitalFinder() {
-  const [hospitals, setHospitals] = useState([]);
-  const [visibleHospitals, setVisibleHospitals] = useState([]);
-  const [page, setPage] = useState(1);
-
-  const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
-  const [locationError, setLocationError] = useState(null);
-  const [MapComponents, setMapComponents] = useState(null);
 
-  // -------------------------------------------------------
-  // FETCH HOSPITALS
-  // -------------------------------------------------------
   useEffect(() => {
-    const fetchHospitals = async () => {
-      let data = [];
+    (async () => {
+      const { status } =
+        await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") return;
 
-      if (Platform.OS === "web") {
-        try {
-          const snapshot = await getDocs(collection(db, "hospitals"));
-          data = snapshot.docs.map((doc) => doc.data());
-        } catch (error) {
-          console.log("Firestore fetch failed, using static data:", error);
-          data = STATIC_HOSPITALS;
-        }
-      } else {
-        data = STATIC_HOSPITALS;
-      }
-
-      setHospitals(data);
-      setVisibleHospitals(data.slice(0, PAGE_SIZE));
-      setLoading(false);
-    };
-
-    fetchHospitals();
+      const loc = await Location.getCurrentPositionAsync({});
+      setUserLocation(loc.coords);
+    })();
   }, []);
 
-  // -------------------------------------------------------
-  // GET USER LOCATION AND DYNAMIC IMPORT OF MAP
-  // -------------------------------------------------------
-  useEffect(() => {
-    if (Platform.OS === "web") return;
-
-    const loadLocationAndMap = async () => {
-      try {
-        const Location = await import("expo-location");
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          setLocationError("Permission to access location was denied.");
-          return;
-        }
-
-        const loc = await Location.getCurrentPositionAsync({});
-        setUserLocation(loc.coords);
-
-        const RNMaps = await import("react-native-maps");
-        setMapComponents({
-          MapView: RNMaps.default,
-          Marker: RNMaps.Marker,
-        });
-      } catch (err) {
-        console.log(err);
-        setLocationError("Unable to retrieve location or load map.");
-      }
-    };
-
-    loadLocationAndMap();
-  }, []);
-
-  const loadMoreHospitals = () => {
-    const start = page * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-
-    if (start >= hospitals.length) return;
-
-    const more = hospitals.slice(start, end);
-    setVisibleHospitals((prev) => [...prev, ...more]);
-    setPage((prev) => prev + 1);
-  };
-
-  if (loading) {
+  if (!userLocation) {
     return (
-      <View style={[styles.wrapper, styles.center]}>
-        <Text style={styles.loadingText}>Loading hospitals...</Text>
+      <View style={styles.center}>
+        <Text>Loading location...</Text>
       </View>
     );
   }
-
-  const MapView = MapComponents?.MapView;
-  const Marker = MapComponents?.Marker;
-
-  const renderHospital = ({ item: h }) => (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.name}>{h.name}</Text>
-        <View
-          style={[
-            styles.statusBadge,
-            h.status === "Closed" ? styles.closedBadge : styles.openBadge,
-          ]}
-        >
-          <Text style={styles.statusText}>{h.status}</Text>
-        </View>
-      </View>
-
-      <View style={styles.divider} />
-
-      <View style={styles.detailsGrid}>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>State</Text>
-          <Text style={styles.detailValue}>{h.state}</Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Region</Text>
-          <Text style={styles.detailValue}>{h.region}</Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Type</Text>
-          <Text
-            style={[
-              styles.detailValue,
-              h.type === "Public" ? styles.publicText : styles.privateText,
-            ]}
-          >
-            {h.type}
-          </Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Coordinates</Text>
-          <Text style={styles.detailValue}>
-            {h.latitude}, {h.longitude}
-          </Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Code</Text>
-          <Text style={styles.detailValue}>{h.code}</Text>
-        </View>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>ID</Text>
-          <Text style={styles.detailValue}>{h.id}</Text>
-        </View>
-      </View>
-
-      {h.description && (
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionLabel}>Description</Text>
-          <Text style={styles.descriptionText}>{h.description}</Text>
-        </View>
-      )}
-    </View>
-  );
 
   return (
     <View style={styles.wrapper}>
       <Header title="Hospital Finder" />
 
-      {Platform.OS !== "web" && MapView && Marker && userLocation && (
-        <View style={{ height: 250, margin: 20, borderRadius: 20, overflow: "hidden" }}>
-          <MapView
-            style={{ flex: 1 }}
-            initialRegion={{
-              latitude: userLocation.latitude,
-              longitude: userLocation.longitude,
-              latitudeDelta: 0.1,
-              longitudeDelta: 0.1,
-            }}
-          >
-            <Marker
-              coordinate={{
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
-              }}
-              title="You are here"
-              pinColor="blue"
-            />
-
-            {hospitals.map((h) => (
-              <Marker
-                key={h.id}
-                coordinate={{
-                  latitude: parseFloat(h.latitude),
-                  longitude: parseFloat(h.longitude),
-                }}
-                title={h.name}
-                description={h.description}
-              />
-            ))}
-          </MapView>
-        </View>
-      )}
-
-      <FlatList
-        data={visibleHospitals}
-        renderItem={renderHospital}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.scrollContent}
-        onEndReached={loadMoreHospitals}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={
-          visibleHospitals.length < hospitals.length ? (
-            <Text style={{ textAlign: "center", padding: 16, color: "#007ea7" }}>
-              Loading more hospitals...
-            </Text>
-          ) : null
-        }
-      />
+      <MapView
+        style={{ height: 250, margin: 20 }}
+        initialRegion={{
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          latitudeDelta: 0.2,
+          longitudeDelta: 0.2,
+        }}
+      >
+        <Marker
+          coordinate={userLocation}
+          title="You are here"
+          pinColor="blue"
+        />
+      </MapView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: "#f8fdff" },
-  center: { justifyContent: "center", alignItems: "center", flex: 1 },
-  loadingText: { fontSize: 16, fontStyle: "italic", color: "#007ea7" },
-  scrollContent: { padding: 20 },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: "#007ea7",
-    shadowColor: "#007ea7",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  },
-  name: { fontSize: 18, fontWeight: "700", color: "#006d8c", flex: 1 },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    minWidth: 60,
-    alignItems: "center",
-  },
-  openBadge: { backgroundColor: "#e8f7f0" },
-  closedBadge: { backgroundColor: "#ffe8e8" },
-  statusText: { fontSize: 12, fontWeight: "700", color: "#555" },
-  divider: { height: 1, backgroundColor: "#e1f5fe", marginBottom: 16 },
-  detailsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  detailItem: { width: "48%", marginBottom: 12 },
-  detailLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#007ea7",
-    marginBottom: 2,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#2c3e50",
-    lineHeight: 18,
-  },
-  publicText: { color: "#27ae60", fontWeight: "600" },
-  privateText: { color: "#e74c3c", fontWeight: "600" },
-  descriptionContainer: {
-    marginTop: 8,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-  },
-  descriptionLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#007ea7",
-    marginBottom: 6,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  descriptionText: {
-    fontSize: 14,
-    color: "#555",
-    lineHeight: 20,
-    fontStyle: "italic",
-  },
+  wrapper: { flex: 1 },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });
