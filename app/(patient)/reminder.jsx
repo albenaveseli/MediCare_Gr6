@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
@@ -10,31 +9,61 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 import Header from "../../components/Header";
 import { scheduleNotification } from "../../utils/notifications";
+
+
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { auth, db } from "../../firebase";
 
 export default function Reminder() {
   const [medicines, setMedicines] = useState([]);
   const [newMedicineName, setNewMedicineName] = useState("");
   const [newMedicineTime, setNewMedicineTime] = useState("");
 
+  
   const isValidTime = (time) => {
     const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
     return regex.test(time);
   };
 
+
   useEffect(() => {
     const loadMedicines = async () => {
-      const saved = await AsyncStorage.getItem("medicines");
-      if (saved) setMedicines(JSON.parse(saved));
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const q = query(
+          collection(db, "reminders"),
+          where("userId", "==", user.uid)
+        );
+
+        const snapshot = await getDocs(q);
+
+        const meds = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setMedicines(meds);
+      } catch (error) {
+        console.error("Error loading reminders:", error);
+      }
     };
+
     loadMedicines();
   }, []);
 
-  useEffect(() => {
-    AsyncStorage.setItem("medicines", JSON.stringify(medicines));
-  }, [medicines]);
-
+  
   const addMedicine = async () => {
     if (!newMedicineName || !newMedicineTime) {
       Alert.alert("⚠️ Error", "Please enter both medicine name and time");
@@ -46,42 +75,62 @@ export default function Reminder() {
       return;
     }
 
-    const newMed = {
-      id: Date.now().toString(),
-      name: newMedicineName.trim(),
-      time: newMedicineTime.trim(),
-    };
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert("Error", "User not logged in");
+      return;
+    }
 
-    setMedicines((prev) => [...prev, newMed]);
+    try {
+      const newMed = {
+        name: newMedicineName.trim(),
+        time: newMedicineTime.trim(),
+        userId: user.uid,
+        createdAt: new Date(),
+      };
 
-    await scheduleNotification(newMedicineName, newMedicineTime);
+      const docRef = await addDoc(collection(db, "reminders"), newMed);
 
-    Alert.alert("✅ Success", "Medicine reminder added and notification scheduled!");
-    setNewMedicineName("");
-    setNewMedicineTime("");
+      setMedicines((prev) => [...prev, { id: docRef.id, ...newMed }]);
+
+      await scheduleNotification(newMedicineName, newMedicineTime);
+
+      Alert.alert("✅ Success", "Medicine reminder added!");
+      setNewMedicineName("");
+      setNewMedicineTime("");
+    } catch (error) {
+      console.error("Error adding reminder:", error);
+      Alert.alert("Error", "Failed to add reminder");
+    }
   };
 
+ 
   const deleteMedicine = async (id) => {
-    const updated = medicines.filter((m) => m.id !== id);
-    setMedicines(updated);
-    await AsyncStorage.setItem("medicines", JSON.stringify(updated));
+    try {
+      await deleteDoc(collection(db, "reminders").doc(id));
+      setMedicines((prev) => prev.filter((m) => m.id !== id));
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+    }
   };
 
-  const renderItem =  useCallback(({ item }) => (
-    <View style={styles.card}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View>
-          <Text style={styles.medicineName}>{item.name}</Text>
-          <Text style={styles.medicineTime}>{item.time}</Text>
+
+  const renderItem = useCallback(
+    ({ item }) => (
+      <View style={styles.card}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View>
+            <Text style={styles.medicineName}>{item.name}</Text>
+            <Text style={styles.medicineTime}>{item.time}</Text>
+          </View>
+          <TouchableOpacity onPress={() => deleteMedicine(item.id)}>
+            <Ionicons name="trash-outline" size={24} color="#d9534f" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => deleteMedicine(item.id)}>
-          <Ionicons name="trash-outline" size={24} color="#d9534f" />
-        </TouchableOpacity>
       </View>
-    </View>
-  ),
-  [medicines]
-);
+    ),
+    [medicines]
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: "#e8f6f8" }}>
