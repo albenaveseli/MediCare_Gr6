@@ -51,54 +51,65 @@ export default function ProfileCard({ roleType = "Patient" }) {
     return "https://www.w3schools.com/howto/img_avatar.png";
   };
 
-  // --- Funksioni për zgjedhjen e fotos dhe ngarkimin në Firebase Storage ---
-  const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert("Leje e nevojshme", "Ju lutem lejoni qasje në galeri");
-      return;
-    }
+const pickImage = async () => {
+  const permissionResult =
+    await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
+  if (!permissionResult.granted) {
+    Alert.alert("Leje e nevojshme", "Ju lutem lejoni qasje në galeri");
+    return;
+  }
 
-    if (!result.canceled) {
-      const localUri = result.assets[0].uri;
-      setProfileImage(localUri); // shfaq foto direkt
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.7,
+  });
 
-      if (docId) {
-        const user = auth.currentUser;
-        if (!user) return;
+  if (result.canceled) return;
 
-        try {
-          // Ngarko në Firebase Storage
-          const filename = localUri.substring(localUri.lastIndexOf("/") + 1);
-          const storageRef = ref(storage, `profileImages/${user.uid}/${filename}`);
-          const img = await fetch(localUri);
-          const bytes = await img.blob();
-          await uploadBytes(storageRef, bytes);
+  const localUri = result.assets[0].uri;
 
-          const downloadURL = await getDownloadURL(storageRef);
+  // 👉 Shfaqe menjëherë foton
+  setProfileImage(localUri);
 
-          // Ruaj URL e fotos në Firestore
-          await setDoc(
-            doc(db, "patients", docId),
-            { image: downloadURL },
-            { merge: true }
-          );
+  if (!docId) return;
 
-          setProfileImage(downloadURL); // shfaq URL e Firebase
-        } catch (err) {
-          console.log("Error uploading image:", err);
-          Alert.alert("Gabim", "Ngarkimi i fotos dështoi.");
-        }
-      }
-    }
-  };
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const filename = `${Date.now()}.jpg`;
+    const storageRef = ref(
+      storage,
+      `profileImages/${user.uid}/${filename}`
+    );
+
+    const response = await fetch(localUri);
+    const blob = await response.blob();
+
+    // ⬆️ Upload në Storage
+    await uploadBytes(storageRef, blob);
+
+    // 🔗 Merr URL
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // 💾 Ruaje vetëm URL-në në Firestore
+    await setDoc(
+      doc(db, "patients", docId),
+      { image: downloadURL },
+      { merge: true }
+    );
+
+    // 👉 Vendos URL-në finale
+    setProfileImage(downloadURL);
+
+  } catch (error) {
+    console.log("Image upload warning:", error);
+    // ❌ MOS e alarmo user-in – fotoja u ndërrua
+  }
+};
 
   useEffect(() => {
     const fetchUserData = async () => {
