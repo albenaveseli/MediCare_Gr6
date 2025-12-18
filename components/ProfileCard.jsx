@@ -17,8 +17,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  ScrollView,
-  Text,
+  ScrollView, StyleSheet, Text,
   TextInput,
   TouchableOpacity,
   View
@@ -313,3 +312,147 @@ export default function ProfileCard({ roleType = "Patient" }) {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+   paddingVertical: 20,
+   paddingHorizontal: 10,
+   backgroundColor: "#E9F8F9",
+  },
+
+  infoCard: {
+    width: "92%",
+    backgroundColor: "#ffffff",
+    borderRadius: 28,
+    paddingVertical: 30,
+    paddingHorizontal: 25,
+
+    
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 8,
+
+    borderWidth: 1,
+    borderColor: "#dff6ff",
+    alignSelf: "center",
+  },
+
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    alignSelf: "center",
+    marginBottom: 20,
+
+   
+    borderWidth: 3,
+    borderColor: "#c8f1ff",
+    shadowColor: "#5cd6ff",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+
+  label: {
+    fontSize: 17,
+    fontWeight: "600",
+    marginBottom: 14,
+    color: "#033d49",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#f6fdff",
+    borderRadius: 10,
+  },
+
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+
+  icon: {
+    marginRight: 12,
+  },
+
+  pickerContainer: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#f2f9fb",
+    borderWidth: 1,
+    borderColor: "#d4f1f4",
+  },
+
+  input: {
+    flex: 1,
+    backgroundColor: "#f2f9fb",
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#d4f1f4",
+  },
+
+  buttonsContainer: {
+    marginTop: 25,
+    gap: 14,
+  },
+
+  editButton: {
+    backgroundColor: "#4DB8FF",
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: "center",
+
+    shadowColor: "#4DB8FF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+  },
+
+  editText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  saveButton: {
+    backgroundColor: "#007ea7",
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: "center",
+
+    shadowColor: "#007ea7",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+  },
+
+  saveText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  logoutButton: {
+    backgroundColor: "#d9f6ff",
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: "center",
+  },
+
+  logoutText: {
+    color: "#007ea7",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
+  },
+});
