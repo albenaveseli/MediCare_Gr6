@@ -2,7 +2,7 @@
 **Course:** Programimi për Pajisje Mobile  
 **Version:** 1.0  
 
-> **Repository naming convention:** `MediCare-Group<Nr>` (p.sh. `MediCare-Group3`)  
+> **Repository naming convention:** `MediCare-Group<6>`
 > **Platform:** Mobile App (React Native + Expo)  
 > **Backend:** Firebase (Auth, Firestore, Storage)
 
@@ -10,12 +10,12 @@
 
 ## Team (Anëtarët e Grupit)
 
-- **Albena Veseli** — Komp. FIEK  
-- **Amela Syla** — Komp. FIEK  
-- **Anita Cacaj** — Komp. FIEK  
-- **Ardit Hyseni** — Komp. FIEK  
-- **Dua Gashi** — Komp. FIEK  
-- **Erzana Beqaj** — Komp. FIEK  
+- **Albena Veseli**  
+- **Amela Syla**   
+- **Anita Cacaj** 
+- **Ardit Hyseni**
+- **Dua Gashi**
+- **Erzana Beqaj** 
 
 ---
 
