@@ -24,7 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth, db, storage } from "../firebase"; // siguro që ke import storage
+import { auth, db, storage } from "../firebase";
 
 export default function ProfileCard({ roleType = "Patient" }) {
   const router = useRouter();
@@ -51,65 +51,57 @@ export default function ProfileCard({ roleType = "Patient" }) {
     return "https://www.w3schools.com/howto/img_avatar.png";
   };
 
-const pickImage = async () => {
-  const permissionResult =
-    await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  if (!permissionResult.granted) {
-    Alert.alert("Leje e nevojshme", "Ju lutem lejoni qasje në galeri");
-    return;
-  }
+    if (!permissionResult.granted) {
+      Alert.alert("Leje e nevojshme", "Ju lutem lejoni qasje në galeri");
+      return;
+    }
 
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 0.7,
-  });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
 
-  if (result.canceled) return;
+    if (result.canceled) return;
 
-  const localUri = result.assets[0].uri;
+    const localUri = result.assets[0].uri;
+    setProfileImage(localUri);
 
-  // 👉 Shfaqe menjëherë foton
-  setProfileImage(localUri);
+    if (!docId) return;
 
-  if (!docId) return;
+    const user = auth.currentUser;
+    if (!user) return;
 
-  const user = auth.currentUser;
-  if (!user) return;
+    try {
+      const filename = `${Date.now()}.jpg`;
+      const storageRef = ref(
+        storage,
+        `profileImages/${user.uid}/${filename}`
+      );
 
-  try {
-    const filename = `${Date.now()}.jpg`;
-    const storageRef = ref(
-      storage,
-      `profileImages/${user.uid}/${filename}`
-    );
+      const response = await fetch(localUri);
+      const blob = await response.blob();
 
-    const response = await fetch(localUri);
-    const blob = await response.blob();
+      await uploadBytes(storageRef, blob);
 
-    // ⬆️ Upload në Storage
-    await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
 
-    // 🔗 Merr URL
-    const downloadURL = await getDownloadURL(storageRef);
+      await setDoc(
+        doc(db, "patients", docId),
+        { image: downloadURL },
+        { merge: true }
+      );
 
-    // 💾 Ruaje vetëm URL-në në Firestore
-    await setDoc(
-      doc(db, "patients", docId),
-      { image: downloadURL },
-      { merge: true }
-    );
-
-    // 👉 Vendos URL-në finale
-    setProfileImage(downloadURL);
-
-  } catch (error) {
-    console.log("Image upload warning:", error);
-    // ❌ MOS e alarmo user-in – fotoja u ndërrua
-  }
-};
+      setProfileImage(downloadURL);
+    } catch (error) {
+      console.log("Image upload warning:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -253,15 +245,15 @@ const pickImage = async () => {
               source={{ uri: doctorDetails.image }}
               style={styles.profileImage}
             />
-            <Text style={styles.label}>Name: {name}</Text>
-            <Text style={styles.label}> Email: {email}</Text>
-            <Text style={styles.label}> Speciality: {doctorDetails.speciality}</Text>
-            <Text style={styles.label}> Price: {doctorDetails.price}</Text>
-            <Text style={styles.label}> Rating: {doctorDetails.rating}</Text>
-            <Text style={styles.label}> Education: {doctorDetails.education}</Text>
-            <Text style={styles.label}> Experience: {doctorDetails.experience}</Text>
-            <Text style={styles.label}> Languages: {doctorDetails.languages.join(", ")}</Text>
-            <Text style={styles.label}> Description: {doctorDetails.description}</Text>
+           <Text style={styles.label}>👤 Name: {name}</Text>
+           <Text style={styles.label}>📧 Email: {email}</Text>
+           <Text style={styles.label}>🩺 Speciality: {doctorDetails.speciality}</Text>
+           <Text style={styles.label}>💰 Price: {doctorDetails.price}</Text>
+           <Text style={styles.label}>⭐ Rating: {doctorDetails.rating}</Text>
+           <Text style={styles.label}>🎓 Education: {doctorDetails.education}</Text>
+           <Text style={styles.label}>🛠️ Experience: {doctorDetails.experience}</Text>
+           <Text style={styles.label}>🗣️ Languages: {doctorDetails.languages.join(", ")}</Text>
+           <Text style={styles.label}>📝 Description: {doctorDetails.description}</Text>
           </>
         ) : (
           <>
@@ -274,93 +266,85 @@ const pickImage = async () => {
 
             {isEditing ? (
               <>
-               {/* NAME */}
-    <View style={styles.inputRow}>
-      <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Full Name"
-      />
-    </View>
+                <View style={styles.inputRow}>
+                  <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    editable={false}
+                  />
+                </View>
 
-    {/* EMAIL – JO EDITABLE */}
-    <View style={styles.inputRow}>
-      <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={[styles.input, { backgroundColor: "#eaeaea" }]}
-        value={email}
-        editable={false}
-      />
-    </View>
+                <View style={styles.inputRow}>
+                  <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={[styles.input, { backgroundColor: "#eaeaea" }]}
+                    value={email}
+                    editable={false}
+                  />
+                </View>
 
-    {/* BIRTH DATE */}
-    <View style={styles.inputRow}>
-      <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={styles.input}
-        value={birthdate}
-        onChangeText={setBirthdate}
-        placeholder="Birth date (YYYY-MM-DD)"
-      />
-    </View>
+                <View style={styles.inputRow}>
+                  <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={birthdate}
+                    onChangeText={setBirthdate}
+                    placeholder="Birth date (YYYY-MM-DD)"
+                  />
+                </View>
 
-    {/* GENDER */}
-    <View style={styles.inputRow}>
-      <Ionicons name="transgender-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={styles.input}
-        value={gender}
-        onChangeText={setGender}
-        placeholder="Gender (Male / Female)"
-      />
-    </View>
+                <View style={styles.inputRow}>
+                  <Ionicons name="transgender-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={gender}
+                    onChangeText={setGender}
+                    placeholder="Gender (Male / Female)"
+                  />
+                </View>
 
-    {/* HEIGHT */}
-    <View style={styles.inputRow}>
-      <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={styles.input}
-        value={height}
-        onChangeText={setHeight}
-        placeholder="Height (cm)"
-        keyboardType="numeric"
-      />
-    </View>
+                <View style={styles.inputRow}>
+                  <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={height}
+                    onChangeText={setHeight}
+                    placeholder="Height (cm)"
+                    keyboardType="numeric"
+                  />
+                </View>
 
-    {/* WEIGHT */}
-    <View style={styles.inputRow}>
-      <Ionicons name="fitness-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={styles.input}
-        value={weight}
-        onChangeText={setWeight}
-        placeholder="Weight (kg)"
-        keyboardType="numeric"
-      />
-    </View>
+                <View style={styles.inputRow}>
+                  <Ionicons name="fitness-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={weight}
+                    onChangeText={setWeight}
+                    placeholder="Weight (kg)"
+                    keyboardType="numeric"
+                  />
+                </View>
 
-    {/* MEDICATION ALLERGY */}
-    <View style={styles.inputRow}>
-      <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
-      <TextInput
-        style={styles.input}
-        value={allergies}
-        onChangeText={setAllergies}
-        placeholder="Medication Allergy (Yes / No)"
-      />
-    </View>
-  </>
+                <View style={styles.inputRow}>
+                  <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={allergies}
+                    onChangeText={setAllergies}
+                    placeholder="Medication Allergy (Yes / No)"
+                  />
+                </View>
+              </>
             ) : (
               <>
-                <Text style={styles.label}> Name: {name}</Text>
-                <Text style={styles.label}> Email: {email}</Text>
-                <Text style={styles.label}> Birth Date: {birthdate}</Text>
-                <Text style={styles.label}> Gender: {gender}</Text>
-                <Text style={styles.label}> Height: {height} cm</Text>
-                <Text style={styles.label}> Weight: {weight} kg</Text>
-                <Text style={styles.label}> Medication Allergy: {allergies}</Text>
+                <Text style={styles.label}>👤 Name: {name}</Text>
+                <Text style={styles.label}>📧 Email: {email}</Text>
+                <Text style={styles.label}>🎂 Birth Date: {birthdate}</Text>
+                <Text style={styles.label}>⚧ Gender: {gender}</Text>
+                <Text style={styles.label}>📏 Height: {height} cm</Text>
+                <Text style={styles.label}>⚖️ Weight: {weight} kg</Text>
+                <Text style={styles.label}>💊 Medication Allergy: {allergies}</Text>
               </>
             )}
           </>
@@ -402,14 +386,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     paddingVertical: 30,
     paddingHorizontal: 25,
-
-    
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 8,
-
     borderWidth: 1,
     borderColor: "#dff6ff",
     alignSelf: "center",
@@ -421,8 +402,6 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     alignSelf: "center",
     marginBottom: 20,
-
-   
     borderWidth: 3,
     borderColor: "#c8f1ff",
     shadowColor: "#5cd6ff",
@@ -481,7 +460,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 14,
     alignItems: "center",
-
     shadowColor: "#4DB8FF",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
@@ -499,7 +477,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 14,
     alignItems: "center",
-
     shadowColor: "#007ea7",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
