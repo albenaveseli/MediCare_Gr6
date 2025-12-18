@@ -88,15 +88,14 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 ##  Use Cases (Rrjedhat Kryesore të Përdorimit)
 
 ### Use Case 1 — Sign Up (Regjistrim i ri)
-**Aktorët:** Pacient / Doktor  
+**Aktorët:** Pacient  
 **Qëllimi:** Krijimi i llogarisë dhe vendosja e rolit  
-**Trigger:** “Register” në Welcome/Login Screen  
+**Trigger:** “Sign Up” në Welcome/Login Screen  
 **Rrjedha:**
-1. Përdoruesi zgjedh “Register”
-2. Zgjedh rolin: Pacient / Doktor
-3. Fut Email, Password, Confirm Password, Display Name
+1. Përdoruesi zgjedh “Sign Up”
+3. Fut Email, Password, Confirm Password
 4. Sistemi verifikon fushat dhe krijon llogarinë (Firebase Auth)
-5. Ridrejtim te Onboarding ose Home
+5. Ridrejtim te Onboarding
 **Alternative:**
 - Email ekziston → “Email already in use”
 - Password i dobët / mismatch → mesazh gabimi
@@ -158,7 +157,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 ### Use Case 9 — GPS & Hospital Finder
 1. Leje GPS
 2. Merr koordinata
-3. Shfaq spitale afër + “Navigate”
+3. Mundeson lidhjen me google maps
 
 ### Use Case 10 — Push Notifications
 1. Ruajtja e eventeve (termin, dokument, ilaç)
@@ -180,9 +179,8 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 3. Filtrim kohor
 
 ### Use Case 14 — Emergency / SOS
-1. Alarm + lokacion GPS
-2. Opsional: simptoma/foto
-3. Njoftim emergjent
+1. Njoftim emergjent
+2. Mundesi direkte e komunikimit me organet kompetente
 
 ### Use Case 15 — E-Recipe
 1. Doktori krijon recetën
