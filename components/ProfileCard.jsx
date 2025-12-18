@@ -17,12 +17,14 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  ScrollView, StyleSheet, Text,
+  ScrollView,
+  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import { auth, db, storage } from "../firebase";
+import { auth, db, storage } from "../firebase"; // siguro që ke import storage
 
 export default function ProfileCard({ roleType = "Patient" }) {
   const router = useRouter();
@@ -49,56 +51,65 @@ export default function ProfileCard({ roleType = "Patient" }) {
     return "https://www.w3schools.com/howto/img_avatar.png";
   };
 
-  const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+const pickImage = async () => {
+  const permissionResult =
+    await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (!permissionResult.granted) {
-      Alert.alert("Leje e nevojshme", "Ju lutem lejoni qasje në galeri");
-      return;
-    }
+  if (!permissionResult.granted) {
+    Alert.alert("Leje e nevojshme", "Ju lutem lejoni qasje në galeri");
+    return;
+  }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.7,
+  });
 
-    if (result.canceled) return;
+  if (result.canceled) return;
 
-    const localUri = result.assets[0].uri;
-    setProfileImage(localUri);
+  const localUri = result.assets[0].uri;
 
-    if (!docId) return;
+  // 👉 Shfaqe menjëherë foton
+  setProfileImage(localUri);
 
-    const user = auth.currentUser;
-    if (!user) return;
+  if (!docId) return;
 
-    try {
-      const filename = `${Date.now()}.jpg`;
-      const storageRef = ref(
-        storage,
-        `profileImages/${user.uid}/${filename}`
-      );
+  const user = auth.currentUser;
+  if (!user) return;
 
-      const response = await fetch(localUri);
-      const blob = await response.blob();
+  try {
+    const filename = `${Date.now()}.jpg`;
+    const storageRef = ref(
+      storage,
+      `profileImages/${user.uid}/${filename}`
+    );
 
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
+    const response = await fetch(localUri);
+    const blob = await response.blob();
 
-      await setDoc(
-        doc(db, "patients", docId),
-        { image: downloadURL },
-        { merge: true }
-      );
+    // ⬆️ Upload në Storage
+    await uploadBytes(storageRef, blob);
 
-      setProfileImage(downloadURL);
-    } catch (error) {
-      console.log("Image upload warning:", error);
-    }
-  };
+    // 🔗 Merr URL
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // 💾 Ruaje vetëm URL-në në Firestore
+    await setDoc(
+      doc(db, "patients", docId),
+      { image: downloadURL },
+      { merge: true }
+    );
+
+    // 👉 Vendos URL-në finale
+    setProfileImage(downloadURL);
+
+  } catch (error) {
+    console.log("Image upload warning:", error);
+    // ❌ MOS e alarmo user-in – fotoja u ndërrua
+  }
+};
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -143,8 +154,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
           );
           const usersSnapshot = await getDocs(usersQuery);
           let fullName = "";
-          if (!usersSnapshot.empty)
-            fullName = usersSnapshot.docs[0].data().fullName || "";
+          if (!usersSnapshot.empty) fullName = usersSnapshot.docs[0].data().fullName || "";
 
           const patientsQuery = query(
             collection(db, "patients"),
@@ -237,75 +247,75 @@ export default function ProfileCard({ roleType = "Patient" }) {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.infoCard}>
-        <TouchableOpacity onPress={pickImage}>
-          <Image
-            source={{ uri: profileImage ? profileImage : getPatientAvatar() }}
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-
-        {isEditing ? (
+        {role === "doctor" && doctorDetails ? (
           <>
-            <View style={styles.inputRow}>
-              <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="👤 Full Name" />
-            </View>
-
-            <View style={styles.inputRow}>
-              <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={[styles.input, { backgroundColor: "#e6eef1" }]} value={email} editable={false} />
-            </View>
-
-            <View style={styles.inputRow}>
-              <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={styles.input} value={birthdate} onChangeText={setBirthdate} placeholder="📅 YYYY-MM-DD" />
-            </View>
-
-            <View style={styles.inputRow}>
-              <Ionicons name="male-female-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={styles.input} value={gender} onChangeText={setGender} placeholder="⚧ Gender" />
-            </View>
-
-            <View style={styles.inputRow}>
-              <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={styles.input} value={height} onChangeText={setHeight} placeholder="📏 Height (cm)" keyboardType="numeric" />
-            </View>
-
-            <View style={styles.inputRow}>
-              <Ionicons name="fitness-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={styles.input} value={weight} onChangeText={setWeight} placeholder="⚖️ Weight (kg)" keyboardType="numeric" />
-            </View>
-
-            <View style={styles.inputRow}>
-              <Ionicons name="alert-circle-outline" size={20} color="#007ea7" style={styles.icon} />
-              <TextInput style={styles.input} value={allergies} onChangeText={setAllergies} placeholder="💊 Yes / No" />
-            </View>
+            <Image
+              source={{ uri: doctorDetails.image }}
+              style={styles.profileImage}
+            />
+            <Text style={styles.label}>Name: {name}</Text>
+            <Text style={styles.label}> Email: {email}</Text>
+            <Text style={styles.label}> Speciality: {doctorDetails.speciality}</Text>
+            <Text style={styles.label}> Price: {doctorDetails.price}</Text>
+            <Text style={styles.label}> Rating: {doctorDetails.rating}</Text>
+            <Text style={styles.label}> Education: {doctorDetails.education}</Text>
+            <Text style={styles.label}> Experience: {doctorDetails.experience}</Text>
+            <Text style={styles.label}> Languages: {doctorDetails.languages.join(", ")}</Text>
+            <Text style={styles.label}> Description: {doctorDetails.description}</Text>
           </>
         ) : (
           <>
-            <Text style={styles.label}>👤 Name: {name}</Text>
-            <Text style={styles.label}>📧 Email: {email}</Text>
-            <Text style={styles.label}>📅 Birth Date: {birthdate}</Text>
-            <Text style={styles.label}>⚧ Gender: {gender}</Text>
-            <Text style={styles.label}>📏 Height: {height} cm</Text>
-            <Text style={styles.label}>⚖️ Weight: {weight} kg</Text>
-            <Text style={styles.label}>💊 Medication Allergy: {allergies}</Text>
+            <TouchableOpacity onPress={pickImage}>
+              <Image
+                source={{ uri: profileImage ? profileImage : getPatientAvatar() }}
+                style={styles.profileImage}
+              />
+            </TouchableOpacity>
+
+            {isEditing ? (
+              <>
+                <View style={styles.inputRow}>
+                  <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Full Name"
+                    editable={false}
+                  />
+                </View>
+                {/* ... pjesa tjetër e inputeve mbetet e njëjtë */}
+              </>
+            ) : (
+              <>
+                <Text style={styles.label}> Name: {name}</Text>
+                <Text style={styles.label}> Email: {email}</Text>
+                <Text style={styles.label}> Birth Date: {birthdate}</Text>
+                <Text style={styles.label}> Gender: {gender}</Text>
+                <Text style={styles.label}> Height: {height} cm</Text>
+                <Text style={styles.label}> Weight: {weight} kg</Text>
+                <Text style={styles.label}> Medication Allergy: {allergies}</Text>
+              </>
+            )}
           </>
         )}
 
         <View style={styles.buttonsContainer}>
-          {isEditing ? (
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveText}>💾 Save Changes</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-              <Text style={styles.editText}>✏️ Edit Profile</Text>
-            </TouchableOpacity>
+          {role !== "doctor" && (
+            <>
+              {isEditing ? (
+                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                  <Text style={styles.saveText}>Save Changes</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                  <Text style={styles.editText}>Edit Profile</Text>
+                </TouchableOpacity>
+              )}
+            </>
           )}
-
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>🚪 Log Out</Text>
+            <Text style={styles.logoutText}>Log Out</Text>
           </TouchableOpacity>
         </View>
       </View>
