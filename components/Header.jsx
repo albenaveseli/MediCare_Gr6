@@ -7,7 +7,7 @@ export default function Header({ title, onBack }) {
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+      <TouchableOpacity testID="header-back" onPress={handleBack} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
 

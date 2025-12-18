@@ -1,0 +1,291 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DashboardCards matches snapshot (optional) 1`] = `
+<View
+  style={
+    {
+      "flexDirection": "row",
+      "flexWrap": "wrap",
+      "justifyContent": "space-between",
+      "paddingBottom": 40,
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ffffff",
+        "borderColor": "#d4f1f4",
+        "borderRadius": 20,
+        "borderWidth": 1,
+        "elevation": 4,
+        "marginBottom": 16,
+        "opacity": 1,
+        "paddingVertical": 26,
+        "shadowColor": "#007ea7",
+        "shadowOffset": {
+          "height": 3,
+          "width": 0,
+        },
+        "shadowOpacity": 0.12,
+        "shadowRadius": 6,
+        "width": "48%",
+      }
+    }
+    testID="dashboard-card-0"
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#e0f7fa",
+          "borderRadius": 50,
+          "marginBottom": 12,
+          "padding": 12,
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "backgroundColor": "#b9ecf0",
+            "borderRadius": 50,
+            "padding": 10,
+          }
+        }
+      >
+        <Ionicons
+          color="#007ea7"
+          name="person-outline"
+          size={28}
+        />
+      </View>
+    </View>
+    <Text
+      style={
+        {
+          "color": "#033d49",
+          "fontSize": 15,
+          "fontWeight": "600",
+          "marginTop": 4,
+          "textAlign": "center",
+        }
+      }
+      testID="dashboard-card-title-0"
+    >
+      Profile
+    </Text>
+  </View>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ffffff",
+        "borderColor": "#d4f1f4",
+        "borderRadius": 20,
+        "borderWidth": 1,
+        "elevation": 4,
+        "marginBottom": 16,
+        "opacity": 1,
+        "paddingVertical": 26,
+        "shadowColor": "#007ea7",
+        "shadowOffset": {
+          "height": 3,
+          "width": 0,
+        },
+        "shadowOpacity": 0.12,
+        "shadowRadius": 6,
+        "width": "48%",
+      }
+    }
+    testID="dashboard-card-1"
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#e0f7fa",
+          "borderRadius": 50,
+          "marginBottom": 12,
+          "padding": 12,
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "backgroundColor": "#b9ecf0",
+            "borderRadius": 50,
+            "padding": 10,
+          }
+        }
+      >
+        <Ionicons
+          color="#007ea7"
+          name="calendar-outline"
+          size={28}
+        />
+      </View>
+    </View>
+    <Text
+      style={
+        {
+          "color": "#033d49",
+          "fontSize": 15,
+          "fontWeight": "600",
+          "marginTop": 4,
+          "textAlign": "center",
+        }
+      }
+      testID="dashboard-card-title-1"
+    >
+      Appointments
+    </Text>
+  </View>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#ffffff",
+        "borderColor": "#d4f1f4",
+        "borderRadius": 20,
+        "borderWidth": 1,
+        "elevation": 4,
+        "marginBottom": 16,
+        "opacity": 1,
+        "paddingVertical": 26,
+        "shadowColor": "#007ea7",
+        "shadowOffset": {
+          "height": 3,
+          "width": 0,
+        },
+        "shadowOpacity": 0.12,
+        "shadowRadius": 6,
+        "width": "48%",
+      }
+    }
+    testID="dashboard-card-2"
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#e0f7fa",
+          "borderRadius": 50,
+          "marginBottom": 12,
+          "padding": 12,
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "backgroundColor": "#b9ecf0",
+            "borderRadius": 50,
+            "padding": 10,
+          }
+        }
+      >
+        <Ionicons
+          color="#007ea7"
+          name="settings-outline"
+          size={28}
+        />
+      </View>
+    </View>
+    <Text
+      style={
+        {
+          "color": "#033d49",
+          "fontSize": 15,
+          "fontWeight": "600",
+          "marginTop": 4,
+          "textAlign": "center",
+        }
+      }
+      testID="dashboard-card-title-2"
+    >
+      Settings
+    </Text>
+  </View>
+</View>
+`;
