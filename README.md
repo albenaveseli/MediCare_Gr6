@@ -2,7 +2,6 @@
 **Course:** Programimi për Pajisje Mobile  
 **Version:** 1.0  
 
-> **Repository naming convention:** `MediCare-Group<6>`
 > **Platform:** Mobile App (React Native + Expo)  
 > **Backend:** Firebase (Auth, Firestore, Storage)
 
