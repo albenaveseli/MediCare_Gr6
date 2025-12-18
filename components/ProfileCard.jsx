@@ -274,18 +274,84 @@ const pickImage = async () => {
 
             {isEditing ? (
               <>
-                <View style={styles.inputRow}>
-                  <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
-                  <TextInput
-                    style={styles.input}
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Full Name"
-                    editable={false}
-                  />
-                </View>
-                {/* ... pjesa tjetër e inputeve mbetet e njëjtë */}
-              </>
+               {/* NAME */}
+    <View style={styles.inputRow}>
+      <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Full Name"
+      />
+    </View>
+
+    {/* EMAIL – JO EDITABLE */}
+    <View style={styles.inputRow}>
+      <Ionicons name="mail-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={[styles.input, { backgroundColor: "#eaeaea" }]}
+        value={email}
+        editable={false}
+      />
+    </View>
+
+    {/* BIRTH DATE */}
+    <View style={styles.inputRow}>
+      <Ionicons name="calendar-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={styles.input}
+        value={birthdate}
+        onChangeText={setBirthdate}
+        placeholder="Birth date (YYYY-MM-DD)"
+      />
+    </View>
+
+    {/* GENDER */}
+    <View style={styles.inputRow}>
+      <Ionicons name="transgender-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={styles.input}
+        value={gender}
+        onChangeText={setGender}
+        placeholder="Gender (Male / Female)"
+      />
+    </View>
+
+    {/* HEIGHT */}
+    <View style={styles.inputRow}>
+      <Ionicons name="resize-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={styles.input}
+        value={height}
+        onChangeText={setHeight}
+        placeholder="Height (cm)"
+        keyboardType="numeric"
+      />
+    </View>
+
+    {/* WEIGHT */}
+    <View style={styles.inputRow}>
+      <Ionicons name="fitness-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={styles.input}
+        value={weight}
+        onChangeText={setWeight}
+        placeholder="Weight (kg)"
+        keyboardType="numeric"
+      />
+    </View>
+
+    {/* MEDICATION ALLERGY */}
+    <View style={styles.inputRow}>
+      <Ionicons name="medkit-outline" size={20} color="#007ea7" style={styles.icon} />
+      <TextInput
+        style={styles.input}
+        value={allergies}
+        onChangeText={setAllergies}
+        placeholder="Medication Allergy (Yes / No)"
+      />
+    </View>
+  </>
             ) : (
               <>
                 <Text style={styles.label}> Name: {name}</Text>
