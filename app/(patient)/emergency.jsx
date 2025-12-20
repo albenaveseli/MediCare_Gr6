@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Alert,
   Linking,
@@ -31,7 +32,7 @@ const quickSteps = [
   "Assist the victim if safe until help arrives",
 ];
 
-const EmergencyCard = ({ label, number, color, callNumber }) => (
+const EmergencyCard = memo(({ label, number, color, callNumber }) =>  (
   <TouchableOpacity
     style={[styles.card, { borderLeftColor: color }]}
     onPress={() => callNumber(number)}
@@ -39,9 +40,9 @@ const EmergencyCard = ({ label, number, color, callNumber }) => (
     <Text style={[styles.cardText, { color }]}>{label}</Text>
     <Text style={[styles.cardNumber, { color }]}>{number}</Text>
   </TouchableOpacity>
-);
+));
 
-export default function Emergency() {
+function Emergency() {
   const handleSOS = () => {
     Alert.alert("SOS Activated!", "Calling emergency services...", [
       {
@@ -151,3 +152,5 @@ const styles = StyleSheet.create({
   },
   stepText: { fontSize: 16, color: "#033d49", flexShrink: 1 },
 });
+
+export default memo(Emergency);

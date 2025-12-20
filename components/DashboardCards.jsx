@@ -8,6 +8,7 @@ export default function DashboardCards({ pages }) {
       {pages.map((item, index) => (
         <TouchableOpacity
           key={index}
+          testID={`dashboard-card-${index}`}
           style={styles.card}
           activeOpacity={0.9}
           onPress={() => router.push(item.path)}
@@ -18,7 +19,9 @@ export default function DashboardCards({ pages }) {
             </View>
           </View>
 
-          <Text style={styles.cardTitle}>{item.title}</Text>
+          <Text testID={`dashboard-card-title-${index}`} style={styles.cardTitle}>
+            {item.title}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>

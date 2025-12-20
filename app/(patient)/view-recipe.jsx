@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -12,6 +12,39 @@ import {
 } from "react-native";
 import Header from "../../components/Header";
 import { db } from "../../firebase";
+
+const PrescriptionItem = memo(function PrescriptionItem({ item, onPress }) {
+  return (
+    <TouchableOpacity
+      style={[
+        styles.listItem,
+        item.urgency === "Emergency" && styles.urgentBorder,
+        item.urgency === "Normal" && styles.normalBorder,
+        item.urgency === "Medium" && styles.monitorBorder,
+      ]}
+      onPress={onPress}
+    >
+      <View style={styles.listTextContainer}>
+        <Text style={styles.doctorName}>{item.doctorName}</Text>
+        <Text style={styles.profession}>{item.profession}</Text>
+        <Text style={styles.dateText}>{item.date}</Text>
+      </View>
+
+      <View
+        style={[
+          styles.badge,
+          item.urgency === "Emergency"
+            ? styles.badgeUrgent
+            : item.urgency === "Medium"
+            ? styles.badgeMonitor
+            : styles.badgeNormal,
+        ]}
+      >
+        <Text style={styles.badgeText}>{item.urgency}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+});
 
 export default function ViewRecipeScreen() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
@@ -31,6 +64,7 @@ export default function ViewRecipeScreen() {
           id: doc.id,
           ...doc.data(),
         }));
+
         const currentUserDoc = users.find((u) => u.email === user.email);
         if (!currentUserDoc)
           return Alert.alert("Error", "User not found in database.");
@@ -38,9 +72,12 @@ export default function ViewRecipeScreen() {
         const prescriptionsSnapshot = await getDocs(
           collection(db, "prescriptions")
         );
+
         const data = prescriptionsSnapshot.docs
           .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter((prescription) => prescription.patientId === currentUserDoc.id);
+          .filter(
+            (prescription) => prescription.patientId === currentUserDoc.id
+          );
 
         function parseEUDDate(d) {
           if (!d) return new Date(0);
@@ -49,7 +86,6 @@ export default function ViewRecipeScreen() {
         }
 
         data.sort((a, b) => parseEUDDate(b.date) - parseEUDDate(a.date));
-
         setPrescriptions(data);
       } catch (error) {
         console.error("Error fetching prescriptions:", error);
@@ -76,8 +112,11 @@ export default function ViewRecipeScreen() {
 
       {!selectedRecipe ? (
         <FlatList
-          style={styles.container}
-          contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 20, paddingTop: 20 }}
+          contentContainerStyle={{
+            paddingBottom: 40,
+            paddingHorizontal: 20,
+            paddingTop: 20,
+          }}
           data={prescriptions}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
@@ -92,33 +131,10 @@ export default function ViewRecipeScreen() {
             ) : null
           }
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.listItem,
-                item.urgency === "Emergency" && styles.urgentBorder,
-                item.urgency === "Normal" && styles.normalBorder,
-                item.urgency === "Medium" && styles.monitorBorder,
-              ]}
+            <PrescriptionItem
+              item={item}
               onPress={() => setSelectedRecipe(item)}
-            >
-              <View style={styles.listTextContainer}>
-                <Text style={styles.doctorName}>{item.doctorName}</Text>
-                <Text style={styles.profession}>{item.profession}</Text>
-                <Text style={styles.dateText}>{item.date}</Text>
-              </View>
-              <View
-                style={[
-                  styles.badge,
-                  item.urgency === "Emergency"
-                    ? styles.badgeUrgent
-                    : item.urgency === "Medium"
-                    ? styles.badgeMonitor
-                    : styles.badgeNormal,
-                ]}
-              >
-                <Text style={styles.badgeText}>{item.urgency}</Text>
-              </View>
-            </TouchableOpacity>
+            />
           )}
           showsVerticalScrollIndicator={false}
           removeClippedSubviews
