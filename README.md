@@ -87,7 +87,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 
 ##  Use Cases (Rrjedhat Kryesore të Përdorimit)
 
-### Use Case 1 — Sign Up (Regjistrim i ri)
+### Sign Up (Regjistrim i ri)
 **Aktorët:** Pacient  
 **Qëllimi:** Krijimi i llogarisë dhe vendosja e rolit  
 **Trigger:** “Sign Up” në Welcome/Login Screen  
@@ -100,7 +100,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 - Email ekziston → “Email already in use”
 - Password i dobët / mismatch → mesazh gabimi
 
-### Use Case 2 — Login (Hyrje)
+### Login (Hyrje)
 **Aktorët:** Pacient / Doktor i regjistruar  
 **Trigger:** “Login”  
 **Rrjedha:**
@@ -111,7 +111,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 - Credentials gabim → “Invalid email or password”
 - Forgot Password → email reset
 
-### Use Case 3 — Onboarding (Pacient)
+### Onboarding (Pacient)
 **Aktor:** Pacient i ri  
 **Trigger:** Pas Sign Up  
 **Rrjedha:**
@@ -120,17 +120,17 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 3. Opsional: upload foto profili
 4. Konfirmon → Home
 
-### Use Case 4 — Home/Dashboard
+### Home/Dashboard
 **Aktorët:** Pacient / Doktor  
 - Pacient: doktorët + terminet  
 - Doktor: orari + historiku
 
-### Use Case 5 — Doctor Details
+### Doctor Details
 **Aktor:** Pacient  
 1. Shfaq emrin, specializimin, foton, disponueshmërinë
 2. “Book Appointment” → ekran rezervimi
 
-### Use Case 6 — Book Appointment
+### Book Appointment
 **Aktor:** Pacient  
 1. Zgjedh datë/orë
 2. Shton opsionalisht koment/arsye
@@ -140,54 +140,54 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 6. Doktori merr njoftim
 **Alternative:** ora e zënë → gabim
 
-### Use Case 7 — Doctor Appointment Management
+### Doctor Appointment Management
 **Aktor:** Doktor  
 1. Sheh terminet
 2. Hap detajet
 3. Approve/Cancel/Reschedule
 4. Pacienti njoftohet
 
-### Use Case 8 — Upload Documents
+### Upload Documents
 **Aktor:** Pacient  
 1. Zgjedh file (kamera/galeria)
 2. Upload në Storage
 3. Metadata në Firestore
 4. Doktori e sheh në historik
 
-### Use Case 9 — GPS & Hospital Finder
+### GPS & Hospital Finder
 1. Leje GPS
 2. Merr koordinata
 3. Mundeson lidhjen me google maps
 
-### Use Case 10 — Push Notifications
+### Push Notifications
 1. Ruajtja e eventeve (termin, dokument, ilaç)
 2. Gjenerimi i njoftimeve në kohën e caktuar
 3. Shfaqja në ekran
 4. Klikimi hap ekranin përkatës
 
-### Use Case 11 — Profile & History
+### Profile & History
 - Pacient: terminet e kaluara + dokumente
 - Doktor: pacientët + historiku
 - Opsional: edit profil
 
-### Use Case 12 — Logout
+### Logout
 - Sistemi invalidon session/token dhe ridrejton te Welcome/Login
 
-### Use Case 13 — Analytics (Doctor)
+### Analytics (Doctor)
 1. Shfaq statistika
 2. Paraqitje me grafikë
 3. Filtrim kohor
 
-### Use Case 14 — Emergency / SOS
+### Emergency / SOS
 1. Njoftim emergjent
 2. Mundesi direkte e komunikimit me organet kompetente
 
-### Use Case 15 — E-Recipe
+### E-Recipe
 1. Doktori krijon recetën
 2. Ruhet në profilin e pacientit
 3. Përdoret në farmaci
 
-### Use Case 16 — Medication Reminder
+### Medication Reminder
 1. Pacienti shton ilaçin + orarin
 2. Ruhet
 3. Dërgohet push notification në kohë
