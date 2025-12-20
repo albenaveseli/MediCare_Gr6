@@ -239,10 +239,10 @@ expo start
 ###  Authentication & Entry
 <div align="center">
   <img src="assets/images/common.jpg" width="200" />
-   <img src="assets/images/common2.jpg" width="200" />
-    <img src="assets/images/common3.jpg" width="200" />
-     <img src="assets/images/common4.jpg" width="200" />
-      <img src="assets/images/common5.jpg" width="200" />
+   <img src="assets/images/common2.png" width="200" />
+    <img src="assets/images/common3.png" width="200" />
+     <img src="assets/images/common4.png" width="200" />
+      <img src="assets/images/common5.png" width="200" />
 </div>
 
 ---
