@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { memo } from "react";
 
-export default function DoctorLayout() {
+function DoctorLayout() {
   return (
     <Tabs
       screenOptions={{
@@ -56,3 +57,5 @@ export default function DoctorLayout() {
     </Tabs>
   );
 }
+
+export default memo(DoctorLayout);
