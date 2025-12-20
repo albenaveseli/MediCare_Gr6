@@ -232,13 +232,17 @@ expo start
 
 ---
 
-## 🩺 Application Flow – Doctor Side
+## Application Flow – Doctor Side
 
 **Rrjedha logjike e përdorimit të aplikacionit për Doktorin**, nga hyrja në sistem deri te menaxhimi i pacientëve dhe shërbimeve.
 
-### 1️⃣ Authentication & Entry
+###  Authentication & Entry
 <div align="center">
   <img src="assets/images/common.jpg" width="200" />
+   <img src="assets/images/common2.jpg" width="200" />
+    <img src="assets/images/common3.jpg" width="200" />
+     <img src="assets/images/common4.jpg" width="200" />
+      <img src="assets/images/common5.jpg" width="200" />
 </div>
 
 ---
