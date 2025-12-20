@@ -299,7 +299,6 @@ expo start
   <img src="assets/images/pacient1.png" width="180" />
   <img src="assets/images/pacient2.png" width="180" />
   <img src="assets/images/pacient3.png" width="180" />
-  <img src="assets/images/pacient4.png" width="180" />
   <img src="assets/images/pacient5.png" width="180" />
   <img src="assets/images/pacient6.png" width="180" />
   <img src="assets/images/pacient7.png" width="180" />
@@ -311,7 +310,8 @@ expo start
 
 ###  Appointment Booking Flow
 <div align="center">
-  <img src="assets/images/pacient9.png" width="180" />
+  
+  <img src="assets/images/pacient4.png" width="180" />
   <img src="assets/images/pacient16.png" width="180" />
 </div>
 
