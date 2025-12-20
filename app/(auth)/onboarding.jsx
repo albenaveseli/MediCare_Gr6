@@ -1,9 +1,11 @@
 import Slider from "@react-native-community/slider";
 import { router } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Animated,
+  Modal,
   ScrollView,
   StyleSheet,
   Switch,
@@ -22,6 +24,26 @@ export default function OnBoarding() {
   const [weight, setWeight] = useState(65);
   const [height, setHeight] = useState(170);
   const [hasAllergy, setHasAllergy] = useState(false);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const fadeIn = () => {
+    setModalVisible(true);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setModalVisible(false));
+  };
 
   const handleNext = async () => {
     const trimmedBirthDate = birthDate.trim();
@@ -53,8 +75,6 @@ export default function OnBoarding() {
       return;
     }
 
-    
-
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -72,8 +92,14 @@ export default function OnBoarding() {
         createdAt: new Date(),
       });
 
-      Alert.alert("Success!", "Your data has been saved successfully!");
-      router.replace("/(patient)/home");
+      // Show success modal with fade-in
+      fadeIn();
+
+      // After 1.5 seconds fade out and navigate
+      setTimeout(() => {
+        fadeOut();
+        router.replace("/(patient)/home");
+      }, 1500);
     } catch (error) {
       console.error("Error saving data:", error);
       Alert.alert("Error", "Failed to save your data. Please try again.");
@@ -97,11 +123,14 @@ export default function OnBoarding() {
     );
   }
 
-  const genders =useMemo(() =>  [
-    { label: "Female", value: "F" },
-    { label: "Male", value: "M" },
-    { label: "Other", value: "T" },
-  ], []);
+  const genders = useMemo(
+    () => [
+      { label: "Female", value: "F" },
+      { label: "Male", value: "M" },
+      { label: "Other", value: "T" },
+    ],
+    []
+  );
 
   return (
     <SafeAreaView style={styles.safecontainer}>
@@ -187,6 +216,15 @@ export default function OnBoarding() {
           <Text style={styles.nextButtonText}>Next</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Modal with fade in/out */}
+      <Modal transparent visible={modalVisible} animationType="none">
+        <View style={styles.modalBackground}>
+          <Animated.View style={[styles.modalContainer, { opacity: fadeAnim }]}>
+            <Text style={styles.modalText}>Success! Data saved.</Text>
+          </Animated.View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -291,4 +329,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   nextButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 30,
+    borderRadius: 20,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#007ea7",
+  },
 });
+
