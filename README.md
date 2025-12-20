@@ -235,6 +235,8 @@ expo start
 ## Pamje nga aplikacioni te pjesa e doktorit
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+
+  <img src="assets/images/common.jpg" width="180" />
   <img src="assets/images/doctor1.png" width="180" />
   <img src="assets/images/doctor2.png" width="180" />
   <img src="assets/images/doctor3.png" width="180" />
@@ -259,6 +261,7 @@ expo start
 ## Pamje nga aplikacioni te pjesa e pacientit
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+ <img src="assets/images/common.jpg" width="180" />
 <img src="assets/images/pacient1.png" width="180" />
 <img src="assets/images/pacient2.png" width="180" />
 <img src="assets/images/pacient3.png" width="180" />
