@@ -331,13 +331,14 @@ expo start
 ### Notifications, Reminders & SOS
 <div align="center">
   <img src="assets/images/pacient11.png" width="180" />
-  <img src="assets/images/pacient13.png" width="180" />
+  
+   <img src="assets/images/pacient17.png" width="180" />
   <img src="assets/images/pacient14.png" width="180" />
+    <img src="assets/images/pacient12.png" width="180" />
   
  
   <img src="assets/images/pacient18.png" width="180" />
   <img src="assets/images/pacient19.png" width="180" />
-   <img src="assets/images/pacient17.png" width="180" />
 
 </div>
 
@@ -345,6 +346,8 @@ expo start
 
 ###  Profile, History & Settings
 <div align="center">
-  <img src="assets/images/pacient12.png" width="180" />
+
+  <img src="assets/images/pacient13.png" width="180" />
+
 </div>
 
