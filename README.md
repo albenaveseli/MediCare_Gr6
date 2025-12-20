@@ -232,122 +232,74 @@ expo start
 
 ---
 
-## Application Flow – Doctor Side
+## 🩺 Application Flow – Doctor Side
 
 **Rrjedha logjike e përdorimit të aplikacionit për Doktorin**, nga hyrja në sistem deri te menaxhimi i pacientëve dhe shërbimeve.
 
-###  Authentication & Entry
-<div align="center">
-  <img src="assets/images/common.jpg" width="200" />
-      <img src="assets/images/common6.png" width="200" />
+### 🔐 Authentication & Entry
+<div align="center" style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px;">
+  <img src="assets/images/common.jpg" width="200"
+       style="border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.12);" />
+  <img src="assets/images/common6.png" width="200"
+       style="border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.12);" />
 </div>
 
 ---
 
-###  Doctor Dashboard & Overview
-<div align="center">
-  <img src="assets/images/doctor1.png" width="180" />
-  <img src="assets/images/doctor2.png" width="180" />
-  <img src="assets/images/doctor3.png" width="180" />
-  <img src="assets/images/doctor4.png" width="180" />
-  <img src="assets/images/doctor5.png" width="180" />
-  <img src="assets/images/doctor6.png" width="180" />
+### 📊 Doctor Dashboard & Overview
+<div align="center" style="display:flex; flex-wrap:wrap; justify-content:center; gap:18px;">
+  <img src="assets/images/doctor1.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor2.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor3.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor4.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor5.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor6.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
 </div>
 
 ---
 
-###  Appointments Management
-<div align="center">
-  <img src="assets/images/doctor7.png" width="180" />
-    <img src="assets/images/doctor10.png" width="180" />
-  <img src="assets/images/doctor11.png" width="180" />
-  <img src="assets/images/doctor12.png" width="180" />
-  <img src="assets/images/doctor13.png" width="180" />
-  <img src="assets/images/doctor14.png" width="180" />
-  <img src="assets/images/doctor15.png" width="180" />
-  <img src="assets/images/doctor16.png" width="180" />
+### 📅 Appointments Management
+<div align="center" style="display:flex; flex-wrap:wrap; justify-content:center; gap:18px;">
+  <img src="assets/images/doctor7.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor10.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor11.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor12.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor13.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor14.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor15.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/doctor16.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
 </div>
 
 ---
 
-###  Profile, Settings & Logout
-<div align="center">
-  <img src="assets/images/doctor8.png" width="180" />
-   <img src="assets/images/doctor9.png" width="180" />
+### ⚙️ Profile, Settings & Logout
+<div align="center" style="display:flex; justify-content:center; gap:20px;">
+  <img src="assets/images/doctor8.png" width="180" style="border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.12);" />
+  <img src="assets/images/doctor9.png" width="180" style="border:1px solid #ddd; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.12);" />
 </div>
 
 ---
 
-##  Application Flow – Patient Side
+## 👤 Application Flow – Patient Side
 
-**Rrjedha e plotë e përdorimit për Pacientin**, nga regjistrimi deri te kujdesi shëndetësor dhe njoftimet.
+**Rrjedha e plotë e përdorimit për Pacientin**, nga regjistrimi deri te shërbimet shëndetësore.
 
-###  Authentication & Onboarding
-<div align="center">
-    <img src="assets/images/common.jpg" width="200" />
-   <img src="assets/images/common2.png" width="200" />
-    <img src="assets/images/common3.png" width="200" />
-     <img src="assets/images/common4.png" width="200" />
-      <img src="assets/images/common5.png" width="200" />
-      <img src="assets/images/common6.png" width="200" />
+### 🔐 Authentication & Onboarding
+<div align="center" style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px;">
+  <img src="assets/images/common.jpg" width="200" style="border:1px solid #ddd; border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" />
+  <img src="assets/images/common2.png" width="200" style="border:1px solid #ddd; border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" />
+  <img src="assets/images/common3.png" width="200" style="border:1px solid #ddd; border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" />
+  <img src="assets/images/common4.png" width="200" style="border:1px solid #ddd; border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" />
+  <img src="assets/images/common5.png" width="200" style="border:1px solid #ddd; border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" />
+  <img src="assets/images/common6.png" width="200" style="border:1px solid #ddd; border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,0.15);" />
 </div>
 
 ---
 
-###  Home & Doctor Discovery
-<div align="center">
-  <img src="assets/images/pacient1.png" width="180" />
-  <img src="assets/images/pacient2.png" width="180" />
-  <img src="assets/images/pacient3.png" width="180" />
-  <img src="assets/images/pacient5.png" width="180" />
-  <img src="assets/images/pacient6.png" width="180" />
-  <img src="assets/images/pacient7.png" width="180" />
-  <img src="assets/images/pacient8.png" width="180" />
-  <img src="assets/images/pacient9.png" width="180" />
+### 🏠 Home, Records & Notifications
+<div align="center" style="display:flex; flex-wrap:wrap; justify-content:center; gap:18px;">
+  <img src="assets/images/pacient1.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/pacient2.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/pacient3.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+  <img src="assets/images/pacient13.png" width="180" style="border:1px solid #e0e0e0; border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
 </div>
-
----
-
-###  Appointment Booking Flow
-<div align="center">
-  
-  <img src="assets/images/pacient4.png" width="180" />
-  <img src="assets/images/pacient16.png" width="180" />
-</div>
-
----
-
-###  Medical Records & Documents
-<div align="center">
-  
-
-  <img src="assets/images/pacient15.png" width="180" />
-  <img src="assets/images/pacient10.png" width="180" />
-  <img src="assets/images/pacient20.png" width="180" />
-</div>
-
----
-
-### Notifications, Reminders & SOS
-<div align="center">
-  <img src="assets/images/pacient11.png" width="180" />
-  
-   <img src="assets/images/pacient17.png" width="180" />
-  <img src="assets/images/pacient14.png" width="180" />
-    <img src="assets/images/pacient12.png" width="180" />
-  
- 
-  <img src="assets/images/pacient18.png" width="180" />
-  <img src="assets/images/pacient19.png" width="180" />
-
-</div>
-
----
-
-###  Profile, History & Settings
-<div align="center">
-
-  <img src="assets/images/pacient13.png" width="180" />
-
-</div>
-
