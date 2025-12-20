@@ -263,5 +263,7 @@ expo start
 <img src="assets/images/pacient11.png" width="180" />
 <img src="assets/images/pacient12.png" width="180" />
 <img src="assets/images/pacient13.png" width="180" />
+<img src="assets/images/pacient14.png" width="180" />
+<img src="assets/images/pacient15.png" width="180" />
 </div>
 
