@@ -229,3 +229,35 @@ Run project
 ```bash
 expo start
 ```
+
+---
+
+## Pamje nga aplikacioni te pjesa e doktorit
+
+<img src="assets/images/doctor1.png" width="180" />
+<img src="assets/images/doctor2.png" width="180" />
+<img src="assets/images/doctor3.png" width="180" />
+<img src="assets/images/doctor4.png" width="180" />
+<img src="assets/images/doctor5.png" width="180" />
+<img src="assets/images/doctor6.png" width="180" />
+<img src="assets/images/doctor7.png" width="180" />
+
+---
+
+## Pamje nga aplikacioni te pjesa e pacientit
+
+<img src="assets/images/pacient1.png" width="180" />
+<img src="assets/images/pacient2.png" width="180" />
+<img src="assets/images/pacient3.png" width="180" />
+<img src="assets/images/pacient4.png" width="180" />
+<img src="assets/images/pacient5.png" width="180" />
+<img src="assets/images/pacient6.png" width="180" />
+<img src="assets/images/pacient7.png" width="180" />
+<img src="assets/images/pacient8.png" width="180" />
+<img src="assets/images/pacient9.png" width="180" />
+<img src="assets/images/pacient10.png" width="180" />
+<img src="assets/images/pacient11.png" width="180" />
+<img src="assets/images/pacient12.png" width="180" />
+<img src="assets/images/pacient13.png" width="180" />
+
+
