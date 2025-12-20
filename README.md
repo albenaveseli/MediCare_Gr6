@@ -243,6 +243,7 @@ expo start
     <img src="assets/images/common3.png" width="200" />
      <img src="assets/images/common4.png" width="200" />
       <img src="assets/images/common5.png" width="200" />
+      <img src="assets/images/common6.png" width="200" />
 </div>
 
 ---
