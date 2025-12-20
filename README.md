@@ -239,10 +239,6 @@ expo start
 ###  Authentication & Entry
 <div align="center">
   <img src="assets/images/common.jpg" width="200" />
-   <img src="assets/images/common2.png" width="200" />
-    <img src="assets/images/common3.png" width="200" />
-     <img src="assets/images/common4.png" width="200" />
-      <img src="assets/images/common5.png" width="200" />
       <img src="assets/images/common6.png" width="200" />
 </div>
 
@@ -282,62 +278,73 @@ expo start
 
 ---
 
-## 👤 Application Flow – Patient Side
+##  Application Flow – Patient Side
 
 **Rrjedha e plotë e përdorimit për Pacientin**, nga regjistrimi deri te kujdesi shëndetësor dhe njoftimet.
 
-### 1️⃣ Authentication & Onboarding
+###  Authentication & Onboarding
 <div align="center">
-  <img src="assets/images/common.jpg" width="200" />
+    <img src="assets/images/common.jpg" width="200" />
+   <img src="assets/images/common2.png" width="200" />
+    <img src="assets/images/common3.png" width="200" />
+     <img src="assets/images/common4.png" width="200" />
+      <img src="assets/images/common5.png" width="200" />
+      <img src="assets/images/common6.png" width="200" />
 </div>
 
 ---
 
-### 2️⃣ Home & Doctor Discovery
+###  Home & Doctor Discovery
 <div align="center">
   <img src="assets/images/pacient1.png" width="180" />
   <img src="assets/images/pacient2.png" width="180" />
   <img src="assets/images/pacient3.png" width="180" />
-</div>
-
----
-
-### 3️⃣ Appointment Booking Flow
-<div align="center">
   <img src="assets/images/pacient4.png" width="180" />
   <img src="assets/images/pacient5.png" width="180" />
   <img src="assets/images/pacient6.png" width="180" />
   <img src="assets/images/pacient7.png" width="180" />
-</div>
-
----
-
-### 4️⃣ Medical Records & Documents
-<div align="center">
   <img src="assets/images/pacient8.png" width="180" />
   <img src="assets/images/pacient9.png" width="180" />
-  <img src="assets/images/pacient10.png" width="180" />
-  <img src="assets/images/pacient11.png" width="180" />
 </div>
 
 ---
 
-### 5️⃣ Notifications, Reminders & SOS
+###  Appointment Booking Flow
 <div align="center">
-  <img src="assets/images/pacient12.png" width="180" />
+  <img src="assets/images/pacient9.png" width="180" />
+  <img src="assets/images/pacient16.png" width="180" />
+</div>
+
+---
+
+###  Medical Records & Documents
+<div align="center">
+  
+
+  <img src="assets/images/pacient15.png" width="180" />
+  <img src="assets/images/pacient10.png" width="180" />
+  <img src="assets/images/pacient20.png" width="180" />
+</div>
+
+---
+
+### Notifications, Reminders & SOS
+<div align="center">
+  <img src="assets/images/pacient11.png" width="180" />
   <img src="assets/images/pacient13.png" width="180" />
   <img src="assets/images/pacient14.png" width="180" />
-  <img src="assets/images/pacient15.png" width="180" />
+  
+ 
+  <img src="assets/images/pacient18.png" width="180" />
+  <img src="assets/images/pacient19.png" width="180" />
+   <img src="assets/images/pacient17.png" width="180" />
+
 </div>
 
 ---
 
-### 6️⃣ Profile, History & Settings
+###  Profile, History & Settings
 <div align="center">
-  <img src="assets/images/pacient16.png" width="180" />
-  <img src="assets/images/pacient17.png" width="180" />
-  <img src="assets/images/pacient18.png" width="180" />
-  <img src="assets/images/pacient19.png" width="180" />
-  <img src="assets/images/pacient20.png" width="180" />
+  <img src="assets/images/pacient12.png" width="180" />
 </div>
 
