@@ -234,18 +234,22 @@ expo start
 
 ## Pamje nga aplikacioni te pjesa e doktorit
 
-<img src="assets/images/doctor1.png" width="180" />
-<img src="assets/images/doctor2.png" width="180" />
-<img src="assets/images/doctor3.png" width="180" />
-<img src="assets/images/doctor4.png" width="180" />
-<img src="assets/images/doctor5.png" width="180" />
-<img src="assets/images/doctor6.png" width="180" />
-<img src="assets/images/doctor7.png" width="180" />
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="assets/images/doctor1.png" width="180" />
+  <img src="assets/images/doctor2.png" width="180" />
+  <img src="assets/images/doctor3.png" width="180" />
+  <img src="assets/images/doctor4.png" width="180" />
+  <img src="assets/images/doctor5.png" width="180" />
+  <img src="assets/images/doctor6.png" width="180" />
+  <img src="assets/images/doctor7.png" width="180" />
+</div>
+
 
 ---
 
 ## Pamje nga aplikacioni te pjesa e pacientit
 
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
 <img src="assets/images/pacient1.png" width="180" />
 <img src="assets/images/pacient2.png" width="180" />
 <img src="assets/images/pacient3.png" width="180" />
@@ -259,5 +263,5 @@ expo start
 <img src="assets/images/pacient11.png" width="180" />
 <img src="assets/images/pacient12.png" width="180" />
 <img src="assets/images/pacient13.png" width="180" />
-
+</div>
 
