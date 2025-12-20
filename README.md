@@ -232,59 +232,119 @@ expo start
 
 ---
 
-## 🩺 Pamje nga aplikacioni – Pjesa e Doktorit
+## 🩺 Application Flow – Doctor Side
 
-<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;">
+**Rrjedha logjike e përdorimit të aplikacionit për Doktorin**, nga hyrja në sistem deri te menaxhimi i pacientëve dhe shërbimeve.
 
-  <img src="assets/images/common.jpg" width="180" alt="Doctor Common Screen" />
-
-  <img src="assets/images/doctor1.png" width="180" />
-  <img src="assets/images/doctor2.png" width="180" />
-  <img src="assets/images/doctor3.png" width="180" />
-  <img src="assets/images/doctor4.png" width="180" />
-  <img src="assets/images/doctor5.png" width="180" />
-  <img src="assets/images/doctor6.png" width="180" />
-  <img src="assets/images/doctor7.png" width="180" />
-  <img src="assets/images/doctor8.png" width="180" />
-  <img src="assets/images/doctor9.png" width="180" />
-  <img src="assets/images/doctor10.png" width="180" />
-  <img src="assets/images/doctor11.png" width="180" />
-  <img src="assets/images/doctor12.png" width="180" />
-  <img src="assets/images/doctor13.png" width="180" />
-  <img src="assets/images/doctor14.png" width="180" />
-  <img src="assets/images/doctor15.png" width="180" />
-  <img src="assets/images/doctor16.png" width="180" />
-
+### 1️⃣ Authentication & Entry
+<div align="center">
+  <img src="assets/images/common.jpg" width="200" />
 </div>
 
 ---
 
-## 👤 Pamje nga aplikacioni – Pjesa e Pacientit
+### 2️⃣ Doctor Dashboard & Overview
+<div align="center">
+  <img src="assets/images/doctor1.png" width="180" />
+  <img src="assets/images/doctor2.png" width="180" />
+</div>
 
-<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;">
+---
 
-  <img src="assets/images/common.jpg" width="180" alt="Patient Common Screen" />
+### 3️⃣ Appointments Management
+<div align="center">
+  <img src="assets/images/doctor3.png" width="180" />
+  <img src="assets/images/doctor4.png" width="180" />
+  <img src="assets/images/doctor5.png" width="180" />
+</div>
 
+---
+
+### 4️⃣ Patient Details & Medical History
+<div align="center">
+  <img src="assets/images/doctor6.png" width="180" />
+  <img src="assets/images/doctor7.png" width="180" />
+  <img src="assets/images/doctor8.png" width="180" />
+</div>
+
+---
+
+### 5️⃣ Documents, Prescriptions & Analytics
+<div align="center">
+  <img src="assets/images/doctor9.png" width="180" />
+  <img src="assets/images/doctor10.png" width="180" />
+  <img src="assets/images/doctor11.png" width="180" />
+  <img src="assets/images/doctor12.png" width="180" />
+</div>
+
+---
+
+### 6️⃣ Profile, Settings & Logout
+<div align="center">
+  <img src="assets/images/doctor13.png" width="180" />
+  <img src="assets/images/doctor14.png" width="180" />
+  <img src="assets/images/doctor15.png" width="180" />
+  <img src="assets/images/doctor16.png" width="180" />
+</div>
+
+---
+
+## 👤 Application Flow – Patient Side
+
+**Rrjedha e plotë e përdorimit për Pacientin**, nga regjistrimi deri te kujdesi shëndetësor dhe njoftimet.
+
+### 1️⃣ Authentication & Onboarding
+<div align="center">
+  <img src="assets/images/common.jpg" width="200" />
+</div>
+
+---
+
+### 2️⃣ Home & Doctor Discovery
+<div align="center">
   <img src="assets/images/pacient1.png" width="180" />
   <img src="assets/images/pacient2.png" width="180" />
   <img src="assets/images/pacient3.png" width="180" />
+</div>
+
+---
+
+### 3️⃣ Appointment Booking Flow
+<div align="center">
   <img src="assets/images/pacient4.png" width="180" />
   <img src="assets/images/pacient5.png" width="180" />
   <img src="assets/images/pacient6.png" width="180" />
   <img src="assets/images/pacient7.png" width="180" />
+</div>
+
+---
+
+### 4️⃣ Medical Records & Documents
+<div align="center">
   <img src="assets/images/pacient8.png" width="180" />
   <img src="assets/images/pacient9.png" width="180" />
   <img src="assets/images/pacient10.png" width="180" />
   <img src="assets/images/pacient11.png" width="180" />
+</div>
+
+---
+
+### 5️⃣ Notifications, Reminders & SOS
+<div align="center">
   <img src="assets/images/pacient12.png" width="180" />
   <img src="assets/images/pacient13.png" width="180" />
   <img src="assets/images/pacient14.png" width="180" />
   <img src="assets/images/pacient15.png" width="180" />
+</div>
+
+---
+
+### 6️⃣ Profile, History & Settings
+<div align="center">
   <img src="assets/images/pacient16.png" width="180" />
   <img src="assets/images/pacient17.png" width="180" />
   <img src="assets/images/pacient18.png" width="180" />
   <img src="assets/images/pacient19.png" width="180" />
   <img src="assets/images/pacient20.png" width="180" />
-
 </div>
 
