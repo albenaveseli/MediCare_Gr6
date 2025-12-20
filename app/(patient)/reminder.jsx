@@ -18,9 +18,10 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  doc,
   getDocs,
   query,
-  where,
+  where
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 
@@ -29,7 +30,7 @@ export default function Reminder() {
   const [newMedicineName, setNewMedicineName] = useState("");
   const [newMedicineTime, setNewMedicineTime] = useState("");
 
-  
+
   const isValidTime = (time) => {
     const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
     return regex.test(time);
@@ -49,21 +50,21 @@ export default function Reminder() {
 
         const snapshot = await getDocs(q);
 
-        const meds = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
+        const meds = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
         }));
 
         setMedicines(meds);
       } catch (error) {
-        console.error("Error loading reminders:", error);
+        console.error("❌ Error loading reminders:", error);
       }
     };
 
     loadMedicines();
   }, []);
 
-  
+
   const addMedicine = async () => {
     if (!newMedicineName || !newMedicineTime) {
       Alert.alert("⚠️ Error", "Please enter both medicine name and time");
@@ -99,18 +100,18 @@ export default function Reminder() {
       setNewMedicineName("");
       setNewMedicineTime("");
     } catch (error) {
-      console.error("Error adding reminder:", error);
+      console.error("❌ Error adding reminder:", error);
       Alert.alert("Error", "Failed to add reminder");
     }
   };
 
- 
+  
   const deleteMedicine = async (id) => {
     try {
-      await deleteDoc(collection(db, "reminders").doc(id));
+      await deleteDoc(doc(db, "reminders", id));
       setMedicines((prev) => prev.filter((m) => m.id !== id));
     } catch (error) {
-      console.error("Error deleting reminder:", error);
+      console.error("❌ Error deleting reminder:", error);
     }
   };
 
@@ -129,7 +130,7 @@ export default function Reminder() {
         </View>
       </View>
     ),
-    [medicines]
+    []
   );
 
   return (
