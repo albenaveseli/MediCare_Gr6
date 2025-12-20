@@ -248,48 +248,36 @@ expo start
 
 ---
 
-### 2️⃣ Doctor Dashboard & Overview
+###  Doctor Dashboard & Overview
 <div align="center">
   <img src="assets/images/doctor1.png" width="180" />
   <img src="assets/images/doctor2.png" width="180" />
-</div>
-
----
-
-### 3️⃣ Appointments Management
-<div align="center">
   <img src="assets/images/doctor3.png" width="180" />
   <img src="assets/images/doctor4.png" width="180" />
   <img src="assets/images/doctor5.png" width="180" />
-</div>
-
----
-
-### 4️⃣ Patient Details & Medical History
-<div align="center">
   <img src="assets/images/doctor6.png" width="180" />
-  <img src="assets/images/doctor7.png" width="180" />
-  <img src="assets/images/doctor8.png" width="180" />
 </div>
 
 ---
 
-### 5️⃣ Documents, Prescriptions & Analytics
+###  Appointments Management
 <div align="center">
-  <img src="assets/images/doctor9.png" width="180" />
-  <img src="assets/images/doctor10.png" width="180" />
+  <img src="assets/images/doctor7.png" width="180" />
+    <img src="assets/images/doctor10.png" width="180" />
   <img src="assets/images/doctor11.png" width="180" />
   <img src="assets/images/doctor12.png" width="180" />
-</div>
-
----
-
-### 6️⃣ Profile, Settings & Logout
-<div align="center">
   <img src="assets/images/doctor13.png" width="180" />
   <img src="assets/images/doctor14.png" width="180" />
   <img src="assets/images/doctor15.png" width="180" />
   <img src="assets/images/doctor16.png" width="180" />
+</div>
+
+---
+
+###  Profile, Settings & Logout
+<div align="center">
+  <img src="assets/images/doctor8.png" width="180" />
+   <img src="assets/images/doctor9.png" width="180" />
 </div>
 
 ---
