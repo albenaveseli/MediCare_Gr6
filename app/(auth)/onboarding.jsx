@@ -24,10 +24,18 @@ export default function OnBoarding() {
   const [weight, setWeight] = useState(65);
   const [height, setHeight] = useState(170);
   const [hasAllergy, setHasAllergy] = useState(false);
-
+  
   const [modalVisible, setModalVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
+  
+  const genders = useMemo(
+    () => [
+      { label: "Female", value: "F" },
+      { label: "Male", value: "M" },
+      { label: "Other", value: "T" },
+    ],
+    []
+  );
   const fadeIn = () => {
     setModalVisible(true);
     Animated.timing(fadeAnim, {
@@ -36,7 +44,7 @@ export default function OnBoarding() {
       useNativeDriver: true,
     }).start();
   };
-
+  
   const fadeOut = () => {
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -123,14 +131,6 @@ export default function OnBoarding() {
     );
   }
 
-  const genders = useMemo(
-    () => [
-      { label: "Female", value: "F" },
-      { label: "Male", value: "M" },
-      { label: "Other", value: "T" },
-    ],
-    []
-  );
 
   return (
     <SafeAreaView style={styles.safecontainer}>
