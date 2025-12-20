@@ -232,11 +232,12 @@ expo start
 
 ---
 
-## Pamje nga aplikacioni te pjesa e doktorit
+## 🩺 Pamje nga aplikacioni – Pjesa e Doktorit
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;">
 
-  <img src="assets/images/common.jpg" width="180" />
+  <img src="assets/images/common.jpg" width="180" alt="Doctor Common Screen" />
+
   <img src="assets/images/doctor1.png" width="180" />
   <img src="assets/images/doctor2.png" width="180" />
   <img src="assets/images/doctor3.png" width="180" />
@@ -250,37 +251,40 @@ expo start
   <img src="assets/images/doctor11.png" width="180" />
   <img src="assets/images/doctor12.png" width="180" />
   <img src="assets/images/doctor13.png" width="180" />
-   <img src="assets/images/doctor14.png" width="180" />
+  <img src="assets/images/doctor14.png" width="180" />
   <img src="assets/images/doctor15.png" width="180" />
   <img src="assets/images/doctor16.png" width="180" />
-</div>
 
+</div>
 
 ---
 
-## Pamje nga aplikacioni te pjesa e pacientit
+## 👤 Pamje nga aplikacioni – Pjesa e Pacientit
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
- <img src="assets/images/common.jpg" width="180" />
-<img src="assets/images/pacient1.png" width="180" />
-<img src="assets/images/pacient2.png" width="180" />
-<img src="assets/images/pacient3.png" width="180" />
-<img src="assets/images/pacient4.png" width="180" />
-<img src="assets/images/pacient5.png" width="180" />
-<img src="assets/images/pacient6.png" width="180" />
-<img src="assets/images/pacient7.png" width="180" />
-<img src="assets/images/pacient8.png" width="180" />
-<img src="assets/images/pacient9.png" width="180" />
-<img src="assets/images/pacient10.png" width="180" />
-<img src="assets/images/pacient11.png" width="180" />
-<img src="assets/images/pacient12.png" width="180" />
-<img src="assets/images/pacient13.png" width="180" />
-<img src="assets/images/pacient14.png" width="180" />
-<img src="assets/images/pacient15.png" width="180" />
-<img src="assets/images/pacient16.png" width="180" />
-<img src="assets/images/pacient17.png" width="180" />
-<img src="assets/images/pacient18.png" width="180" />
-<img src="assets/images/pacient19.png" width="180" />
-<img src="assets/images/pacient20.png" width="180" />
+<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;">
+
+  <img src="assets/images/common.jpg" width="180" alt="Patient Common Screen" />
+
+  <img src="assets/images/pacient1.png" width="180" />
+  <img src="assets/images/pacient2.png" width="180" />
+  <img src="assets/images/pacient3.png" width="180" />
+  <img src="assets/images/pacient4.png" width="180" />
+  <img src="assets/images/pacient5.png" width="180" />
+  <img src="assets/images/pacient6.png" width="180" />
+  <img src="assets/images/pacient7.png" width="180" />
+  <img src="assets/images/pacient8.png" width="180" />
+  <img src="assets/images/pacient9.png" width="180" />
+  <img src="assets/images/pacient10.png" width="180" />
+  <img src="assets/images/pacient11.png" width="180" />
+  <img src="assets/images/pacient12.png" width="180" />
+  <img src="assets/images/pacient13.png" width="180" />
+  <img src="assets/images/pacient14.png" width="180" />
+  <img src="assets/images/pacient15.png" width="180" />
+  <img src="assets/images/pacient16.png" width="180" />
+  <img src="assets/images/pacient17.png" width="180" />
+  <img src="assets/images/pacient18.png" width="180" />
+  <img src="assets/images/pacient19.png" width="180" />
+  <img src="assets/images/pacient20.png" width="180" />
+
 </div>
 
