@@ -242,6 +242,15 @@ expo start
   <img src="assets/images/doctor5.png" width="180" />
   <img src="assets/images/doctor6.png" width="180" />
   <img src="assets/images/doctor7.png" width="180" />
+  <img src="assets/images/doctor8.png" width="180" />
+  <img src="assets/images/doctor9.png" width="180" />
+  <img src="assets/images/doctor10.png" width="180" />
+  <img src="assets/images/doctor11.png" width="180" />
+  <img src="assets/images/doctor12.png" width="180" />
+  <img src="assets/images/doctor13.png" width="180" />
+   <img src="assets/images/doctor14.png" width="180" />
+  <img src="assets/images/doctor15.png" width="180" />
+  <img src="assets/images/doctor16.png" width="180" />
 </div>
 
 
