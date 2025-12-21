@@ -51,8 +51,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 ### 4) Push Notifications & Reminders
 - Kujtesa për:
   - Medikamente (Reminder)
-  - Ndryshime & dokumente të reja
-- Shfaqje njoftimi dhe hapja e ekranit përkatës pas klikimit
+
 
 ### 5) GPS & Hospital Finder
 - Kërkim lejesh për lokacion (GPS)
@@ -62,7 +61,6 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 - Statistika mbi aktivitetin:
   - numri i pacientëve
   - terminet e përfunduara/anuluara
-- Filtrim sipas periudhave
 
 ### 7) Emergency / SOS
 - Dërgim alarmi urgjent 
@@ -141,10 +139,8 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 3. Mundeson lidhjen me google maps
 
 ### Push Notifications
-1. Ruajtja e eventeve (termin, dokument, ilaç)
-2. Gjenerimi i njoftimeve në kohën e caktuar
-3. Shfaqja në ekran
-4. Klikimi hap ekranin përkatës
+1. Gjenerimi i njoftimeve për përdorimin e medikamenteve në kohën e caktuar
+2. Shfaqja në ekran
 
 ### Profile
 - Pacient: Të dhëna personale të pacientit
