@@ -1,27 +1,24 @@
-import { getAuth } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import AppointmentCard from "../../components/AppointmentCard";
 import Header from "../../components/Header";
+import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase";
 
 export default function History() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const user = getAuth().currentUser;
 
+  const { user, loading: authLoading } = useAuth(); 
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
+        if (authLoading) return;
+
         if (!user) {
+          setAppointments([]);
           setLoading(false);
           return;
         }
@@ -44,9 +41,10 @@ export default function History() {
     };
 
     fetchAppointments();
-  }, [user]);
+  }, [user, authLoading]); 
 
-  if (loading) {
+  
+  if (loading || authLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007ea7" />
@@ -129,4 +127,3 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 });
-

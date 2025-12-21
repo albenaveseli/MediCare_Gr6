@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { signOut } from "firebase/auth";
 import {
   collection,
   doc,
@@ -24,10 +23,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth, db, storage } from "../firebase";
+import { useAuth } from "../context/AuthContext";
+import { db, storage } from "../firebase";
 
-export default function ProfileCard({ roleType = "Patient" }) {
+export default function ProfileCard({ roleType = "Patient", homePath = "/(patient)/home" }) {
   const router = useRouter();
+  const { user, loading: authLoading, logout } = useAuth(); 
+
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [docId, setDocId] = useState(null);
@@ -74,15 +76,12 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
     if (!docId) return;
 
-    const user = auth.currentUser;
+    if (authLoading) return; 
     if (!user) return;
 
     try {
       const filename = `${Date.now()}.jpg`;
-      const storageRef = ref(
-        storage,
-        `profileImages/${user.uid}/${filename}`
-      );
+      const storageRef = ref(storage, `profileImages/${user.uid}/${filename}`);
 
       const response = await fetch(localUri);
       const blob = await response.blob();
@@ -105,7 +104,8 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const user = auth.currentUser;
+      if (authLoading) return; 
+
       if (!user) {
         setLoading(false);
         return;
@@ -146,7 +146,8 @@ export default function ProfileCard({ roleType = "Patient" }) {
           );
           const usersSnapshot = await getDocs(usersQuery);
           let fullName = "";
-          if (!usersSnapshot.empty) fullName = usersSnapshot.docs[0].data().fullName || "";
+          if (!usersSnapshot.empty)
+            fullName = usersSnapshot.docs[0].data().fullName || "";
 
           const patientsQuery = query(
             collection(db, "patients"),
@@ -178,7 +179,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
     };
 
     fetchUserData();
-  }, []);
+  }, [user, authLoading, role]);
 
   if (loading) {
     return (
@@ -196,8 +197,8 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
     setIsEditing(false);
     try {
-      const user = auth.currentUser;
-      if (!user) return;
+      if (authLoading) return; 
+      if (!user) return; 
 
       await setDoc(
         doc(db, "patients", docId),
@@ -224,9 +225,9 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await logout();
       Alert.alert("Logged out", "You have been logged out successfully!");
-      router.replace("/(auth)/login");
+    
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -241,19 +242,18 @@ export default function ProfileCard({ roleType = "Patient" }) {
       <View style={styles.infoCard}>
         {role === "doctor" && doctorDetails ? (
           <>
-            <Image
-              source={{ uri: doctorDetails.image }}
-              style={styles.profileImage}
-            />
-           <Text style={styles.label}> Name: {name}</Text>
-           <Text style={styles.label}> Email: {email}</Text>
-           <Text style={styles.label}> Speciality: {doctorDetails.speciality}</Text>
-           <Text style={styles.label}> Price: {doctorDetails.price}</Text>
-           <Text style={styles.label}> Rating: {doctorDetails.rating}</Text>
-           <Text style={styles.label}> Education: {doctorDetails.education}</Text>
-           <Text style={styles.label}> Experience: {doctorDetails.experience}</Text>
-           <Text style={styles.label}> Languages: {doctorDetails.languages.join(", ")}</Text>
-           <Text style={styles.label}> Description: {doctorDetails.description}</Text>
+            <Image source={{ uri: doctorDetails.image }} style={styles.profileImage} />
+            <Text style={styles.label}> Name: {name}</Text>
+            <Text style={styles.label}> Email: {email}</Text>
+            <Text style={styles.label}> Speciality: {doctorDetails.speciality}</Text>
+            <Text style={styles.label}> Price: {doctorDetails.price}</Text>
+            <Text style={styles.label}> Rating: {doctorDetails.rating}</Text>
+            <Text style={styles.label}> Education: {doctorDetails.education}</Text>
+            <Text style={styles.label}> Experience: {doctorDetails.experience}</Text>
+            <Text style={styles.label}>
+              Languages: {doctorDetails.languages.join(", ")}
+            </Text>
+            <Text style={styles.label}> Description: {doctorDetails.description}</Text>
           </>
         ) : (
           <>
@@ -268,11 +268,7 @@ export default function ProfileCard({ roleType = "Patient" }) {
               <>
                 <View style={styles.inputRow}>
                   <Ionicons name="person-outline" size={20} color="#007ea7" style={styles.icon} />
-                  <TextInput
-                    style={styles.input}
-                    value={name}
-                    editable={false}
-                  />
+                  <TextInput style={styles.input} value={name} editable={false} />
                 </View>
 
                 <View style={styles.inputRow}>
@@ -375,9 +371,9 @@ export default function ProfileCard({ roleType = "Patient" }) {
 
 const styles = StyleSheet.create({
   container: {
-   paddingVertical: 20,
-   paddingHorizontal: 10,
-   backgroundColor: "#E9F8F9",
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    backgroundColor: "#E9F8F9",
   },
 
   infoCard: {

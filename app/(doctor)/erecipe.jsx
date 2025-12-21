@@ -21,9 +21,12 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
-import { auth, db } from "../../firebase";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../firebase";
 
 export default function ERecipeScreen() {
+  const { user, loading: authLoading } = useAuth(); 
+
   const [loggedDoctor, setLoggedDoctor] = useState({ name: "", specialty: "" });
 
   const { appointmentId, patientName, patientId } = useLocalSearchParams();
@@ -71,8 +74,8 @@ export default function ERecipeScreen() {
 
   useEffect(() => {
     const fetchDoctor = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+      if (authLoading) return; 
+      if (!user) return; 
 
       const doctorQuery = query(
         collection(db, "doctors"),
@@ -90,7 +93,7 @@ export default function ERecipeScreen() {
     };
 
     fetchDoctor();
-  }, []);
+  }, [user, authLoading]); 
 
   const handleGenerate = () => {
     const missing = [];
@@ -130,7 +133,8 @@ export default function ERecipeScreen() {
 
   const handleSend = async () => {
     try {
-      const user = auth.currentUser;
+      if (authLoading) return; 
+
       if (!user) {
         Alert.alert("Error", "You must be logged in.");
         return;
@@ -160,7 +164,10 @@ export default function ERecipeScreen() {
         doctorName: doctorData.name,
         profession: doctorData.specialty,
         date: new Date().toLocaleDateString(),
-        medications: medications.split(",").map((m) => m.trim()),
+        medications: medications
+          .split(",")
+          .map((m) => m.trim())
+          .filter(Boolean), 
         diagnosis,
         steps,
         notes,
@@ -392,7 +399,9 @@ export default function ERecipeScreen() {
           {
             modal: sendModal,
             set: setSendModal,
-            text: `Prescription successfully sent to ${patient || "the patient"}!`,
+            text: `Prescription successfully sent to ${
+              patient || "the patient"
+            }!`,
             color: "#28a745",
             action: handleClear,
           },

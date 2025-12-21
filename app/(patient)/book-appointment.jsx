@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
-import { getAuth } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -26,9 +25,12 @@ import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
+import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase";
 
 export default function BookingScreen() {
+  const { user, loading } = useAuth();
+
   const {
     doctorId,
     doctorName,
@@ -46,9 +48,8 @@ export default function BookingScreen() {
 
   useEffect(() => {
     const fetchPatientName = async () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
+      
+      if (loading) return;
       if (!user) return;
 
       try {
@@ -65,7 +66,7 @@ export default function BookingScreen() {
     };
 
     fetchPatientName();
-  }, []);
+  }, [user, loading]); 
 
   const doctor = useMemo(
     () => ({
@@ -109,7 +110,9 @@ export default function BookingScreen() {
       );
       const snapshot = await getDocs(q);
       const bookedSlots = snapshot.docs.map((doc) => doc.data().time);
-      const availableSlots = allSlots.filter((slot) => !bookedSlots.includes(slot));
+      const availableSlots = allSlots.filter(
+        (slot) => !bookedSlots.includes(slot)
+      );
       setAvailableTimeSlots(availableSlots);
     },
     [doctor]
@@ -144,8 +147,9 @@ export default function BookingScreen() {
     if (isWeekend(selectedDate))
       return Alert.alert("Weekend", "Appointments not available on weekends");
     try {
-      const user = getAuth().currentUser;
+      if (loading) return;
       if (!user) return Alert.alert("Error", "You must be logged in to book.");
+
       const appointmentsRef = collection(db, "appointments");
       const q = query(
         appointmentsRef,
@@ -191,7 +195,7 @@ export default function BookingScreen() {
 
       await addDoc(collection(db, "appointments"), {
         doctorId,
-        patientId: user.uid,
+        patientId: user.uid, 
         doctorName,
         patientName,
         date: selectedDate.toDateString(),
@@ -306,7 +310,9 @@ export default function BookingScreen() {
                   >
                     <Ionicons name="time" size={20} color="#007ea7" />
                     <Text style={styles.dateText}>
-                      {selectedTime ? selectedTime : "Select time (08:00 - 16:00)"}
+                      {selectedTime
+                        ? selectedTime
+                        : "Select time (08:00 - 16:00)"}
                     </Text>
                   </TouchableOpacity>
                   {showTimePicker && (
@@ -373,7 +379,11 @@ export default function BookingScreen() {
 
             <View style={styles.buttonContainer}>
               <PrimaryButton
-                title={isWeekend(selectedDate) ? "Weekend - Not Available" : "Confirm Appointment"}
+                title={
+                  isWeekend(selectedDate)
+                    ? "Weekend - Not Available"
+                    : "Confirm Appointment"
+                }
                 onPress={handleBooking}
                 disabled={isWeekend(selectedDate) || !selectedTime || !patientName}
                 icon={() => (

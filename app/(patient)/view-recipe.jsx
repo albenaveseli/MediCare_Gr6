@@ -1,4 +1,3 @@
-import { getAuth } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
 import { memo, useEffect, useState } from "react";
 import {
@@ -11,6 +10,7 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
+import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase";
 
 const PrescriptionItem = memo(function PrescriptionItem({ item, onPress }) {
@@ -47,6 +47,8 @@ const PrescriptionItem = memo(function PrescriptionItem({ item, onPress }) {
 });
 
 export default function ViewRecipeScreen() {
+  const { user, loading: authLoading } = useAuth(); 
+
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,8 +56,7 @@ export default function ViewRecipeScreen() {
   useEffect(() => {
     const fetchPrescriptions = async () => {
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
+        if (authLoading) return; 
         if (!user || !user.email)
           return Alert.alert("Error", "You must be logged in.");
 
@@ -96,7 +97,7 @@ export default function ViewRecipeScreen() {
     };
 
     fetchPrescriptions();
-  }, []);
+  }, [user, authLoading]);
 
   const handleCopy = (prescription) => {
     const message = `Prescription from ${prescription.doctorName} copied successfully.`;

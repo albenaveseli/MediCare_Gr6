@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { getAuth } from "firebase/auth";
 import { Alert } from "react-native";
 
 import {
@@ -21,10 +20,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase";
 
 export default function MyAppointmentsScreen() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth(); 
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +34,8 @@ export default function MyAppointmentsScreen() {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) return Alert.alert("Error", "You must be logged in.");
+        if (authLoading) return; 
+        if (!user) return Alert.alert("Error", "You must be logged in."); 
 
         const doctorQuery = query(
           collection(db, "doctors"),
@@ -76,7 +76,7 @@ export default function MyAppointmentsScreen() {
     };
 
     fetchAppointments();
-  }, []);
+  }, [user, authLoading]); 
 
   const handleStatusChange = async (appointmentId, newStatus) => {
     try {
@@ -254,9 +254,7 @@ export default function MyAppointmentsScreen() {
                         size={16}
                         color="#fff"
                       />
-                      <Text style={styles.createRecipeText}>
-                        Create Recipe
-                      </Text>
+                      <Text style={styles.createRecipeText}>Create Recipe</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -278,35 +276,21 @@ export default function MyAppointmentsScreen() {
                   {appointment.status === "pending" && (
                     <View style={styles.actionButtons}>
                       <TouchableOpacity
-                        style={[
-                          styles.actionButton,
-                          styles.approveButton,
-                        ]}
+                        style={[styles.actionButton, styles.approveButton]}
                         onPress={() =>
                           handleStatusChange(appointment.id, "approved")
                         }
                       >
-                        <Ionicons
-                          name="checkmark"
-                          size={16}
-                          color="#fff"
-                        />
+                        <Ionicons name="checkmark" size={16} color="#fff" />
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        style={[
-                          styles.actionButton,
-                          styles.cancelButton,
-                        ]}
+                        style={[styles.actionButton, styles.cancelButton]}
                         onPress={() =>
                           handleStatusChange(appointment.id, "cancelled")
                         }
                       >
-                        <Ionicons
-                          name="close"
-                          size={16}
-                          color="#fff"
-                        />
+                        <Ionicons name="close" size={16} color="#fff" />
                       </TouchableOpacity>
                     </View>
                   )}
@@ -333,9 +317,7 @@ export default function MyAppointmentsScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Ionicons name="calendar-outline" size={48} color="#a0c4c7" />
-            <Text style={styles.emptyStateText}>
-              No appointments scheduled
-            </Text>
+            <Text style={styles.emptyStateText}>No appointments scheduled</Text>
           </View>
         }
       />

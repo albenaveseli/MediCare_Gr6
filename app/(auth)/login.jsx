@@ -47,16 +47,12 @@ export default function Login() {
       if (userDoc.exists()) {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
-        if (role === "doctor") router.replace("/(doctor)/home");
-        else router.replace("/(patient)/home");
       } else {
         await setDoc(userRef, {
           email: trimmedEmail,
           role,
           createdAt: serverTimestamp(),
         });
-        if (role === "doctor") router.replace("/(doctor)/home");
-        else router.replace("/(patient)/home");
       }
     } catch (error) {
       Alert.alert(
@@ -86,8 +82,6 @@ export default function Login() {
         const data = userDoc.data();
         if (data.role !== role) await updateDoc(userRef, { role });
       }
-      if (role === "doctor") router.replace("/(doctor)/home");
-      else router.replace("/(patient)/home");
     } catch (error) {
       Alert.alert(
         "Google Sign-In Unavailable",

@@ -1,6 +1,8 @@
 import Slider from "@react-native-community/slider";
-import { router } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
+
+import { router } from "expo-router";
+
 import { useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -15,19 +17,22 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth, db } from "../../firebase";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../firebase";
 
 export default function OnBoarding() {
+  const { user, loading } = useAuth(); 
+
   const [showWelcome, setShowWelcome] = useState(true);
   const [birthDate, setBirthDate] = useState("");
   const [gender, setGender] = useState("F");
   const [weight, setWeight] = useState(65);
   const [height, setHeight] = useState(170);
   const [hasAllergy, setHasAllergy] = useState(false);
-  
+
   const [modalVisible, setModalVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  
+
   const genders = useMemo(
     () => [
       { label: "Female", value: "F" },
@@ -36,6 +41,7 @@ export default function OnBoarding() {
     ],
     []
   );
+
   const fadeIn = () => {
     setModalVisible(true);
     Animated.timing(fadeAnim, {
@@ -44,7 +50,7 @@ export default function OnBoarding() {
       useNativeDriver: true,
     }).start();
   };
-  
+
   const fadeOut = () => {
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -84,7 +90,7 @@ export default function OnBoarding() {
     }
 
     try {
-      const user = auth.currentUser;
+      if (loading) return; 
       if (!user) {
         Alert.alert("Error", "User not logged in.");
         return;
@@ -100,13 +106,11 @@ export default function OnBoarding() {
         createdAt: new Date(),
       });
 
-      // Show success modal with fade-in
       fadeIn();
 
-      // After 1.5 seconds fade out and navigate
       setTimeout(() => {
         fadeOut();
-        router.replace("/(patient)/home");
+         router.replace("/(patient)/home"); 
       }, 1500);
     } catch (error) {
       console.error("Error saving data:", error);
@@ -130,7 +134,6 @@ export default function OnBoarding() {
       </View>
     );
   }
-
 
   return (
     <SafeAreaView style={styles.safecontainer}>
@@ -217,7 +220,6 @@ export default function OnBoarding() {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Modal with fade in/out */}
       <Modal transparent visible={modalVisible} animationType="none">
         <View style={styles.modalBackground}>
           <Animated.View style={[styles.modalContainer, { opacity: fadeAnim }]}>
@@ -230,10 +232,7 @@ export default function OnBoarding() {
 }
 
 const styles = StyleSheet.create({
-  safecontainer: {
-    flex: 1,
-    backgroundColor: "#e8f6f8",
-  },
+  safecontainer: { flex: 1, backgroundColor: "#e8f6f8" },
   container: { backgroundColor: "#e8f6f8", padding: 20 },
   scrollContent: { paddingBottom: 40 },
 
@@ -263,14 +262,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
     color: "#033d49",
   },
-  radioGroup: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  radioButton: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  radioGroup: { flexDirection: "row", justifyContent: "space-between" },
+  radioButton: { flexDirection: "row", alignItems: "center" },
   radioOuter: {
     width: 22,
     height: 22,
@@ -281,19 +274,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 8,
   },
-  radioSelectedOuter: {
-    borderColor: "#007ea7",
-  },
+  radioSelectedOuter: { borderColor: "#007ea7" },
   radioInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
     backgroundColor: "#007ea7",
   },
-  radioLabel: {
-    fontSize: 16,
-    color: "#033d49",
-  },
+  radioLabel: { fontSize: 16, color: "#033d49" },
+
   welcomeContainer: {
     flex: 1,
     justifyContent: "center",
@@ -321,6 +310,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   getStartedText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+
   nextButton: {
     backgroundColor: "#007ea7",
     paddingVertical: 16,
@@ -346,10 +336,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 6,
   },
-  modalText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#007ea7",
-  },
+  modalText: { fontSize: 18, fontWeight: "700", color: "#007ea7" },
 });
-

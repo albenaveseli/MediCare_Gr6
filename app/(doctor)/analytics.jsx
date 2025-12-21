@@ -1,11 +1,5 @@
 import { router } from "expo-router";
-import {
-  collection,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -15,9 +9,12 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Header";
-import { auth, db } from "../../firebase";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../firebase";
 
 export default function Analytics() {
+  const { user, loading: authLoading } = useAuth(); 
+
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,12 +34,18 @@ export default function Analytics() {
   }, []);
 
   useEffect(() => {
-    let unsubscribe = null; //  MIN CHANGE (needed for proper cleanup)
+    let unsubscribe = null;
 
     const fetchAnalytics = async () => {
       try {
-        const user = auth.currentUser;
-        if (!user) return;
+        if (authLoading) return;
+
+        if (!user) {
+          setLoading(false);
+          return;
+        }
+
+        setLoading(true);
 
         const doctorQuery = query(
           collection(db, "doctors"),
@@ -56,28 +59,17 @@ export default function Analytics() {
           return;
         }
 
-        const doctorDoc = doctorSnapshot.docs[0];
-        const doctorId = doctorDoc.id;
+        const doctorId = doctorSnapshot.docs[0].id;
 
         const appointmentsQuery = query(
           collection(db, "appointments"),
           where("doctorId", "==", doctorId)
         );
 
-        unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => { // MIN CHANGE
+        unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => {
           const monthlyCounts = {
-            Jan: 0,
-            Feb: 0,
-            Mar: 0,
-            Apr: 0,
-            May: 0,
-            Jun: 0,
-            Jul: 0,
-            Aug: 0,
-            Sep: 0,
-            Oct: 0,
-            Nov: 0,
-            Dec: 0,
+            Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
+            Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0,
           };
 
           snapshot.forEach((docSnap) => {
@@ -86,29 +78,23 @@ export default function Analytics() {
             if (data.status?.toLowerCase() === "approved" && data.date) {
               try {
                 const dateObj = new Date(data.date);
-                const monthName = dateObj.toLocaleString("en-US", {
-                  month: "short",
-                });
+                const monthName = dateObj.toLocaleString("en-US", { month: "short" });
                 if (monthlyCounts[monthName] !== undefined) {
                   monthlyCounts[monthName] += 1;
                 }
-              } catch (err) {
+              } catch {
                 console.log("Invalid date format:", data.date);
               }
             }
           });
 
           const formattedData = Object.entries(monthlyCounts).map(
-            ([month, visits]) => ({
-              month,
-              visits,
-            })
+            ([month, visits]) => ({ month, visits })
           );
 
           setMonthlyData(formattedData);
           setLoading(false);
         });
-
       } catch (error) {
         console.error("Error fetching analytics:", error);
         setLoading(false);
@@ -117,19 +103,14 @@ export default function Analytics() {
 
     fetchAnalytics();
 
-    return () => {                 //  MIN CHANGE (real cleanup)
+    return () => {
       if (unsubscribe) unsubscribe();
     };
-  }, []);
+  }, [user, authLoading]); 
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
         <ActivityIndicator size="large" color="#007ea7" />
       </View>
     );
@@ -141,8 +122,8 @@ export default function Analytics() {
 
       <ScrollView
         contentContainerStyle={styles.content}
-        removeClippedSubviews //  MIN CHANGE (small perf / "lazy-ish" for offscreen on Android)
-        keyboardShouldPersistTaps="handled" //  MIN CHANGE (avoids extra touch handling work)
+        removeClippedSubviews
+        keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.subtitle}>Monthly Patient Visits</Text>
 
@@ -155,14 +136,12 @@ export default function Analytics() {
             appointment records.
           </Text>
           <Text style={styles.highlight}>
-            💡 Keep track of your busiest months to manage your schedule
-            effectively!
+            💡 Keep track of your busiest months to manage your schedule effectively!
           </Text>
         </View>
 
         <Text style={styles.footer}>
-          Data from MediCare system · Updates automatically when appointments
-          are approved ✅
+          Data from MediCare system · Updates automatically when appointments are approved ✅
         </Text>
       </ScrollView>
     </View>

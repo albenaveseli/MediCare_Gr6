@@ -13,7 +13,6 @@ import {
 import Header from "../../components/Header";
 import { scheduleNotification } from "../../utils/notifications";
 
-
 import {
   addDoc,
   collection,
@@ -21,26 +20,27 @@ import {
   doc,
   getDocs,
   query,
-  where
+  where,
 } from "firebase/firestore";
-import { auth, db } from "../../firebase";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../firebase";
 
 export default function Reminder() {
+  const { user, loading: authLoading } = useAuth(); 
+
   const [medicines, setMedicines] = useState([]);
   const [newMedicineName, setNewMedicineName] = useState("");
   const [newMedicineTime, setNewMedicineTime] = useState("");
-
 
   const isValidTime = (time) => {
     const regex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
     return regex.test(time);
   };
 
-
   useEffect(() => {
     const loadMedicines = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+      if (authLoading) return;
+      if (!user) return; 
 
       try {
         const q = query(
@@ -62,8 +62,7 @@ export default function Reminder() {
     };
 
     loadMedicines();
-  }, []);
-
+  }, [user, authLoading]);
 
   const addMedicine = async () => {
     if (!newMedicineName || !newMedicineTime) {
@@ -76,7 +75,7 @@ export default function Reminder() {
       return;
     }
 
-    const user = auth.currentUser;
+    if (authLoading) return; 
     if (!user) {
       Alert.alert("Error", "User not logged in");
       return;
@@ -86,7 +85,7 @@ export default function Reminder() {
       const newMed = {
         name: newMedicineName.trim(),
         time: newMedicineTime.trim(),
-        userId: user.uid,
+        userId: user.uid, 
         createdAt: new Date(),
       };
 
@@ -105,7 +104,6 @@ export default function Reminder() {
     }
   };
 
-  
   const deleteMedicine = async (id) => {
     try {
       await deleteDoc(doc(db, "reminders", id));
@@ -114,7 +112,6 @@ export default function Reminder() {
       console.error("❌ Error deleting reminder:", error);
     }
   };
-
 
   const renderItem = useCallback(
     ({ item }) => (

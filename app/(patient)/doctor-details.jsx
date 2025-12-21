@@ -1,6 +1,5 @@
 import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { getAuth } from "firebase/auth";
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -8,6 +7,7 @@ import Card from "../../components/Card";
 import Header from "../../components/Header";
 import PrimaryButton from "../../components/PrimaryButton";
 import TimeSlots from "../../components/TimeSlots";
+import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase";
 
 export default function DoctorDetails() {
@@ -21,8 +21,8 @@ export default function DoctorDetails() {
   const [hasRated, setHasRated] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
 
-  const auth = getAuth();
-  const currentUserId = auth.currentUser?.uid;
+  const { user, loading: authLoading } = useAuth(); 
+  const currentUserId = user?.uid;
 
   const isWeekend = () => {
     const day = new Date().getDay();
@@ -111,7 +111,9 @@ export default function DoctorDetails() {
   }, [params.id]);
 
   const toggleLike = useCallback(async () => {
+    if (authLoading) return; 
     if (!currentUserId) return;
+
     try {
       const docRef = doc(db, "doctors", params.id);
       const newStatus = !isLiked;
@@ -127,9 +129,10 @@ export default function DoctorDetails() {
     } catch (error) {
       console.error("Error toggling like:", error);
     }
-  }, [currentUserId, params.id, isLiked]);
+  }, [currentUserId, params.id, isLiked, authLoading]);
 
   const checkUserRating = async () => {
+    if (authLoading) return;
     if (!currentUserId) return;
 
     const docRef = doc(db, "doctors", params.id);
@@ -151,9 +154,10 @@ export default function DoctorDetails() {
 
   useEffect(() => {
     checkUserRating();
-  }, [params.id, currentUserId]);
+  }, [params.id, currentUserId, authLoading]);
 
   const submitRating = async (rating) => {
+    if (authLoading) return; 
     if (!currentUserId) return;
 
     try {
