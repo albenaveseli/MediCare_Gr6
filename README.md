@@ -33,7 +33,8 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 ##  Core Features (Funksionalitetet Kryesore)
 
 ### 1) Authentication & Roles
-- **Sign Up / Login** për **Pacient** dhe **Doktor**
+- **Sign Up / Login** për **Pacient**  
+- **Login** për **Doktor**
 - Menaxhim rolesh dhe drejtim në ekranet përkatëse sipas rolit
 
 ### 2) Personalized Dashboard
