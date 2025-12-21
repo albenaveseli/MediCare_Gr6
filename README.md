@@ -43,42 +43,30 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 ### 3) Appointment Booking & Management
 - Rezervim termini me datë/orë
 - Ruajtje e terminit me të dhëna:
-  - `patientId`, `doctorId`, `datetime`, `status`, `notes`
+  - `createdAt`, `date`, `patientId`, `patientName`, `doctorId`, `doctorName`, `reason`, `status`, `notes`, `time`
 - Menaxhim nga doktori:
   - **Approve / Cancel / Reschedule**
 - Njoftime për ndryshime të terminit
 
-### 4) Medical Documents Management
-- Upload dokumente/analiza nga pacienti
-- Ruajtje në **Firebase Storage**
-- Ruajtje metadata në **Firestore**:
-  - `patientId`, `type`, `date`, `fileUrl`
-- Qasje për doktorin në historikun e pacientit
-
-### 5) Push Notifications & Reminders
+### 4) Push Notifications & Reminders
 - Kujtesa për:
-  - Termine
   - Medikamente (Reminder)
-  - Ndryshime & dokumente të reja
-- Shfaqje njoftimi dhe hapja e ekranit përkatës pas klikimit
 
-### 6) GPS & Hospital Finder
+
+### 5) GPS & Hospital Finder
 - Kërkim lejesh për lokacion (GPS)
 - Marrja e koordinatave
-- Shfaqje e spitaleve më të afërta me opsion navigimi
 
-### 7) Analytics (Doctor Dashboard)
+### 6) Analytics (Doctor Dashboard)
 - Statistika mbi aktivitetin:
   - numri i pacientëve
   - terminet e përfunduara/anuluara
-- Raporte/grafikë dhe filtrim sipas periudhave
 
-### 8) Emergency / SOS
-- Dërgim alarmi urgjent me lokacion GPS
-- Opsional: shtim i simptomave/fotos
-- Njoftim për doktorin/spitalin
+### 7) Emergency / SOS
+- Dërgim alarmi urgjent 
+- Njoftim për doktorin/spitalin ose organ tjeter
 
-### 9) E-Recipe (Receta Elektronike)
+### 8) E-Recipe (Receta Elektronike)
 - Doktori lëshon recetë pas konsultës
 - Ruhet në profilin e pacientit
 - Përdorshme në farmaci
@@ -115,15 +103,13 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 **Aktor:** Pacient i ri  
 **Trigger:** Pas Sign Up  
 **Rrjedha:**
-1. Vendos datën e lindjes, gjininë, monedhën/vendin
-2. Konfiguron preferenca për njoftime (reminders)
-3. Opsional: upload foto profili
-4. Konfirmon → Home
+1. Vendos datën e lindjes, gjininë dhe të dhëna të tjera
+2. Konfirmon → Home
 
 ### Home/Dashboard
 **Aktorët:** Pacient / Doktor  
-- Pacient: doktorët + terminet  
-- Doktor: orari + historiku
+- Pacient: doktorët + opsione të tjera 
+- Doktor: Betimi i Hipokratit + opsione të tjera
 
 ### Doctor Details
 **Aktor:** Pacient  
@@ -136,38 +122,29 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 2. Shton opsionalisht koment/arsye
 3. “Confirm”
 4. Ruhet termini (Firestore) + status
-5. Pacienti merr njoftim
-6. Doktori merr njoftim
+5. Pacienti merr njoftim se a eshte bere rezervimi i terminit
+6. Doktori mund ta shohe terminin tek My Appointments
 **Alternative:** ora e zënë → gabim
 
 ### Doctor Appointment Management
 **Aktor:** Doktor  
 1. Sheh terminet
 2. Hap detajet
-3. Approve/Cancel/Reschedule
-4. Pacienti njoftohet
-
-### Upload Documents
-**Aktor:** Pacient  
-1. Zgjedh file (kamera/galeria)
-2. Upload në Storage
-3. Metadata në Firestore
-4. Doktori e sheh në historik
-
+3. Approve/Cancel
+4. Pacienti mund ta sheh në kohë reale se si ndryshon statusi i terminit
+   
 ### GPS & Hospital Finder
 1. Leje GPS
 2. Merr koordinata
 3. Mundeson lidhjen me google maps
 
 ### Push Notifications
-1. Ruajtja e eventeve (termin, dokument, ilaç)
-2. Gjenerimi i njoftimeve në kohën e caktuar
-3. Shfaqja në ekran
-4. Klikimi hap ekranin përkatës
+1. Gjenerimi i njoftimeve për përdorimin e medikamenteve në kohën e caktuar
+2. Shfaqja në ekran
 
-### Profile & History
-- Pacient: terminet e kaluara + dokumente
-- Doktor: pacientët + historiku
+### Profile
+- Pacient: Të dhëna personale të pacientit
+- Doktor: Të dhëna personale të doktorit
 - Opsional: edit profil
 
 ### Logout
@@ -175,8 +152,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 
 ### Analytics (Doctor)
 1. Shfaq statistika
-2. Paraqitje me grafikë
-3. Filtrim kohor
+2. Filtrim kohor
 
 ### Emergency / SOS
 1. Njoftim emergjent
@@ -270,7 +246,7 @@ expo start
 
 ---
 
-###  Profile, Settings & Logout
+###  Profile & Logout
 <div align="center">
   <img src="assets/images/doctor8.png" width="180" />
    <img src="assets/images/doctor9.png" width="180" />
@@ -313,11 +289,20 @@ expo start
   
   <img src="assets/images/pacient4.png" width="180" />
   <img src="assets/images/pacient16.png" width="180" />
+  <img src="assets/images/pacient21.png" width="180" />
+  <img src="assets/images/pacient22.png" width="180" />
+  <img src="assets/images/pacient23.png" width="180" />
+  <img src="assets/images/pacient24.png" width="180" />
+  <img src="assets/images/pacient25.png" width="180" />
+  <img src="assets/images/pacient26.png" width="180" />
+  <img src="assets/images/pacient27.png" width="180" />
+  <img src="assets/images/pacient28.png" width="180" />
+  <img src="assets/images/pacient29.png" width="180" />
 </div>
 
 ---
 
-###  Medical Records & Documents
+###  Medical Records 
 <div align="center">
   
 
@@ -328,7 +313,7 @@ expo start
 
 ---
 
-### Notifications, Reminders & SOS
+### Notifications, Reminders & SOS, GPS
 <div align="center">
   <img src="assets/images/pacient11.png" width="180" />
   
@@ -344,7 +329,7 @@ expo start
 
 ---
 
-###  Profile, History & Settings
+###  Profile & Logout
 <div align="center">
 
   <img src="assets/images/pacient13.png" width="180" />
