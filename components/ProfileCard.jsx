@@ -26,9 +26,19 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { db, storage } from "../firebase";
 
-export default function ProfileCard({ roleType = "Patient", homePath = "/(patient)/home" }) {
+
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from "firebase/auth";
+
+export default function ProfileCard({
+  roleType = "Patient",
+  homePath = "/(patient)/home",
+}) {
   const router = useRouter();
-  const { user, loading: authLoading, logout } = useAuth(); 
+  const { user, loading: authLoading, logout } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -44,6 +54,13 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
   const [profileImage, setProfileImage] = useState(null);
   const [doctorDetails, setDoctorDetails] = useState(null);
+
+ 
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const role = roleType;
 
@@ -76,7 +93,7 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
     if (!docId) return;
 
-    if (authLoading) return; 
+    if (authLoading) return;
     if (!user) return;
 
     try {
@@ -90,11 +107,7 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
       const downloadURL = await getDownloadURL(storageRef);
 
-      await setDoc(
-        doc(db, "patients", docId),
-        { image: downloadURL },
-        { merge: true }
-      );
+      await setDoc(doc(db, "patients", docId), { image: downloadURL }, { merge: true });
 
       setProfileImage(downloadURL);
     } catch (error) {
@@ -104,7 +117,7 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (authLoading) return; 
+      if (authLoading) return;
 
       if (!user) {
         setLoading(false);
@@ -146,13 +159,13 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
           );
           const usersSnapshot = await getDocs(usersQuery);
           let fullName = "";
-          if (!usersSnapshot.empty)
-            fullName = usersSnapshot.docs[0].data().fullName || "";
+          if (!usersSnapshot.empty) fullName = usersSnapshot.docs[0].data().fullName || "";
 
           const patientsQuery = query(
             collection(db, "patients"),
             where("userId", "==", user.uid)
           );
+
           const unsubscribe = onSnapshot(patientsQuery, (querySnapshot) => {
             const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
             const data = lastDoc?.data();
@@ -197,8 +210,8 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
     setIsEditing(false);
     try {
-      if (authLoading) return; 
-      if (!user) return; 
+      if (authLoading) return;
+      if (!user) return;
 
       await setDoc(
         doc(db, "patients", docId),
@@ -223,11 +236,85 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
   const handleEdit = () => setIsEditing(true);
 
+ 
+  const handleChangePassword = async () => {
+  if (authLoading) return;
+
+  if (!user) {
+    Alert.alert("Error", "You must be logged in.");
+    return;
+  }
+
+  // 1) Required fields
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    Alert.alert("Error", "Please fill all password fields.");
+    return;
+  }
+
+  // 2) Same password check (optional but good)
+  if (currentPassword === newPassword) {
+    Alert.alert("Error", "New password must be different from current password.");
+    return;
+  }
+
+  // 3) Same validations as Signup (strong password)
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!passwordRegex.test(newPassword)) {
+    Alert.alert(
+      "Weak Password",
+      "Password must be at least 8 characters long and include:\n- 1 uppercase letter\n- 1 lowercase letter\n- 1 number\n- 1 special character (@$!%*?&)"
+    );
+    return;
+  }
+
+  // 4) Confirm match
+  if (newPassword !== confirmNewPassword) {
+    Alert.alert("Error", "Passwords do not match!");
+    return;
+  }
+
+  setChangingPassword(true);
+
+  try {
+    // Re-authenticate (required by Firebase for sensitive actions)
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+
+    // Update password
+    await updatePassword(user, newPassword);
+
+    Alert.alert("Success", "Password updated successfully!");
+
+    // Reset fields
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+    setShowPasswordChange(false);
+  } catch (error) {
+    // Optional: friendlier messages for common errors
+    const code = error?.code;
+
+    if (code === "auth/wrong-password") {
+      Alert.alert("Error", "Current password is incorrect.");
+    } else if (code === "auth/too-many-requests") {
+      Alert.alert("Error", "Too many attempts. Please try again later.");
+    } else if (code === "auth/requires-recent-login") {
+      Alert.alert("Error", "Please log in again and try changing your password.");
+    } else {
+      Alert.alert("Current password is incorrect.");
+    }
+  } finally {
+    setChangingPassword(false);
+  }
+};
+
+
   const handleLogout = async () => {
     try {
       await logout();
       Alert.alert("Logged out", "You have been logged out successfully!");
-    
     } catch (error) {
       console.log("Error", error.message);
     }
@@ -291,7 +378,12 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
                 </View>
 
                 <View style={styles.inputRow}>
-                  <Ionicons name="transgender-outline" size={20} color="#007ea7" style={styles.icon} />
+                  <Ionicons
+                    name="transgender-outline"
+                    size={20}
+                    color="#007ea7"
+                    style={styles.icon}
+                  />
                   <TextInput
                     style={styles.input}
                     value={gender}
@@ -331,6 +423,82 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
                     placeholder="Medication Allergy (Yes / No)"
                   />
                 </View>
+
+               
+                <TouchableOpacity
+                  style={styles.changePassToggle}
+                  onPress={() => setShowPasswordChange((v) => !v)}
+                >
+                  <Text style={styles.changePassToggleText}>
+                    {showPasswordChange ? "Hide Password Fields" : "Change Password"}
+                  </Text>
+                </TouchableOpacity>
+
+                
+                {showPasswordChange && (
+                  <>
+                    <View style={styles.inputRow}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={20}
+                        color="#007ea7"
+                        style={styles.icon}
+                      />
+                      <TextInput
+                        style={styles.input}
+                        value={currentPassword}
+                        onChangeText={setCurrentPassword}
+                        placeholder="Current password"
+                        secureTextEntry
+                        autoCapitalize="none"
+                      />
+                    </View>
+
+                    <View style={styles.inputRow}>
+                      <Ionicons
+                        name="key-outline"
+                        size={20}
+                        color="#007ea7"
+                        style={styles.icon}
+                      />
+                      <TextInput
+                        style={styles.input}
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                        placeholder="New password"
+                        secureTextEntry
+                        autoCapitalize="none"
+                      />
+                    </View>
+
+                    <View style={styles.inputRow}>
+                      <Ionicons
+                        name="key-outline"
+                        size={20}
+                        color="#007ea7"
+                        style={styles.icon}
+                      />
+                      <TextInput
+                        style={styles.input}
+                        value={confirmNewPassword}
+                        onChangeText={setConfirmNewPassword}
+                        placeholder="Confirm new password"
+                        secureTextEntry
+                        autoCapitalize="none"
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      style={[styles.saveButton, changingPassword ? { opacity: 0.7 } : null]}
+                      onPress={handleChangePassword}
+                      disabled={changingPassword}
+                    >
+                      <Text style={styles.saveText}>
+                        {changingPassword ? "Updating..." : "Update Password"}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -503,5 +671,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 50,
+  },
+
+
+  changePassToggle: {
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: "center",
+    backgroundColor: "#d9f6ff",
+  },
+  changePassToggleText: {
+    color: "#007ea7",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
