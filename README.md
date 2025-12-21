@@ -43,14 +43,13 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 ### 3) Appointment Booking & Management
 - Rezervim termini me datë/orë
 - Ruajtje e terminit me të dhëna:
-  - `patientId`, `doctorId`, `datetime`, `status`, `notes`
+  - `createdAt`, `date`, `patientId`, `patientName`, `doctorId`, `doctorName`, `reason`, `status`, `notes`, `time`
 - Menaxhim nga doktori:
   - **Approve / Cancel / Reschedule**
 - Njoftime për ndryshime të terminit
 
 ### 4) Push Notifications & Reminders
 - Kujtesa për:
-  - Termine
   - Medikamente (Reminder)
   - Ndryshime & dokumente të reja
 - Shfaqje njoftimi dhe hapja e ekranit përkatës pas klikimit
@@ -59,17 +58,17 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 - Kërkim lejesh për lokacion (GPS)
 - Marrja e koordinatave
 
-### 7) Analytics (Doctor Dashboard)
+### 6) Analytics (Doctor Dashboard)
 - Statistika mbi aktivitetin:
   - numri i pacientëve
   - terminet e përfunduara/anuluara
 - Filtrim sipas periudhave
 
-### 8) Emergency / SOS
+### 7) Emergency / SOS
 - Dërgim alarmi urgjent 
 - Njoftim për doktorin/spitalin ose organ tjeter
 
-### 9) E-Recipe (Receta Elektronike)
+### 8) E-Recipe (Receta Elektronike)
 - Doktori lëshon recetë pas konsultës
 - Ruhet në profilin e pacientit
 - Përdorshme në farmaci
@@ -125,16 +124,16 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 2. Shton opsionalisht koment/arsye
 3. “Confirm”
 4. Ruhet termini (Firestore) + status
-5. Pacienti merr njoftim
-6. Doktori merr njoftim
+5. Pacienti merr njoftim se a eshte bere rezervimi i terminit
+6. Doktori mund ta shohe terminin tek My Appointments
 **Alternative:** ora e zënë → gabim
 
 ### Doctor Appointment Management
 **Aktor:** Doktor  
 1. Sheh terminet
 2. Hap detajet
-3. Approve/Cancel/Reschedule
-4. Pacienti njoftohet
+3. Approve/Cancel
+4. Pacienti mund ta sheh në kohë reale se si ndryshon statusi i terminit
    
 ### GPS & Hospital Finder
 1. Leje GPS
@@ -294,6 +293,15 @@ expo start
   
   <img src="assets/images/pacient4.png" width="180" />
   <img src="assets/images/pacient16.png" width="180" />
+  <img src="assets/images/pacient21.png" width="180" />
+  <img src="assets/images/pacient22.png" width="180" />
+  <img src="assets/images/pacient23.png" width="180" />
+  <img src="assets/images/pacient24.png" width="180" />
+  <img src="assets/images/pacient25.png" width="180" />
+  <img src="assets/images/pacient26.png" width="180" />
+  <img src="assets/images/pacient27.png" width="180" />
+  <img src="assets/images/pacient28.png" width="180" />
+  <img src="assets/images/pacient29.png" width="180" />
 </div>
 
 ---
