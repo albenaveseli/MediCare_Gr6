@@ -217,7 +217,7 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
 
       Alert.alert("Success", "Profile updated successfully!");
     } catch (error) {
-      Alert.alert("Error", error.message);
+      console.log("Error", error.message);
     }
   };
 
@@ -229,7 +229,7 @@ export default function ProfileCard({ roleType = "Patient", homePath = "/(patien
       Alert.alert("Logged out", "You have been logged out successfully!");
     
     } catch (error) {
-      Alert.alert("Error", error.message);
+      console.log("Error", error.message);
     }
   };
 

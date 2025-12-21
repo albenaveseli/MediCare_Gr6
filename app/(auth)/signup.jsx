@@ -73,7 +73,7 @@ export default function Signup() {
           "This email is already registered. Please login or use a different email."
         );
       } else {
-        Alert.alert("Error", error.message);
+        console.log("Error", error.message);
       }
     }
   };

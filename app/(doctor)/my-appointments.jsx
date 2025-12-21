@@ -35,7 +35,7 @@ export default function MyAppointmentsScreen() {
     const fetchAppointments = async () => {
       try {
         if (authLoading) return; 
-        if (!user) return Alert.alert("Error", "You must be logged in."); 
+        if (!user) return console.log("Error", "You must be logged in."); 
 
         const doctorQuery = query(
           collection(db, "doctors"),

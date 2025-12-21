@@ -148,7 +148,7 @@ export default function BookingScreen() {
       return Alert.alert("Weekend", "Appointments not available on weekends");
     try {
       if (loading) return;
-      if (!user) return Alert.alert("Error", "You must be logged in to book.");
+      if (!user) return console.log("Error", "You must be logged in to book.");
 
       const appointmentsRef = collection(db, "appointments");
       const q = query(

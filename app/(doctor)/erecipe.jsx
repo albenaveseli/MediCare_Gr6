@@ -136,7 +136,7 @@ export default function ERecipeScreen() {
       if (authLoading) return; 
 
       if (!user) {
-        Alert.alert("Error", "You must be logged in.");
+        console.log("Error", "You must be logged in.");
         return;
       }
 

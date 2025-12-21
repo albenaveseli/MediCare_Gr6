@@ -58,7 +58,7 @@ export default function ViewRecipeScreen() {
       try {
         if (authLoading) return; 
         if (!user || !user.email)
-          return Alert.alert("Error", "You must be logged in.");
+          return console.log("Error", "You must be logged in.");
 
         const usersSnapshot = await getDocs(collection(db, "users"));
         const users = usersSnapshot.docs.map((doc) => ({
