@@ -216,6 +216,8 @@ expo start
 <div align="center">
   <img src="assets/images/common.jpg" width="200" />
       <img src="assets/images/common6.png" width="200" />
+      <img src="assets/images/common7.png" width="200" />
+      <img src="assets/images/common8.png" width="200" />
 </div>
 
 ---
@@ -266,6 +268,8 @@ expo start
      <img src="assets/images/common4.png" width="200" />
       <img src="assets/images/common5.png" width="200" />
       <img src="assets/images/common6.png" width="200" />
+      <img src="assets/images/common7.png" width="200" />
+      <img src="assets/images/common8.png" width="200" />
 </div>
 
 ---
@@ -333,6 +337,9 @@ expo start
 <div align="center">
 
   <img src="assets/images/pacient13.png" width="180" />
+  <img src="assets/images/pacient30.png" width="180" />
+  <img src="assets/images/pacient31.png" width="180" />
+  <img src="assets/images/pacient32.png" width="180" />
 
 </div>
 
