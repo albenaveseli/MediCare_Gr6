@@ -335,11 +335,9 @@ expo start
 
 ###  Profile & Logout
 <div align="center">
-
-  <img src="assets/images/pacient13.png" width="180" />
   <img src="assets/images/pacient30.png" width="180" />
   <img src="assets/images/pacient31.png" width="180" />
-  <img src="assets/images/pacient32.png" width="180" />
+  <img src="assets/images/pacient32.jpg" width="180" />
 
 </div>
 
