@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react-native";
-import DashboardCards from "../components/DashboardCards"; // 🔁 ndrysho path sipas projektit
+import DashboardCards from "../components/DashboardCards";
 
 /* ---------- MOCKS ---------- */
 

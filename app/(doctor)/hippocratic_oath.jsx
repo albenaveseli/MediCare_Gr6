@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-// NDYSHIMI 1: Zëvendësojmë ScrollView me FlatList nga react-native
+//  OPTIMIZIMI 1: Zëvendësojmë ScrollView me FlatList nga react-native
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Header from "../../components/Header";
 
@@ -40,7 +40,7 @@ export default function DoctorOath() {
     },
   ];
 
-  // NDYSHIMI 2: Krijojmë një funksion RenderItem për FlatList
+  // OPTIMIZIMI 2: Krijojmë një funksion RenderItem për FlatList
   const renderItem = ({ item, index }) => (
     <View key={index} style={styles.sectionCard}>
       <View style={styles.iconContainer}>
@@ -50,7 +50,7 @@ export default function DoctorOath() {
     </View>
   );
 
-  // NDYSHIMI 3: Krijojmë një Header Component për FlatList
+  // OPTIMIZIMI 3: Krijojmë një Header Component për FlatList
   const ListHeader = () => (
     <View style={styles.headerCard}>
       <MaterialIcons name="medical-services" size={32} color="#00A3B5" />
@@ -66,19 +66,15 @@ export default function DoctorOath() {
         onBack={() => router.push("/(doctor)/home")}
       />
       
-      {/* NDYSHIMI 4: Zëvendësojmë ScrollView me FlatList */}
+      {/*   OPTIMIZIMI 4: Zëvendësojmë ScrollView me FlatList */}
       <FlatList
         data={oathSections}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        ListHeaderComponent={ListHeader} // Përdorim header-in si komponent
+        ListHeaderComponent={ListHeader} 
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       />
-      {/* Pjesa e brendshme e ScrollView (HeaderCard dhe map)
-        është zhvendosur në ListHeaderComponent dhe renderItem
-      */}
-      
     </View>
   );
 }
@@ -88,7 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F9FA",
   },
-  // Kjo stilizimi tani aplikohet direkt në FlatList, duke shërbyer si padding
+
   content: {
     padding: 16,
     paddingBottom: 40,
@@ -98,8 +94,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 24,
     alignItems: "center",
-    // NDYSHIMI 5: Heqim marginBottom nga headerCard, sepse FlatList vendos elementet
-    // Kemi nevojë të kemi vetëm një margin poshtë sectionCard.
     marginBottom: 20, 
     shadowColor: "#00A3B5",
     shadowOffset: { width: 0, height: 6 },
@@ -126,7 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     padding: 20,
-    marginBottom: 16, // Kjo bën hapësirën mes elementeve të FlatList
+    marginBottom: 16, 
     flexDirection: "row",
     alignItems: "flex-start",
     shadowColor: "#000",

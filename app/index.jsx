@@ -23,11 +23,9 @@ export default function WelcomeScreen() {
               source={require("../assets/images/logo.jpg")}
               style={styles.medicalImage}
               resizeMode="contain"
-              fadeDuration={120}                 // ✅ MIN CHANGE (Android perf)
-              shouldRasterizeIOS                 // ✅ MIN CHANGE (iOS perf)
-              accessible={false}                 // ✅ MIN CHANGE
-              // loadingIndicatorSource={require("../assets/images/logo.jpg")}
-              // ↑ opsionale nëse ke placeholder tjetër
+              fadeDuration={120}                 //  MIN CHANGE (Android perf)
+              shouldRasterizeIOS                 //  MIN CHANGE (iOS perf)
+              accessible={false}                 //  MIN CHANGE
             />
           </View>
         </View>

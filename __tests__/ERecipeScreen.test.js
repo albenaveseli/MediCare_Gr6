@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
-import ERecipeScreen from "../app/(doctor)/erecipe"; // 🔁 ndrysho path-in sipas projektit
+import ERecipeScreen from "../app/(doctor)/erecipe";
 
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -201,7 +201,7 @@ describe("ERecipeScreen", () => {
     });
   });
 
-  // ✅ “fail” i mirë, i qëllimshëm dhe i vlefshëm: kur doktori s’gjendet
+  //  “fail” i mirë, i qëllimshëm dhe i vlefshëm: kur doktori s’gjendet
   it("shows alert when doctor profile is not found (good negative test)", async () => {
     // Override getDocs: fetchDoctor në useEffect kthehet empty për doktor
     getDocs.mockResolvedValueOnce({ empty: true, docs: [] });
@@ -224,8 +224,6 @@ describe("ERecipeScreen", () => {
     fireEvent.press(getByText("OK"));
     fireEvent.press(getByText("View Prescription"));
 
-    // Tash e bëjmë send, por getDocs për doktor në handleSend do kthehet empty
-    // prandaj e vendosim getDocs të kthejë empty në thirrjen e radhës
     getDocs.mockResolvedValueOnce({ empty: true, docs: [] });
 
     fireEvent.press(getByText("Send to Patient"));

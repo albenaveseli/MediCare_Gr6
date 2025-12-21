@@ -67,7 +67,6 @@ jest.mock("../components/AuthForm", () => {
   };
 });
 
-// Mock AuthInput: e kthen në TextInput normal që punon me placeholder/value
 jest.mock("../components/AuthInput", () => {
   const React = require("react");
   const { TextInput } = require("react-native");

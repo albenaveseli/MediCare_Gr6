@@ -37,7 +37,7 @@ export default function Analytics() {
   }, []);
 
   useEffect(() => {
-    let unsubscribe = null; // ✅ MIN CHANGE (needed for proper cleanup)
+    let unsubscribe = null; //  MIN CHANGE (needed for proper cleanup)
 
     const fetchAnalytics = async () => {
       try {
@@ -64,7 +64,7 @@ export default function Analytics() {
           where("doctorId", "==", doctorId)
         );
 
-        unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => { // ✅ MIN CHANGE
+        unsubscribe = onSnapshot(appointmentsQuery, (snapshot) => { // MIN CHANGE
           const monthlyCounts = {
             Jan: 0,
             Feb: 0,
@@ -117,7 +117,7 @@ export default function Analytics() {
 
     fetchAnalytics();
 
-    return () => {                 // ✅ MIN CHANGE (real cleanup)
+    return () => {                 //  MIN CHANGE (real cleanup)
       if (unsubscribe) unsubscribe();
     };
   }, []);
@@ -141,8 +141,8 @@ export default function Analytics() {
 
       <ScrollView
         contentContainerStyle={styles.content}
-        removeClippedSubviews // ✅ MIN CHANGE (small perf / "lazy-ish" for offscreen on Android)
-        keyboardShouldPersistTaps="handled" // ✅ MIN CHANGE (avoids extra touch handling work)
+        removeClippedSubviews //  MIN CHANGE (small perf / "lazy-ish" for offscreen on Android)
+        keyboardShouldPersistTaps="handled" //  MIN CHANGE (avoids extra touch handling work)
       >
         <Text style={styles.subtitle}>Monthly Patient Visits</Text>
 

@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import { router } from "expo-router";
-import Header from "../components/Header"; // ndrysho path sipas projektit
+import Header from "../components/Header";
 
 /* ---------- MOCKS ---------- */
 jest.mock("expo-router", () => ({

@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react-native";
-import AuthInput from "../components/AuthInput"; // ndrysho path sipas projektit
+import AuthInput from "../components/AuthInput";
 
 describe("AuthInput", () => {
   it("renders input with placeholder", () => {
