@@ -1,8 +1,3 @@
-<div align="center">
-
-  <img src="assets/images/logo.jpg" width="180" />
-
-</div>
 # MediCare – Hospital Management & Patient App  
 **Course:** Programimi për Pajisje Mobile  
 **Version:** 1.0  
