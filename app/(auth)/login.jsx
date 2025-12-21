@@ -130,9 +130,13 @@ export default function Login() {
       >
         <View style={styles.buttonContent}>
           <Image
-          source={require("../../assets/images/GoogleLogo.png")}
-          style={{width: 20, height: 20, marginRight: 10}}
-          />
+  source={require("../../assets/images/GoogleLogo.png")}
+  style={{ width: 20, height: 20, marginRight: 10 }}
+  contentFit="contain"   
+  cachePolicy="memory"   
+  transition={200}       // efekt i butë kur ngarkohet
+  quality={0.5}          // kompresim 50% të cilësisë
+/>
         <Text style={styles.buttonText}>Login with Google</Text>
         </View>
       </TouchableOpacity>
