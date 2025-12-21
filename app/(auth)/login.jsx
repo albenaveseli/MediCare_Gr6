@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import {
   GoogleAuthProvider,
@@ -14,7 +15,6 @@ import {
 import { useState } from "react";
 import {
   Alert,
-  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -93,11 +93,14 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/images/logo.jpg")}
-        style={styles.logo}
-        progressiveRenderingEnabled={true} // lazy load (ngarkim gradual)
-        fadeDuration={300} //  efekt i butë kur ngarkohet
-      />
+  source={require("../../assets/images/logo.jpg")}
+  style={styles.logo}
+  contentFit="cover"   // si të përshtatet imazhi
+  cachePolicy="memory" // cache për performancë
+  transition={300}     // efekti fade-in
+  quality={0.5}        // kompresim 50% të cilësisë
+/>
+
 
       <Text style={styles.title}>Welcome Back!</Text>
       <TextInput
