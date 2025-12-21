@@ -9,17 +9,24 @@ import {
   getDocs,
   query,
   setDoc,
-  where
+  where,
 } from "firebase/firestore";
+
+import { useAuth } from "../context/AuthContext";
 
 // -------------------- MOCKS --------------------
 
-// router + params
+// expo-router
 jest.mock("expo-router", () => ({
   router: {
     push: jest.fn(),
   },
   useLocalSearchParams: jest.fn(),
+}));
+
+// AuthContext
+jest.mock("../context/AuthContext", () => ({
+  useAuth: jest.fn(),
 }));
 
 // firestore
@@ -35,11 +42,10 @@ jest.mock("firebase/firestore", () => ({
 
 // firebase config
 jest.mock("../firebase", () => ({
-  auth: { currentUser: { email: "doc@test.com" } },
   db: {},
 }));
 
-// mock Header (që të mos na prishë testin)
+// Header mock
 jest.mock("../components/Header", () => {
   const React = require("react");
   const { View, Text, TouchableOpacity } = require("react-native");
@@ -55,30 +61,43 @@ jest.mock("../components/Header", () => {
   };
 });
 
+// -------------------- TESTS --------------------
+
 describe("ERecipeScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
     jest.spyOn(Alert, "alert").mockImplementation(() => {});
 
+    // auth
+    useAuth.mockReturnValue({
+      user: { email: "doc@test.com" },
+      loading: false,
+    });
+
+    // route params
     useLocalSearchParams.mockReturnValue({
       appointmentId: "A1",
       patientName: "John Patient",
       patientId: "P1",
     });
 
-    // boilerplate returns
+    // firestore boilerplate
     collection.mockReturnValue("COL_REF");
     query.mockReturnValue("QUERY_REF");
     where.mockReturnValue("WHERE_REF");
     doc.mockReturnValue("DOC_REF");
 
-    // fetchDoctor useEffect: kthe 1 doktor
+    // fetchDoctor default → FOUND
     getDocs.mockResolvedValue({
       empty: false,
       docs: [
         {
           id: "D1",
-          data: () => ({ name: "Dr Test", specialty: "Cardiology" }),
+          data: () => ({
+            name: "Dr Test",
+            specialty: "Cardiology",
+          }),
         },
       ],
     });
@@ -90,11 +109,9 @@ describe("ERecipeScreen", () => {
     Alert.alert.mockRestore();
   });
 
-  it("shows error modal and missing fields when trying to generate with empty required fields", async () => {
-    // patientName vjen nga params ("John Patient"), prandaj e zbrazim që të testojmë missing
+  it("shows error modal when required fields are missing", async () => {
     const { getByText, getByPlaceholderText } = render(<ERecipeScreen />);
 
-    // zbraz Patient Name
     fireEvent.changeText(getByPlaceholderText("Patient Name"), "");
     fireEvent.press(getByText("Generate Prescription"));
 
@@ -104,49 +121,37 @@ describe("ERecipeScreen", () => {
       ).toBeTruthy();
     });
 
-    // duhet të shfaqen missing fields
     expect(getByText("• Patient Name")).toBeTruthy();
     expect(getByText("• Diagnosis")).toBeTruthy();
     expect(getByText("• Medications")).toBeTruthy();
     expect(getByText("• Treatment Steps")).toBeTruthy();
   });
 
-  it("generates prescription successfully and shows success modal", async () => {
+  it("generates prescription successfully", async () => {
     const { getByText, getByPlaceholderText } = render(<ERecipeScreen />);
 
-    fireEvent.changeText(getByPlaceholderText("Patient Name"), "John Patient");
     fireEvent.changeText(getByPlaceholderText("Diagnosis"), "Flu");
     fireEvent.changeText(
       getByPlaceholderText("Medications (separate with commas)"),
-      "Paracetamol, Vitamin C"
+      "Paracetamol"
     );
     fireEvent.changeText(getByPlaceholderText("Treatment Steps"), "Rest");
 
     fireEvent.press(getByText("Generate Prescription"));
 
-    await waitFor(() => {
-      expect(getByText("Prescription generated successfully!")).toBeTruthy();
-    });
+    await waitFor(() =>
+      expect(getByText("Prescription generated successfully!")).toBeTruthy()
+    );
 
-    // mbyll modalin OK
     fireEvent.press(getByText("OK"));
-    await waitFor(() => {
-      // suksesi s’duhet të jetë më visible
-      // (nëse modali mbyllet, teksti nuk gjendet)
-      // queryByText do ishte më i pastër, por po e lëmë minimal:
-      expect(true).toBe(true);
-    });
 
-    // duhet të shfaqen butonat generated
     expect(getByText("View Prescription")).toBeTruthy();
     expect(getByText("Clear")).toBeTruthy();
   });
 
-  it("view prescription flow shows 'Send to Patient' and sends to firestore (setDoc)", async () => {
+  it("sends prescription to firestore successfully", async () => {
     const { getByText, getByPlaceholderText } = render(<ERecipeScreen />);
 
-    // plotëso required fields
-    fireEvent.changeText(getByPlaceholderText("Patient Name"), "John Patient");
     fireEvent.changeText(getByPlaceholderText("Diagnosis"), "Flu");
     fireEvent.changeText(
       getByPlaceholderText("Medications (separate with commas)"),
@@ -158,32 +163,21 @@ describe("ERecipeScreen", () => {
       "Drink water"
     );
 
-    // Generate -> success modal
     fireEvent.press(getByText("Generate Prescription"));
-    await waitFor(() => {
-      expect(getByText("Prescription generated successfully!")).toBeTruthy();
-    });
+    await waitFor(() =>
+      expect(getByText("Prescription generated successfully!")).toBeTruthy()
+    );
 
-    // close success modal
     fireEvent.press(getByText("OK"));
-
-    // View prescription
     fireEvent.press(getByText("View Prescription"));
-
-    // tani duhet të jemi në viewRecipe
-    await waitFor(() => {
-      expect(getByText("Send to Patient")).toBeTruthy();
-    });
-
-    // shtyp Send
     fireEvent.press(getByText("Send to Patient"));
 
     await waitFor(() => {
       expect(setDoc).toHaveBeenCalledTimes(1);
     });
 
-    // kontroll i thjeshtë që dërgon të dhëna kryesore
     const payload = setDoc.mock.calls[0][1];
+
     expect(payload.patientId).toBe("P1");
     expect(payload.doctorName).toBe("Dr Test");
     expect(payload.profession).toBe("Cardiology");
@@ -193,7 +187,6 @@ describe("ERecipeScreen", () => {
     expect(payload.medications).toEqual(["Paracetamol", "Vitamin C"]);
     expect(payload.createdAt).toBe("SERVER_TIMESTAMP");
 
-    // duhet të shfaqet send modal
     await waitFor(() => {
       expect(
         getByText("Prescription successfully sent to John Patient!")
@@ -201,15 +194,12 @@ describe("ERecipeScreen", () => {
     });
   });
 
-  //  “fail” i mirë, i qëllimshëm dhe i vlefshëm: kur doktori s’gjendet
-  it("shows alert when doctor profile is not found (good negative test)", async () => {
-    // Override getDocs: fetchDoctor në useEffect kthehet empty për doktor
+  it("shows alert when doctor profile is not found", async () => {
+    // fetchDoctor → empty
     getDocs.mockResolvedValueOnce({ empty: true, docs: [] });
 
     const { getByText, getByPlaceholderText } = render(<ERecipeScreen />);
 
-    // plotëso required fields + generate + view
-    fireEvent.changeText(getByPlaceholderText("Patient Name"), "John Patient");
     fireEvent.changeText(getByPlaceholderText("Diagnosis"), "Flu");
     fireEvent.changeText(
       getByPlaceholderText("Medications (separate with commas)"),
@@ -218,12 +208,14 @@ describe("ERecipeScreen", () => {
     fireEvent.changeText(getByPlaceholderText("Treatment Steps"), "Rest");
 
     fireEvent.press(getByText("Generate Prescription"));
-    await waitFor(() => {
-      expect(getByText("Prescription generated successfully!")).toBeTruthy();
-    });
+    await waitFor(() =>
+      expect(getByText("Prescription generated successfully!")).toBeTruthy()
+    );
+
     fireEvent.press(getByText("OK"));
     fireEvent.press(getByText("View Prescription"));
 
+    // handleSend → empty
     getDocs.mockResolvedValueOnce({ empty: true, docs: [] });
 
     fireEvent.press(getByText("Send to Patient"));
