@@ -48,35 +48,26 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
   - **Approve / Cancel / Reschedule**
 - Njoftime për ndryshime të terminit
 
-### 4) Medical Documents Management
-- Upload dokumente/analiza nga pacienti
-- Ruajtje në **Firebase Storage**
-- Ruajtje metadata në **Firestore**:
-  - `patientId`, `type`, `date`, `fileUrl`
-- Qasje për doktorin në historikun e pacientit
-
-### 5) Push Notifications & Reminders
+### 4) Push Notifications & Reminders
 - Kujtesa për:
   - Termine
   - Medikamente (Reminder)
   - Ndryshime & dokumente të reja
 - Shfaqje njoftimi dhe hapja e ekranit përkatës pas klikimit
 
-### 6) GPS & Hospital Finder
+### 5) GPS & Hospital Finder
 - Kërkim lejesh për lokacion (GPS)
 - Marrja e koordinatave
-- Shfaqje e spitaleve më të afërta me opsion navigimi
 
 ### 7) Analytics (Doctor Dashboard)
 - Statistika mbi aktivitetin:
   - numri i pacientëve
   - terminet e përfunduara/anuluara
-- Raporte/grafikë dhe filtrim sipas periudhave
+- Filtrim sipas periudhave
 
 ### 8) Emergency / SOS
-- Dërgim alarmi urgjent me lokacion GPS
-- Opsional: shtim i simptomave/fotos
-- Njoftim për doktorin/spitalin
+- Dërgim alarmi urgjent 
+- Njoftim për doktorin/spitalin ose organ tjeter
 
 ### 9) E-Recipe (Receta Elektronike)
 - Doktori lëshon recetë pas konsultës
@@ -115,15 +106,13 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 **Aktor:** Pacient i ri  
 **Trigger:** Pas Sign Up  
 **Rrjedha:**
-1. Vendos datën e lindjes, gjininë, monedhën/vendin
-2. Konfiguron preferenca për njoftime (reminders)
-3. Opsional: upload foto profili
-4. Konfirmon → Home
+1. Vendos datën e lindjes, gjininë dhe të dhëna të tjera
+2. Konfirmon → Home
 
 ### Home/Dashboard
 **Aktorët:** Pacient / Doktor  
-- Pacient: doktorët + terminet  
-- Doktor: orari + historiku
+- Pacient: doktorët + opsione të tjera 
+- Doktor: Betimi i Hipokratit + opsione të tjera
 
 ### Doctor Details
 **Aktor:** Pacient  
@@ -146,14 +135,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 2. Hap detajet
 3. Approve/Cancel/Reschedule
 4. Pacienti njoftohet
-
-### Upload Documents
-**Aktor:** Pacient  
-1. Zgjedh file (kamera/galeria)
-2. Upload në Storage
-3. Metadata në Firestore
-4. Doktori e sheh në historik
-
+   
 ### GPS & Hospital Finder
 1. Leje GPS
 2. Merr koordinata
@@ -165,9 +147,9 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 3. Shfaqja në ekran
 4. Klikimi hap ekranin përkatës
 
-### Profile & History
-- Pacient: terminet e kaluara + dokumente
-- Doktor: pacientët + historiku
+### Profile
+- Pacient: Të dhëna personale të pacientit
+- Doktor: Të dhëna personale të doktorit
 - Opsional: edit profil
 
 ### Logout
@@ -175,8 +157,7 @@ Aplikacioni synon të ofrojë një përvojë të thjeshtë, të sigurt dhe efika
 
 ### Analytics (Doctor)
 1. Shfaq statistika
-2. Paraqitje me grafikë
-3. Filtrim kohor
+2. Filtrim kohor
 
 ### Emergency / SOS
 1. Njoftim emergjent
@@ -270,7 +251,7 @@ expo start
 
 ---
 
-###  Profile, Settings & Logout
+###  Profile & Logout
 <div align="center">
   <img src="assets/images/doctor8.png" width="180" />
    <img src="assets/images/doctor9.png" width="180" />
@@ -317,7 +298,7 @@ expo start
 
 ---
 
-###  Medical Records & Documents
+###  Medical Records 
 <div align="center">
   
 
@@ -328,7 +309,7 @@ expo start
 
 ---
 
-### Notifications, Reminders & SOS
+### Notifications, Reminders & SOS, GPS
 <div align="center">
   <img src="assets/images/pacient11.png" width="180" />
   
@@ -344,7 +325,7 @@ expo start
 
 ---
 
-###  Profile, History & Settings
+###  Profile & Logout
 <div align="center">
 
   <img src="assets/images/pacient13.png" width="180" />
